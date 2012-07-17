@@ -1,0 +1,12 @@
+1) sync stream after errors
+2) write traverse routine for functions
+3) array memory management
+4) function memory management
+5) library funtions(can user redefine reserved names for lib funcs?)
+6) function scopes
+7) keywords if/else for and other
+8) pay attention for blocks of insturctions
+9) libbignum integration
+10) нужно придумать как при traverse копировать function body
+    без дополнительных расходов и костылей
+

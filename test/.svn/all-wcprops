@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 27
+/svn/crypti/!svn/ver/6/test
+END
+calc_test.sh
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/crypti/!svn/ver/6/test/calc_test.sh
+END
+answer_1.txt
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/crypti/!svn/ver/1/test/answer_1.txt
+END
+test_1.txt
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/crypti/!svn/ver/1/test/test_1.txt
+END
+answer_2.txt
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/crypti/!svn/ver/1/test/answer_2.txt
+END
+test_2.txt
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/crypti/!svn/ver/1/test/test_2.txt
+END
+answer_3.txt
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/crypti/!svn/ver/1/test/answer_3.txt
+END
+test_3.txt
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/crypti/!svn/ver/1/test/test_3.txt
+END
+memory_test.sh
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/crypti/!svn/ver/6/test/memory_test.sh
+END
+test_4.txt
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/crypti/!svn/ver/1/test/test_4.txt
+END

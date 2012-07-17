@@ -1,0 +1,114 @@
+SYNTAX:
+	prog 	->	statement
+	
+	statement->	expr = statement
+		 |	expr
+	
+	expr	->	expr + term
+		|	expr - term
+		|	term
+	
+	term	->	term * factor
+		|	term / factor
+		|	factor
+	
+	factor	->	number
+		|	id
+		|	(statement)
+
+
+ADAPTED SYNTAX:
+	prog 		->	body
+	
+
+	decls		->	func EOL decls
+			|	something EOL decls
+			|	EMPTY
+
+
+	func		->	"def" id(list_decl) block
+
+	list_decl	->	id list_decl_rest
+			|	EMPTY
+	
+	list_decl_rest	->	, id list_call_rest
+			|	EMPTY
+	
+
+	stmts		->	statement EOL stmts
+	
+	statesent	->	IF (boolean) block ELSE block
+			|	DO block WHILE (boolean)
+			|	WHILE(boolean) block
+			|	FOR (boolean; boolean; boolean) block
+			|	identifier = boolean						//FIXME!
+			|	identifier = { tuple_set }
+			|	block
+
+
+	block		->	{stmts block}
+			|	EMPTY								//FIXME!
+
+	boolean		->	join || boolean
+	
+	join		->	equity && join 
+	
+	equity		->	rel == equity
+			|	rel != equity
+
+	rel		->	expr > rel
+			|	expr >= rel
+			|	expr < rel
+			|	expr <= rel
+	
+	expr		->	term expr_rest
+
+	expr_rest	->	+ term expr_rest
+			|	- term expr_rest
+			|	EMPTY
+
+	term		->	factor term_rest
+	
+	term_rest	->	* factor term_rest
+			|	/ factor term_rest
+			|	EMPTY
+
+	factor		->	identifier
+			|	number
+			|	(boolean)
+			|	EMPTY
+
+	identifier	->	id
+			|	id[boolean]			//array reference
+			|	id (tuple_set)			//function call
+	
+
+	tuple_set	->	boolean tuple_rest
+			|	EMPTY
+
+	tuple_rest	->	, boolean tuple_rest
+			|	EMPTY
+
+
+TERMINALS:
+	ID	(name, value)
+	NUMBER	(value)
+	LPARENTH
+	RPARENTH
+	EQ
+	PLUS
+	MINUS
+	MUL
+	DIV
+	EOL
+	EOF
+	UNKNOWN
+
+
+REMARK:
+1)	in	id[statesment] statesment cant be EMPTY
+2)	in functions we cant define functions
+3)	we can assign only to variables
+
+
+

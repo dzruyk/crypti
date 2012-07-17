@@ -1,0 +1,412 @@
+	./Session.vim	/^inoremap  :w$/;"	m
+	./Session.vim	/^inoremap  "+gP$/;"	m
+	./Session.vim	/^inoremap <expr>  omni#cpp#maycomplete#Complete()$/;"	m
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+.	./Session.vim	/^inoremap <expr> . omni#cpp#maycomplete#Dot()$/;"	m
+0	./Session.vim	/^normal! 0$/;"	m
+015l	./Session.vim	/^normal! 015l$/;"	m
+:	./Session.vim	/^inoremap <expr> : omni#cpp#maycomplete#Scope()$/;"	m
+<F2>	./Session.vim	/^inoremap <F2> $/;"	m
+<F5>	./Session.vim	/^map <F5> :!ctags -R .\/$/;"	m
+<Plug>NetrwBrowseX	./Session.vim	/^nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)$/;"	m
+<S-Insert>	./Session.vim	/^map <S-Insert> <MiddleMouse>$/;"	m
+<S-Insert>	./Session.vim	/^map! <S-Insert> <MiddleMouse>$/;"	m
+>	./Session.vim	/^inoremap <expr> > omni#cpp#maycomplete#Arrow()$/;"	m
+ARRAY_H_	./array.h	2;"	d
+ARRSZ	./macros.h	82;"	d
+AST_NODE	./syn_tree.h	4;"	d
+AST_NODE_ACCESS	./syn_tree.h	/^	AST_NODE_ACCESS,$/;"	e	enum:__anon15
+AST_NODE_ARR	./syn_tree.h	/^	AST_NODE_ARR,$/;"	e	enum:__anon15
+AST_NODE_AS	./syn_tree.h	/^	AST_NODE_AS,$/;"	e	enum:__anon15
+AST_NODE_CALL	./syn_tree.h	/^	AST_NODE_CALL,$/;"	e	enum:__anon15
+AST_NODE_DEF	./syn_tree.h	/^	AST_NODE_DEF,$/;"	e	enum:__anon15
+AST_NODE_ID	./syn_tree.h	/^	AST_NODE_ID,$/;"	e	enum:__anon15
+AST_NODE_NUM	./syn_tree.h	/^	AST_NODE_NUM,$/;"	e	enum:__anon15
+AST_NODE_OP	./syn_tree.h	/^	AST_NODE_OP,$/;"	e	enum:__anon15
+AST_NODE_STUB	./syn_tree.h	/^	AST_NODE_STUB,$/;"	e	enum:__anon15
+AST_NODE_UNKNOWN	./syn_tree.h	/^	AST_NODE_UNKNOWN,$/;"	e	enum:__anon15
+CC	./Makefile	/^CC=gcc$/;"	m
+CFLAGS	./Makefile	/^CFLAGS=-Wall -ggdb$/;"	m
+COLLISION_RATE	./hash.c	12;"	d	file:
+COMMON_H_	./common.h	2;"	d
+CRLF	./macros.h	16;"	d
+EVAL_ARR	./eval.h	/^	EVAL_ARR,$/;"	e	enum:__anon10
+EVAL_FUNC	./eval.h	/^	EVAL_FUNC,$/;"	e	enum:__anon10
+EVAL_NUM	./eval.h	/^	EVAL_NUM,$/;"	e	enum:__anon10
+FALSE	./macros.h	5;"	d
+FREE	./macros.h	53;"	d
+H	./Session.vim	/^map H :bp$/;"	m
+HASH_H_	./hash.h	2;"	d
+HASH_SIZE	./hash.c	10;"	d	file:
+ID_ARR	./id_table.h	/^	ID_ARR,$/;"	e	enum:__anon2
+ID_FUNC	./id_table.h	/^	ID_FUNC,$/;"	e	enum:__anon2
+ID_NUM	./id_table.h	/^	ID_NUM,$/;"	e	enum:__anon2
+ID_UNKNOWN	./id_table.h	/^	ID_UNKNOWN,$/;"	e	enum:__anon2
+INITIAL_SZ	./function.c	9;"	d	file:
+INITIAL_SZ	./id_table.c	10;"	d	file:
+INITIAL_SZ	./keyword.c	9;"	d	file:
+KEY_DEF	./keyword.h	/^	KEY_DEF,		\/\/function definition$/;"	e	enum:__anon1
+KEY_DO	./keyword.h	/^	KEY_DO,$/;"	e	enum:__anon1
+KEY_ELSE	./keyword.h	/^	KEY_ELSE,$/;"	e	enum:__anon1
+KEY_FOR	./keyword.h	/^	KEY_FOR,$/;"	e	enum:__anon1
+KEY_IF	./keyword.h	/^	KEY_IF,$/;"	e	enum:__anon1
+KEY_UNKNOWN	./keyword.h	/^	KEY_UNKNOWN,$/;"	e	enum:__anon1
+KEY_WHILE	./keyword.h	/^	KEY_WHILE,$/;"	e	enum:__anon1
+L	./Session.vim	/^map L :bn$/;"	m
+LEX_MAIN	./Makefile	/^LEX_MAIN = lex_test.o$/;"	m
+LEX_OBJS	./Makefile	/^LEX_OBJS = lex.o id_table.o hash.o primes.o keyword.o common.o array.o $/;"	m
+LEX_TEST	./Makefile	/^LEX_TEST = lex_test$/;"	m
+MACROS_H_	./macros.h	2;"	d
+NULL	./macros.h	13;"	d
+OP_AS	./syn_tree.h	/^	OP_AS,$/;"	e	enum:__anon14
+OP_B_AND	./syn_tree.h	/^	OP_B_AND,$/;"	e	enum:__anon14
+OP_B_OR	./syn_tree.h	/^	OP_B_OR,$/;"	e	enum:__anon14
+OP_DIV	./syn_tree.h	/^	OP_DIV,$/;"	e	enum:__anon14
+OP_EQ	./syn_tree.h	/^	OP_EQ,$/;"	e	enum:__anon14
+OP_GE	./syn_tree.h	/^	OP_GE,$/;"	e	enum:__anon14
+OP_GR	./syn_tree.h	/^	OP_GR,$/;"	e	enum:__anon14
+OP_LE	./syn_tree.h	/^	OP_LE,$/;"	e	enum:__anon14
+OP_LO	./syn_tree.h	/^	OP_LO,$/;"	e	enum:__anon14
+OP_L_AND	./syn_tree.h	/^	OP_L_AND,$/;"	e	enum:__anon14
+OP_L_OR	./syn_tree.h	/^	OP_L_OR,$/;"	e	enum:__anon14
+OP_MINUS	./syn_tree.h	/^	OP_MINUS,$/;"	e	enum:__anon14
+OP_MUL	./syn_tree.h	/^	OP_MUL,$/;"	e	enum:__anon14
+OP_NEQ	./syn_tree.h	/^	OP_NEQ,$/;"	e	enum:__anon14
+OP_NOT	./syn_tree.h	/^	OP_NOT,$/;"	e	enum:__anon14
+OP_PLUS	./syn_tree.h	/^	OP_PLUS,$/;"	e	enum:__anon14
+PRIMES_H_	./primes.h	2;"	d
+PRIM_NUM	./primes.c	7;"	d	file:
+SHOULDNT_REACH	./macros.h	20;"	d
+STREQ	./macros.h	18;"	d
+SessionLoad	./Session.vim	/^let SessionLoad = 1$/;"	v
+TOK_AS	./lex.h	/^	TOK_AS,$/;"	e	enum:__anon5
+TOK_B_AND	./lex.h	/^	TOK_B_AND,$/;"	e	enum:__anon5
+TOK_B_OR	./lex.h	/^	TOK_B_OR,$/;"	e	enum:__anon5
+TOK_COMMA	./lex.h	/^	TOK_COMMA,$/;"	e	enum:__anon5
+TOK_DIV	./lex.h	/^	TOK_DIV,$/;"	e	enum:__anon5
+TOK_EOF	./lex.h	/^	TOK_EOF,$/;"	e	enum:__anon5
+TOK_EOL	./lex.h	/^	TOK_EOL,$/;"	e	enum:__anon5
+TOK_EQ	./lex.h	/^	TOK_EQ,$/;"	e	enum:__anon5
+TOK_GE	./lex.h	/^	TOK_GE,$/;"	e	enum:__anon5
+TOK_GR	./lex.h	/^	TOK_GR,$/;"	e	enum:__anon5
+TOK_ID	./lex.h	/^	TOK_ID,$/;"	e	enum:__anon5
+TOK_KEYWORD	./lex.h	/^	TOK_KEYWORD,$/;"	e	enum:__anon5
+TOK_LBRACE	./lex.h	/^	TOK_LBRACE,	\/\/ {$/;"	e	enum:__anon5
+TOK_LBRACKET	./lex.h	/^	TOK_LBRACKET,	\/\/ [$/;"	e	enum:__anon5
+TOK_LE	./lex.h	/^	TOK_LE,$/;"	e	enum:__anon5
+TOK_LO	./lex.h	/^	TOK_LO,$/;"	e	enum:__anon5
+TOK_LPAR	./lex.h	/^	TOK_LPAR,$/;"	e	enum:__anon5
+TOK_L_AND	./lex.h	/^	TOK_L_AND,$/;"	e	enum:__anon5
+TOK_L_OR	./lex.h	/^	TOK_L_OR,$/;"	e	enum:__anon5
+TOK_MINUS	./lex.h	/^	TOK_MINUS,$/;"	e	enum:__anon5
+TOK_MUL	./lex.h	/^	TOK_MUL,$/;"	e	enum:__anon5
+TOK_NEQ	./lex.h	/^	TOK_NEQ,$/;"	e	enum:__anon5
+TOK_NOT	./lex.h	/^	TOK_NOT,$/;"	e	enum:__anon5
+TOK_NUM	./lex.h	/^	TOK_NUM,$/;"	e	enum:__anon5
+TOK_PLUS	./lex.h	/^	TOK_PLUS,$/;"	e	enum:__anon5
+TOK_RBRACE	./lex.h	/^	TOK_RBRACE,$/;"	e	enum:__anon5
+TOK_RBRACKET	./lex.h	/^	TOK_RBRACKET,$/;"	e	enum:__anon5
+TOK_RPAR	./lex.h	/^	TOK_RPAR,$/;"	e	enum:__anon5
+TOK_UNKNOWN	./lex.h	/^	TOK_UNKNOWN,$/;"	e	enum:__anon5
+TRAVERSE_MAIN	./Makefile	/^TRAVERSE_MAIN = crypti.o$/;"	m
+TRAVERSE_OBJS	./Makefile	/^TRAVERSE_OBJS = stack.o syntax.o syn_tree.o traverse.o eval.o function.o list.o$/;"	m
+TRAVERSE_TEST	./Makefile	/^TRAVERSE_TEST = crypti$/;"	m
+TRUE	./macros.h	9;"	d
+WARN	./hash.c	14;"	d	file:
+X	./Session.vim	/^map X :ls$/;"	m
+_LNLY_LIST_	./list.h	2;"	d
+__AST_NODE_H__	./syn_tree.h	2;"	d
+__EVAL_H__	./eval.h	2;"	d
+__FUNCTION_H__	./function.h	2;"	d
+__ID_TABLE_H__	./id_table.h	2;"	d
+__KEY_H__	./keyword.h	2;"	d
+__LEX_H__	./lex.h	2;"	d
+__STACK_H__	./stack.h	2;"	d
+__SYNTAX_H__	./syntax.h	2;"	d
+__TRAVERSE_H__	./traverse.h	2;"	d
+_hash_table_insert	./hash.c	/^_hash_table_insert(struct hash_table *table, void *key, void *data)$/;"	f	file:
+add_next_argu	./syntax.c	/^add_next_argu(struct list *arglst, void *data)$/;"	f	file:
+args	./function.h	/^	struct list *args;$/;"	m	struct:__anon25	typeref:struct:__anon25::list
+args	./syn_tree.h	/^	struct list *args;$/;"	m	struct:__anon22	typeref:struct:__anon22::list
+args	./syn_tree.h	/^	struct list *args;$/;"	m	struct:__anon23	typeref:struct:__anon23::list
+arr	./eval.h	/^		arr_t *arr;$/;"	m	union:__anon11::__anon12
+arr	./hash.c	/^	struct hash_bucket *arr;$/;"	m	struct:hash_table	typeref:struct:hash_table::hash_bucket	file:
+arr	./id_table.h	/^		arr_t *arr;$/;"	m	union:__anon3::__anon4
+arr	./syn_tree.h	/^	ast_node_t **arr;$/;"	m	struct:__anon20
+arr_free	./array.c	/^arr_free(arr_t *arr)$/;"	f
+arr_get_item	./array.c	/^arr_get_item(arr_t *arr, int ind, int *value)$/;"	f
+arr_new	./array.c	/^arr_new(int n, int item_sz)$/;"	f
+arr_print	./array.c	/^arr_print(arr_t *arr)$/;"	f
+arr_set_item	./array.c	/^arr_set_item(arr_t *arr, int ind, int value)$/;"	f
+arr_t	./array.h	/^} arr_t;$/;"	t	typeref:struct:__anon13
+array_access	./syntax.c	/^array_access()$/;"	f	file:
+array_init	./syntax.c	/^array_init()$/;"	f	file:
+assign	./syntax.c	/^assign(ast_node_t *lvalue)$/;"	f	file:
+ast_node	./syn_tree.h	/^typedef struct ast_node {$/;"	s
+ast_node_access_new	./syn_tree.c	/^ast_node_access_new(char *name, ast_node_t *ind)$/;"	f
+ast_node_access_t	./syn_tree.h	/^} ast_node_access_t;$/;"	t	typeref:struct:__anon21
+ast_node_arr_new	./syn_tree.c	/^ast_node_arr_new(ast_node_t **arr, int sz)$/;"	f
+ast_node_arr_t	./syn_tree.h	/^} ast_node_arr_t;$/;"	t	typeref:struct:__anon20
+ast_node_as_new	./syn_tree.c	/^ast_node_as_new(ast_node_t *left, ast_node_t *right)$/;"	f
+ast_node_as_t	./syn_tree.h	/^} ast_node_as_t;$/;"	t	typeref:struct:__anon17
+ast_node_free	./syn_tree.c	/^ast_node_free(ast_node_t *tree)$/;"	f	file:
+ast_node_func_call	./syn_tree.c	/^ast_node_func_call(char *name)$/;"	f
+ast_node_func_call_t	./syn_tree.h	/^} ast_node_func_call_t;$/;"	t	typeref:struct:__anon23
+ast_node_func_def	./syn_tree.c	/^ast_node_func_def(char *name)$/;"	f
+ast_node_func_free	./syn_tree.c	/^ast_node_func_free(ast_node_t *tree)$/;"	f	file:
+ast_node_func_t	./syn_tree.h	/^} ast_node_func_t;$/;"	t	typeref:struct:__anon22
+ast_node_id_new	./syn_tree.c	/^ast_node_id_new(char *name)$/;"	f
+ast_node_id_t	./syn_tree.h	/^} ast_node_id_t;$/;"	t	typeref:struct:__anon19
+ast_node_num_new	./syn_tree.c	/^ast_node_num_new(int num)$/;"	f
+ast_node_num_t	./syn_tree.h	/^} ast_node_num_t;$/;"	t	typeref:struct:__anon18
+ast_node_op_new	./syn_tree.c	/^ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)$/;"	f
+ast_node_op_t	./syn_tree.h	/^} ast_node_op_t;$/;"	t	typeref:struct:__anon16
+ast_node_stub_new	./syn_tree.c	/^ast_node_stub_new()$/;"	f
+ast_node_stub_t	./syn_tree.h	/^} ast_node_stub_t;$/;"	t	typeref:struct:__anon24
+ast_node_t	./syn_tree.h	/^} ast_node_t;	$/;"	t	typeref:struct:ast_node
+ast_node_unref	./syn_tree.c	/^ast_node_unref(ast_node_t *tree)$/;"	f
+ast_type_t	./syn_tree.h	/^} ast_type_t;$/;"	t	typeref:enum:__anon15
+body	./function.h	/^	void *body;$/;"	m	struct:__anon25
+body	./syn_tree.h	/^	ast_node_t *body;$/;"	m	struct:__anon22
+boolean_t	./common.h	/^typedef int boolean_t;$/;"	t
+bucket	./hash.c	/^	struct hash_bucket *bucket;$/;"	m	struct:hash_table_iter	typeref:struct:hash_table_iter::hash_bucket	file:
+call_function	./syntax.c	/^call_function()$/;"	f	file:
+callback	./traverse.c	/^	traverse_cb callback;$/;"	m	struct:__anon9	file:
+cmp_cb	./hash.c	/^	hash_compare_t	cmp_cb;$/;"	m	struct:hash_table	file:
+collision	./hash.c	/^	size_t		collision;$/;"	m	struct:hash_table	file:
+compare_func_t	./list.h	/^typedef int (*compare_func_t)(const void *a, const void *b);$/;"	t
+count	./hash.c	/^	size_t		count;$/;"	m	struct:hash_table	file:
+current	./id_table.c	/^struct hash_table *current;$/;"	v	typeref:struct:hash_table
+current_tok	./syntax.c	/^tok_t current_tok;$/;"	v
+data	./hash.c	/^	void		*data;$/;"	m	struct:hash_bucket	file:
+data	./list.h	/^	void *data;$/;"	m	struct:list_item
+data	./stack.c	/^	void *data;$/;"	m	struct:stack	file:
+data_destroy_func_t	./list.h	/^typedef void (*data_destroy_func_t)(void *a);$/;"	t
+default_hash_cb	./hash.c	/^default_hash_cb(const void *ptr)$/;"	f	file:
+default_key_cmp_cb	./hash.c	/^default_key_cmp_cb(const void *a, const void *b)$/;"	f	file:
+destructor	./syn_tree.h	/^	destructor_t destructor;$/;"	m	struct:ast_node
+destructor_t	./syn_tree.h	/^typedef void (*destructor_t)(struct ast_node *p);$/;"	t
+equity	./syntax.c	/^equity()$/;"	f	file:
+error	./macros.h	60;"	d
+eval_arr_new	./eval.c	/^eval_arr_new(arr_t *arr)$/;"	f
+eval_free	./eval.c	/^eval_free(eval_t *eval)$/;"	f
+eval_num_new	./eval.c	/^eval_num_new(int value)$/;"	f
+eval_print_val	./eval.c	/^eval_print_val(eval_t *eval)$/;"	f
+eval_process_op	./eval.c	/^eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)$/;"	f
+eval_t	./eval.h	/^} eval_t;$/;"	t	typeref:struct:__anon11
+eval_type_t	./eval.h	/^} eval_type_t;$/;"	t	typeref:enum:__anon10
+expr	./syntax.c	/^expr()$/;"	f	file:
+expr_rest	./syntax.c	/^expr_rest(ast_node_t *left)$/;"	f
+factor	./syntax.c	/^factor()$/;"	f	file:
+func	./id_table.h	/^		func_t *func;$/;"	m	union:__anon3::__anon4
+func_add_argu	./function.c	/^func_add_argu(func_t *func, char *name)$/;"	f
+func_delete	./function.c	/^func_delete(func_t *func)$/;"	f
+func_new	./function.c	/^func_new()$/;"	f
+func_set_body	./function.c	/^func_set_body(func_t *func)$/;"	f
+func_t	./function.h	/^} func_t;$/;"	t	typeref:struct:__anon25
+func_table	./function.c	/^static struct hash_table *func_table;$/;"	v	typeref:struct:hash_table	file:
+function_compare	./function.c	/^function_compare(void *a, void *b)$/;"	f	file:
+function_hash_cb	./function.c	/^function_hash_cb(const void *data)$/;"	f	file:
+function_table_destroy	./function.c	/^function_table_destroy()$/;"	f
+function_table_destroy_cb	./function.c	/^function_table_destroy_cb(func_t *item)$/;"	f	file:
+function_table_init	./function.c	/^function_table_init()$/;"	f
+function_table_insert	./function.c	/^function_table_insert(func_t *item)$/;"	f
+function_table_lookup	./function.c	/^function_table_lookup(char *name)$/;"	f
+get_next_token	./lex.c	/^get_next_token()$/;"	f
+global	./id_table.c	/^struct hash_table *global;$/;"	v	typeref:struct:hash_table
+global_expr	./syntax.c	/^global_expr()$/;"	f	file:
+gx	./Session.vim	/^nmap gx <Plug>NetrwBrowseX$/;"	m
+handler	./function.h	/^	lib_handler_t *handler;$/;"	m	struct:__anon25
+hash_bucket	./hash.c	/^struct hash_bucket {$/;"	s	file:
+hash_callback_t	./hash.h	/^typedef unsigned long (*hash_callback_t)(const void *data);$/;"	t
+hash_cb	./hash.c	/^	hash_callback_t	hash_cb;$/;"	m	struct:hash_table	file:
+hash_compare_t	./hash.h	/^typedef int (*hash_compare_t)(const void *a, const void *b);$/;"	t
+hash_table	./hash.c	/^struct hash_table {$/;"	s	file:
+hash_table_clean	./hash.c	/^hash_table_clean(struct hash_table *table)$/;"	f
+hash_table_destroy	./hash.c	/^hash_table_destroy(struct hash_table **table)$/;"	f
+hash_table_insert	./hash.c	/^hash_table_insert(struct hash_table *table, void *key, void *data)$/;"	f
+hash_table_insert_unique	./hash.c	/^hash_table_insert_unique(struct hash_table *table, void *key, void *data)$/;"	f
+hash_table_iter	./hash.c	/^struct hash_table_iter {$/;"	s	file:
+hash_table_iterate	./hash.c	/^hash_table_iterate(struct hash_table_iter *iter, void **res_key, void **res_data)$/;"	f
+hash_table_iterate_deinit	./hash.c	/^hash_table_iterate_deinit(struct hash_table_iter **iter)$/;"	f
+hash_table_iterate_init	./hash.c	/^hash_table_iterate_init(struct hash_table *table)$/;"	f
+hash_table_lookup	./hash.c	/^hash_table_lookup(struct hash_table *table, void *key, void **res_data)$/;"	f
+hash_table_new	./hash.c	/^hash_table_new(size_t hint_size, hash_callback_t hash, hash_compare_t key_cmp)$/;"	f
+hash_table_remove	./hash.c	/^hash_table_remove(struct hash_table *table, void *key)$/;"	f
+hash_table_replace	./hash.c	/^hash_table_replace(struct hash_table *table, void *key, void *data)$/;"	f
+id	./keyword.c	/^	keyword_t id;$/;"	m	struct:__anon7	file:
+id	./lex.h	/^	tok_t id;$/;"	m	struct:lex_item
+id_compare	./id_table.c	/^id_compare(void *a, void *b)$/;"	f	file:
+id_hash_cb	./id_table.c	/^id_hash_cb(const void *data)$/;"	f	file:
+id_item_t	./id_table.h	/^} id_item_t;$/;"	t	typeref:struct:__anon3
+id_table	./function.h	/^	void *id_table;$/;"	m	struct:__anon25
+id_table_create	./id_table.c	/^id_table_create()$/;"	f
+id_table_destroy	./id_table.c	/^id_table_destroy()$/;"	f
+id_table_destroy_cb	./id_table.c	/^id_table_destroy_cb(id_item_t *item)$/;"	f	file:
+id_table_free	./id_table.c	/^id_table_free(struct hash_table *table)$/;"	f
+id_table_init	./id_table.c	/^id_table_init()$/;"	f
+id_table_insert	./id_table.c	/^id_table_insert(id_item_t *item)$/;"	f
+id_table_lookup	./id_table.c	/^id_table_lookup(char *name)$/;"	f
+id_type_t	./id_table.h	/^} id_type_t;$/;"	t	typeref:enum:__anon2
+identifier	./syntax.c	/^identifier()$/;"	f	file:
+idx	./hash.c	/^	unsigned int	idx;$/;"	m	struct:hash_table_iter	file:
+ind	./syn_tree.h	/^	ast_node_t *ind;$/;"	m	struct:__anon21
+is_lib	./function.h	/^	int is_lib;$/;"	m	struct:__anon25
+item_sz	./array.h	/^	int item_sz;$/;"	m	struct:__anon13
+key	./hash.c	/^	void		*key;$/;"	m	struct:hash_bucket	file:
+key_table	./keyword.c	/^struct hash_table *key_table;$/;"	v	typeref:struct:hash_table
+keyword_compare	./keyword.c	/^keyword_compare(void *a, void *b)$/;"	f	file:
+keyword_hash_cb	./keyword.c	/^keyword_hash_cb(const void *data)$/;"	f	file:
+keyword_t	./keyword.h	/^} keyword_t;$/;"	t	typeref:enum:__anon1
+keyword_table_destroy	./keyword.c	/^keyword_table_destroy()$/;"	f
+keyword_table_destroy_cb	./keyword.c	/^keyword_table_destroy_cb(keyword_table_item_t *item)$/;"	f	file:
+keyword_table_fill	./keyword.c	/^keyword_table_fill()$/;"	f	file:
+keyword_table_init	./keyword.c	/^keyword_table_init()$/;"	f
+keyword_table_insert	./keyword.c	/^keyword_table_insert(keyword_table_item_t *item)$/;"	f	file:
+keyword_table_item_t	./keyword.c	/^} keyword_table_item_t;$/;"	t	typeref:struct:__anon7	file:
+keyword_table_lookup	./keyword.c	/^keyword_table_lookup(char *name)$/;"	f
+keywords	./keyword.c	/^keyword_table_item_t keywords[] =  {$/;"	v
+lb	./list.c	/^lb(int a)$/;"	f	file:
+left	./syn_tree.h	/^	struct ast_node *left;$/;"	m	struct:ast_node	typeref:struct:ast_node::ast_node
+lex_item	./lex.h	/^struct lex_item lex_item;$/;"	v	typeref:struct:lex_item
+lex_item	./lex.h	/^struct lex_item {$/;"	s
+lex_item_prev	./syntax.c	/^struct lex_item lex_item_prev;$/;"	v	typeref:struct:lex_item
+lib_handler_t	./function.h	/^typedef void (*lib_handler_t)(void);$/;"	t
+list	./list.h	/^	struct list_item *list;$/;"	m	struct:list	typeref:struct:list::list_item
+list	./list.h	/^struct list {$/;"	s
+list_destroy	./list.c	/^list_destroy(struct list **root, data_destroy_func_t func)$/;"	f
+list_find	./list.c	/^*list_find(const struct list *root, const void *data, compare_func_t func)$/;"	f
+list_init	./list.c	/^list_init()$/;"	f
+list_item	./list.h	/^struct list_item {$/;"	s
+list_item_add	./list.c	/^list_item_add(struct list *root, struct list_item *item)$/;"	f
+list_item_add_to_end	./list.c	/^list_item_add_to_end(struct list *root, struct list_item *item)$/;"	f
+list_item_new	./list.c	/^list_item_new(const void *data)$/;"	f
+list_pass	./list.c	/^list_pass(struct list *root, list_pass_cb func, void *data)$/;"	f
+list_pass_cb	./list.h	/^typedef void (*list_pass_cb)(struct list_item *item, void *data);$/;"	t
+list_reverse	./list.c	/^list_reverse(struct list *root)$/;"	f
+list_sort	./list.c	/^list_sort(struct list *root, compare_func_t func)$/;"	f
+list_sort_simple	./list.c	/^list_sort_simple(struct list *lst, compare_func_t func)$/;"	f
+logic_conj	./syntax.c	/^logic_conj()$/;"	f	file:
+logic_disj	./syntax.c	/^logic_disj()$/;"	f	file:
+main	./crypti.c	/^main(int argc, char *argv[])$/;"	f
+main	./lex_test.c	/^main()$/;"	f
+malloc_or_die	./common.c	/^malloc_or_die(size_t sz)$/;"	f
+match	./syntax.c	/^match(const tok_t expect)$/;"	f	file:
+n	./array.h	/^	int n;$/;"	m	struct:__anon13
+n	./list.c	/^	int n;			\/\/determines sizeof list$/;"	m	struct:stack_item	file:
+name	./function.h	/^	char *name;$/;"	m	struct:__anon25
+name	./id_table.h	/^	char *name;$/;"	m	struct:__anon3
+name	./keyword.c	/^	char *name;$/;"	m	struct:__anon7	file:
+name	./lex.h	/^		char *name;$/;"	m	union:lex_item::__anon6
+name	./syn_tree.h	/^	char *name;$/;"	m	struct:__anon19
+name	./syn_tree.h	/^	char *name;$/;"	m	struct:__anon21
+name	./syn_tree.h	/^	char *name;$/;"	m	struct:__anon22
+name	./syn_tree.h	/^	char *name;$/;"	m	struct:__anon23
+narg	./function.h	/^	int narg;$/;"	m	struct:__anon25
+nerrors	./syntax.c	/^static int nerrors;$/;"	v	file:
+nerrors	./traverse.c	/^static int nerrors = 0;$/;"	v	file:
+next	./hash.c	/^	struct hash_bucket *next;$/;"	m	struct:hash_bucket	typeref:struct:hash_bucket::hash_bucket	file:
+next	./list.h	/^	struct list_item *next;$/;"	m	struct:list_item	typeref:struct:list_item::list_item
+next	./stack.c	/^	struct stack *next;$/;"	m	struct:stack	typeref:struct:stack::stack	file:
+node	./traverse.c	/^	ast_type_t node;$/;"	m	struct:__anon9	file:
+node_type	./traverse.c	/^} node_type [] = {$/;"	v	typeref:struct:__anon9
+num	./lex.h	/^		int num;$/;"	m	union:lex_item::__anon6
+num	./syn_tree.h	/^	int num;$/;"	m	struct:__anon18
+op	./lex.h	/^		int op;$/;"	m	union:lex_item::__anon6
+opcode	./syn_tree.h	/^	int opcode;$/;"	m	struct:__anon16
+opcode_t	./syn_tree.h	/^} opcode_t;$/;"	t	typeref:enum:__anon14
+prev	./id_table.c	/^	struct scopes *prev;$/;"	m	struct:scopes	typeref:struct:scopes::scopes	file:
+prime_nearest	./primes.c	/^unsigned int prime_nearest(size_t size)$/;"	f
+prime_numbers	./primes.c	/^static const unsigned int prime_numbers[] = {$/;"	v	file:
+print_usage	./common.c	/^print_usage(char *pname)$/;"	f
+print_warn	./common.h	38;"	d
+print_warn_and_die	./common.h	26;"	d
+process_function	./syntax.c	/^process_function()$/;"	f	file:
+process_function_argu	./syntax.c	/^process_function_argu(ast_node_func_t *func)$/;"	f	file:
+process_function_body	./syntax.c	/^process_function_body(ast_node_func_t *func)$/;"	f	file:
+program_start	./syntax.c	/^program_start(ast_node_t **tree)$/;"	f
+ptr	./array.h	/^	void *ptr;$/;"	m	struct:__anon13
+rel_op	./syntax.c	/^rel_op()$/;"	f	file:
+ret_entry_exists	./common.h	/^	ret_entry_exists  = -5,$/;"	e	enum:__anon8
+ret_err	./common.h	/^        ret_err           = -1,$/;"	e	enum:__anon8
+ret_file_exists	./common.h	/^        ret_file_exists   = 1,$/;"	e	enum:__anon8
+ret_invalid	./common.h	/^        ret_invalid       = -2,$/;"	e	enum:__anon8
+ret_no_access	./common.h	/^        ret_no_access     = -4,$/;"	e	enum:__anon8
+ret_not_file	./common.h	/^        ret_not_file      = 2,$/;"	e	enum:__anon8
+ret_not_found	./common.h	/^	ret_not_found     = -6,	$/;"	e	enum:__anon8
+ret_ok	./common.h	/^        ret_ok            = 0,$/;"	e	enum:__anon8
+ret_out_of_memory	./common.h	/^        ret_out_of_memory = -3,$/;"	e	enum:__anon8
+ret_t	./common.h	/^} ret_t;$/;"	t	typeref:enum:__anon8
+return_if_fail	./macros.h	29;"	d
+return_val_if_fail	./macros.h	41;"	d
+right	./syn_tree.h	/^	struct ast_node *right;$/;"	m	struct:ast_node	typeref:struct:ast_node::ast_node
+root	./list.c	/^	struct list_item *root;$/;"	m	struct:stack_item	typeref:struct:stack_item::list_item	file:
+s:cpo_save	./Session.vim	/^let s:cpo_save=&cpo$/;"	v
+s:l	./Session.vim	/^let s:l = 145 - ((13 * winheight(0) + 14) \/ 29)$/;"	v
+s:l	./Session.vim	/^let s:l = 65 - ((0 * winheight(0) + 14) \/ 29)$/;"	v
+s:so_save	./Session.vim	/^let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0$/;"	v
+s:sx	./Session.vim	/^let s:sx = expand("<sfile>:p:r")."x.vim"$/;"	v
+s:wipebuf	./Session.vim	/^  let s:wipebuf = bufnr('%')$/;"	v
+scope	./id_table.c	/^	struct hash_table *scope;$/;"	m	struct:scopes	typeref:struct:scopes::hash_table	file:
+scopes	./id_table.c	/^struct scopes *scopes;$/;"	v	typeref:struct:scopes
+scopes	./id_table.c	/^struct scopes {$/;"	s	file:
+set_value	./traverse.c	/^set_value(ast_node_t *ltree, eval_t *ev)$/;"	f	file:
+set_value_access	./traverse.c	/^set_value_access(ast_node_access_t *node, eval_t *ev)$/;"	f	file:
+set_value_id	./traverse.c	/^set_value_id(ast_node_id_t *node, eval_t *ev)$/;"	f
+size	./hash.c	/^	size_t		size;$/;"	m	struct:hash_table	file:
+stack	./stack.c	/^struct stack *stack = NULL;$/;"	v	typeref:struct:stack
+stack	./stack.c	/^struct stack {$/;"	s	file:
+stack_flush	./stack.c	/^stack_flush(stack_item_free_t ifree)$/;"	f
+stack_item	./list.c	/^struct stack_item {$/;"	s	file:
+stack_item_free_t	./stack.h	/^typedef void (*stack_item_free_t)(void *item);$/;"	t
+stack_item_sort	./list.c	/^stack_item_sort(struct stack_item *left, struct stack_item *right, compare_func_t func)$/;"	f	file:
+stack_pop	./stack.c	/^stack_pop()$/;"	f
+stack_push	./stack.c	/^stack_push(void *data)$/;"	f
+statesment	./syntax.c	/^statesment()$/;"	f	file:
+stmts	./syntax.c	/^stmts()$/;"	f	file:
+strdup_or_die	./common.c	/^strdup_or_die(char *str)$/;"	f
+syntax_is_eof	./syntax.c	/^int syntax_is_eof = 0;$/;"	v
+syntax_is_eof	./syntax.h	/^int syntax_is_eof;$/;"	v
+sz	./syn_tree.h	/^	int sz;$/;"	m	struct:__anon20
+table	./hash.c	/^	struct hash_table *table;$/;"	m	struct:hash_table_iter	typeref:struct:hash_table_iter::hash_table	file:
+term	./syntax.c	/^term()$/;"	f	file:
+term_rest	./syntax.c	/^term_rest(ast_node_t *left)$/;"	f	file:
+tok_next	./syntax.c	/^tok_next()$/;"	f	file:
+tok_t	./lex.h	/^} tok_t;$/;"	t	typeref:enum:__anon5
+tokens	./lex_test.c	/^char *tokens[] = {"TOK_ID",$/;"	v
+traverse	./traverse.c	/^traverse(ast_node_t *tree)$/;"	f	file:
+traverse_access	./traverse.c	/^traverse_access(ast_node_t *tree)$/;"	f	file:
+traverse_arr	./traverse.c	/^traverse_arr(ast_node_t *tree)$/;"	f	file:
+traverse_as	./traverse.c	/^traverse_as(ast_node_t *tree)$/;"	f	file:
+traverse_cb	./traverse.c	/^typedef void (*traverse_cb)(ast_node_t *tree);$/;"	t	file:
+traverse_func_call	./traverse.c	/^traverse_func_call(ast_node_t *tree)$/;"	f
+traverse_func_def	./traverse.c	/^traverse_func_def(ast_node_t *tree)$/;"	f
+traverse_id	./traverse.c	/^traverse_id(ast_node_t *tree)$/;"	f	file:
+traverse_num	./traverse.c	/^traverse_num(ast_node_t *tree)$/;"	f	file:
+traverse_op	./traverse.c	/^traverse_op(ast_node_t *tree)$/;"	f	file:
+traverse_prog	./traverse.c	/^traverse_prog(ast_node_t *tree)$/;"	f
+traverse_result	./traverse.c	/^traverse_result()$/;"	f
+traverse_stub	./traverse.c	/^traverse_stub(ast_node_t *tree)$/;"	f	file:
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon16
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon17
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon18
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon19
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon20
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon21
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon22
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon23
+tree	./syn_tree.h	/^	ast_node_t tree;$/;"	m	struct:__anon24
+type	./eval.h	/^	eval_type_t type;$/;"	m	struct:__anon11
+type	./id_table.h	/^	id_type_t type;$/;"	m	struct:__anon3
+type	./syn_tree.h	/^	ast_type_t type;$/;"	m	struct:ast_node
+ufree	./common.c	/^ufree(void *data)$/;"	f
+update_prev_token	./syntax.c	/^update_prev_token()$/;"	f	file:
+value	./eval.h	/^		int value;$/;"	m	union:__anon11::__anon12
+value	./id_table.h	/^		int value;$/;"	m	union:__anon3::__anon4
+warning	./macros.h	72;"	d
+zt	./Session.vim	/^normal! zt$/;"	m
