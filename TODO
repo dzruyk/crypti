@@ -8,5 +8,5 @@
 8) pay attention for blocks of insturctions
 9) libbignum integration
 10) нужно придумать как при traverse копировать function body
-    без дополнительных расходов и костылей
+    без дополнительных расходов и костылей(сейчас func-> body не убивает деструктор)
 

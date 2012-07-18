@@ -33,6 +33,7 @@ ast_node_free(ast_node_t *tree)
 		break;
 	case AST_NODE_ACCESS:
 		acc = (ast_node_access_t *)tree;
+		free(acc->name);
 		ast_node_unref(acc->ind);
 		break;
 	case AST_NODE_OP:
@@ -63,7 +64,8 @@ ast_node_func_free(ast_node_t *tree)
 		if (func->args == NULL)
 			list_destroy(&(func->args), ufree);
 
-		ast_node_unref(AST_NODE(func->body));
+		//now you must free body manualy!
+		//ast_node_unref(AST_NODE(func->body));
 
 		break;
 	case AST_NODE_CALL:

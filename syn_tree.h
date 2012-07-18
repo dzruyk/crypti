@@ -3,7 +3,6 @@
 
 #define AST_NODE(p)((ast_node_t *)p)
 
-#include "id_table.h"
 #include "list.h"
 
 typedef enum {
@@ -84,6 +83,7 @@ typedef struct {
 	ast_node_t *ind;
 } ast_node_access_t;
 
+//now body not free with ast_node_unref
 typedef struct {
 	ast_node_t tree;
 	char *name;

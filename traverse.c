@@ -73,6 +73,7 @@ traverse_arr(ast_node_t *tree)
 
 	for (i = 0; i < sz; i++) {
 		traverse(synarr[i]);
+		//error handle?
 		if ((ev = stack_pop()) == NULL)
 			print_warn_and_die("unexpected error\n");
 		
@@ -145,6 +146,7 @@ void
 traverse_func_def(ast_node_t *tree)
 {
 	print_warn_and_die("WIP\n");
+
 }
 
 void

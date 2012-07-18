@@ -535,22 +535,31 @@ process_function_body(ast_node_func_t *func)
 {
 	if (match(TOK_LBRACE) == FALSE) {
 		print_warn("LBRACE required\n");
-		return ret_err;
+		goto err;
 	}
 
 	func->body = stmts();
 	if (func->body == NULL) {
 		nerrors++;
 		print_warn("cant traverse func body\n");
-		return ret_err;
+		goto err;
 	}
 
 	if (match(TOK_RBRACE) == FALSE) {
 		print_warn("identifier required\n");
-		return ret_err;
+		goto err;
 	}
 	
 	return ret_ok;
+
+	err:
+
+	if (func->body != NULL) {
+		ast_node_unref(func->body);
+		func->body = NULL;
+	}
+
+	return ret_err;
 }
 
 static ast_node_t *
