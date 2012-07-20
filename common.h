@@ -47,7 +47,7 @@ do { \
 
 inline void *malloc_or_die(size_t sz);
 
-inline void * strdup_or_die(char *str);
+inline void *strdup_or_die(char *str);
 
 /*
  * free data if its not NULL

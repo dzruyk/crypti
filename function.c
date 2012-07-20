@@ -3,6 +3,7 @@
 #include "function.h"
 #include "hash.h"
 #include "id_table.h"
+#include "list.h"
 #include "macros.h"
 #include "syn_tree.h"
 
@@ -132,13 +133,15 @@ function_table_destroy()
 /////////////////////////
 
 func_t *
-func_new()
+func_new(char *name)
 {
 	func_t *func;
 
 	func = malloc_or_die(sizeof(*func));
 
 	memset(func, 0, sizeof(*func));
+
+	func->name = strdup_or_die(name);
 
 	return func;
 }
@@ -161,13 +164,13 @@ func_delete(func_t *func)
 }
 
 void
-func_add_argu(func_t *func, char *name)
+func_set_args(func_t *func, struct list *args)
 {
 
 }
 
 void
-func_set_body(func_t *func)
+func_set_body(func_t *func, ast_node_t *body)
 {
 
 

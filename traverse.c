@@ -145,8 +145,26 @@ traverse_access(ast_node_t *tree)
 void
 traverse_func_def(ast_node_t *tree)
 {
+	func_t *func;
+	ast_node_func_t *synfunc;
+	int ret;
+
 	print_warn_and_die("WIP\n");
 
+	synfunc = (ast_node_func_t *)tree;
+
+	func = function_table_lookup(synfunc->name);
+	if (func == NULL) {
+		//FIXME: builtin functions?
+		ret = func_table_delete(func);
+		if (ret != ret_ok)
+			print_warn_and_die("cant delete from func table");
+	}
+
+	func = func_new(synfunc->name);
+
+	func_set_args(func, synfunc->args);
+	func_set_body(func, synfunc->body);
 }
 
 void

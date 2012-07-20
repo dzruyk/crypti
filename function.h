@@ -27,10 +27,13 @@ func_t * function_table_lookup(char *name);
 
 void function_table_destroy();
 
-func_t *func_new();
+func_t *func_new(char *name);
 
 ret_t func_delete(func_t *func);
 
+void func_set_args(func_t *func, struct list *args);
+
+void func_set_body(func_t *func, ast_node_t *body);
 
 #endif
 
