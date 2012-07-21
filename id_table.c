@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,13 +43,28 @@ id_hash_cb(const void *data)
 	return res;
 }
 
-static void
-id_table_destroy_cb(id_item_t *item)
+/* ID_ITEM FUNCTIONS*/
+id_item_t *
+id_item_new(char *name)
+{
+	id_item_t * item;
+
+	item = malloc_or_die(sizeof(*item));
+	item->name = strdup_or_die(name);
+	item->type = ID_UNKNOWN;
+
+	return item;
+}
+
+void
+id_item_free(id_item_t *item)
 {
 	free(item->name);
 	free(item);
 }
 
+
+/* ID_TABLE FUNCTIONS */
 void
 id_table_init()
 {
@@ -89,6 +106,23 @@ id_table_insert(id_item_t *item)
 	return ret_ok;
 }
 
+
+ret_t
+id_table_insert_to(struct hash_table *table, id_item_t *item)
+{
+	assert(table != NULL);
+
+	int res;
+	
+	res = hash_table_insert_unique(table, item->name, item);
+	if (res == ret_out_of_memory)
+		print_warn_and_die("error at id table insertion\n");
+	else if (res == ret_entry_exists)
+		print_warn_and_die("internal error, entry exists\n");
+
+	return ret_ok;
+}
+
 id_item_t *
 id_table_lookup(char *name)
 {
@@ -109,7 +143,7 @@ id_table_free(struct hash_table *table)
 	iter = hash_table_iterate_init(table);
 	
 	while (hash_table_iterate(iter, &key, &data) != FALSE)
-		id_table_destroy_cb((id_item_t*)data);
+		id_item_free((id_item_t*)data);
 
 	hash_table_iterate_deinit(&iter);
 

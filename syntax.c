@@ -538,6 +538,7 @@ process_function_body(ast_node_func_t *func)
 		goto err;
 	}
 
+	//FIXME
 	func->body = stmts();
 	if (func->body == NULL) {
 		nerrors++;

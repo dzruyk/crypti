@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string.h>
 
 #include "function.h"
@@ -43,11 +44,16 @@ function_table_destroy_cb(func_t *item)
 {
 	ufree(item->name);
 	
+	//FIXME: Library func
+	
 	//free list
 	if (item->is_lib == FALSE) {
 		id_table_free(item->id_table);
 		ast_node_unref(item->body);
 	}
+
+	//free scope
+	id_table_free(item->id_table);
 
 	ufree(item);
 }
@@ -143,11 +149,13 @@ func_new(char *name)
 
 	func->name = strdup_or_die(name);
 
+	func->id_table = id_table_create();
+
 	return func;
 }
 
 ret_t
-func_delete(func_t *func)
+func_table_delete(func_t *func)
 {
 	int ret;
 
@@ -163,16 +171,46 @@ func_delete(func_t *func)
 	return ret_ok;
 }
 
+static void
+add_id_to_scope(struct list_item *list, void *data)
+{
+	assert(data != NULL);
+
+	id_item_t *item;
+
+	struct hash_table *table;
+	char *name;
+
+	name = list->data;
+	if (name == NULL)
+		print_warn_and_die("NULL name ptr\n");
+
+	table = (struct hash_table *)data;
+
+	item = id_item_new(name);
+
+	id_table_insert_to(table, item);
+}
+
+//set args and add id_items to scope
 void
 func_set_args(func_t *func, struct list *args)
 {
+	assert(func != NULL);
 
+	int n;
+
+	n = list_pass(args, add_id_to_scope, func->id_table);
+
+	func->args = args;
+	func->narg = n;
 }
 
 void
-func_set_body(func_t *func, ast_node_t *body)
+func_set_body(func_t *func, void *body)
 {
+	assert(func != NULL && body != NULL);
 
-
+	func->body = body;
 }
 

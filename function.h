@@ -29,11 +29,12 @@ void function_table_destroy();
 
 func_t *func_new(char *name);
 
-ret_t func_delete(func_t *func);
+//FIXME: REWRITE ME. function.c have function_table_destroy_cb
+ret_t func_table_delete(func_t *func);
 
 void func_set_args(func_t *func, struct list *args);
 
-void func_set_body(func_t *func, ast_node_t *body);
+void func_set_body(func_t *func, void *body);
 
 #endif
 

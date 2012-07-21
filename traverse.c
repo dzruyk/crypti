@@ -149,8 +149,6 @@ traverse_func_def(ast_node_t *tree)
 	ast_node_func_t *synfunc;
 	int ret;
 
-	print_warn_and_die("WIP\n");
-
 	synfunc = (ast_node_func_t *)tree;
 
 	func = function_table_lookup(synfunc->name);
@@ -181,10 +179,7 @@ set_value_id(ast_node_id_t *node, eval_t *ev)
 	item = id_table_lookup(node->name);
 	//if we havent id, then we must define it
 	if (item == NULL) {
-		item = malloc_or_die(sizeof(*item));
-		item->name = strdup_or_die(node->name);
-		item->type = ID_UNKNOWN;
-
+		item = id_item_new(node->name);
 		id_table_insert(item);
 	}
 		
