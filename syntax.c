@@ -27,6 +27,8 @@ static ast_node_t *factor();
 
 static ast_node_t *identifier();
 
+static ast_node_t * process_scope();
+
 static ast_node_t * process_function();
 static ret_t process_function_argu(ast_node_func_t *func);
 static ret_t process_function_body(ast_node_func_t *func);
@@ -81,6 +83,18 @@ match(const tok_t expect)
 	return FALSE;
 }
 
+static inline boolean_t
+flush_current_tok()
+{
+	switch(current_tok) {
+	case TOK_ID:
+		ufree(lex_item.name);
+		break;
+	default:
+		break;
+	}
+}
+
 ret_t
 program_start(ast_node_t **tree)
 {
@@ -117,7 +131,27 @@ global_expr()
 static ast_node_t *
 stmts()
 {
-	return statesment();
+	ast_node_t *res;
+	
+	res = NULL;
+	
+	if (match(TOK_LBRACE)) {
+		return process_scope();
+	}
+
+
+	res = statesment();
+	if (current_tok != TOK_EOL &&
+	    current_tok != TOK_EOF &&
+	    current_tok != TOK_SEMICOLON) {
+		nerrors++;
+
+		flush_current_tok();
+		print_warn("expected end of statesment\n");
+	}
+	
+
+	return res;
 }
 
 //FIXME: REWRITEME!
@@ -417,7 +451,7 @@ factor()
 		
 		return stat;
 
-	} else if (current_tok == TOK_EOL) {
+	} else if (current_tok == TOK_EOL || current_tok == TOK_SEMICOLON) {
 		
 		return NULL;
 
@@ -446,6 +480,14 @@ identifier()
 	default:
 		return ast_node_id_new(lex_item_prev.name);
 	}
+}
+
+static ast_node_t *
+process_scope()
+{
+	print_warn_and_die("WIP\n");
+
+	return ast_node_stub_new();
 }
 
 // FIXME: memory management
@@ -530,11 +572,12 @@ process_function_argu(ast_node_func_t *func)
 	return ret_ok;
 
 	err:
-	//FIXME: destroy list
+
 	if (func->args != NULL) {
 		list_destroy(&(func->args), ufree);
 		printf("debug!: after destroy: func->args = %p\n",
 		    func->args);
+	}
 
 	return ret_err;
 }

@@ -32,6 +32,7 @@ typedef enum {
 	TOK_LBRACKET,	// [
 	TOK_RBRACKET,
 	TOK_COMMA,
+	TOK_SEMICOLON,	// ;
 	
 	TOK_PLUS,
 	TOK_MINUS,

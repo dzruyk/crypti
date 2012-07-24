@@ -1,4 +1,4 @@
-#!/bin/bash
+#/usr/bin/env bash
 PNAME='crypti'
 N=3
 

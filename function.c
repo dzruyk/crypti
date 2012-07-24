@@ -198,7 +198,7 @@ add_id_to_scope(struct list_item *list, void *data)
 void
 func_set_args(func_t *func, struct list *args)
 {
-	assert(func != NULL);
+	assert(func != NULL && args != NULL);
 
 	int n;
 
