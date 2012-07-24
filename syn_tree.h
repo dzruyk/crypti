@@ -31,6 +31,7 @@ typedef enum {
 typedef enum {
 	AST_NODE_AS,
 	AST_NODE_OP,
+	AST_NODE_SEQ,
 	AST_NODE_ARR,
 	AST_NODE_ACCESS,
 	AST_NODE_DEF,
@@ -60,6 +61,11 @@ typedef struct {
 typedef struct {
 	ast_node_t tree;
 } ast_node_as_t;
+
+typedef struct {
+	ast_node_t tree;
+	struct list *nodes;
+} ast_node_seq_t;
 
 typedef struct {
 	ast_node_t tree;

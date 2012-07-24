@@ -9,7 +9,7 @@
 #include "list.h"
 
 static ast_node_t * global_expr();
-static ast_node_t * stmts();
+static ast_node_t * stmts(boolean_t is_global);
 static ast_node_t *statesment();
 
 static ast_node_t *assign(ast_node_t *lvalue);
@@ -83,7 +83,7 @@ match(const tok_t expect)
 	return FALSE;
 }
 
-static inline boolean_t
+static inline void
 flush_current_tok()
 {
 	switch(current_tok) {
@@ -125,33 +125,17 @@ global_expr()
 	    lex_item.op == KEY_DEF)
 		return process_function();
 
-	return stmts();
+	return stmts(TRUE);
 }
 
 static ast_node_t *
-stmts()
+stmts(boolean_t is_global)
 {
-	ast_node_t *res;
 	
-	res = NULL;
-	
-	if (match(TOK_LBRACE)) {
+	if (match(TOK_LBRACE)) 
 		return process_scope();
-	}
 
-
-	res = statesment();
-	if (current_tok != TOK_EOL &&
-	    current_tok != TOK_EOF &&
-	    current_tok != TOK_SEMICOLON) {
-		nerrors++;
-
-		flush_current_tok();
-		print_warn("expected end of statesment\n");
-	}
-	
-
-	return res;
+	return  statesment();
 }
 
 //FIXME: REWRITEME!
@@ -162,11 +146,18 @@ statesment()
 
 	result = logic_disj();
 
-	if (result == NULL)
-		return NULL;
+	//if we have some expression, we must try to assign...
+	if (result != NULL && match(TOK_AS) == TRUE)
+		result = assign(result);
 	
-	if (match(TOK_AS) == TRUE)
-		return assign(result);
+	if (current_tok != TOK_EOL &&
+	    current_tok != TOK_EOF &&
+	    current_tok != TOK_SEMICOLON) {
+		nerrors++;
+
+		flush_current_tok();
+		print_warn("expected end of statesment\n");
+	}
 	
 	return result;
 }
@@ -591,7 +582,7 @@ process_function_body(ast_node_func_t *func)
 	}
 
 	//FIXME
-	func->body = stmts();
+	func->body = stmts(FALSE);
 	if (func->body == NULL) {
 		nerrors++;
 		print_warn("cant traverse func body\n");

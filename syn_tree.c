@@ -6,6 +6,7 @@
 #include "macros.h"
 #include "syn_tree.h"
 
+
 static void
 ast_node_free(ast_node_t *tree)
 {
@@ -54,6 +55,7 @@ ast_node_func_free(ast_node_t *tree)
 {
 	ast_node_func_call_t *call;
 	ast_node_func_t *func;
+
 	return_if_fail(tree != NULL);
 
 
@@ -81,6 +83,22 @@ ast_node_func_free(ast_node_t *tree)
 
 	ufree(tree);
 }
+
+static void
+ast_node_seq_free(ast_node_t *tree)
+{
+	ast_node_seq_t *seq;
+
+	return_if_fail(tree != NULL);
+
+	if (tree->type == AST_NODE_SEQ) {
+		seq = (ast_node_seq_t *)tree;
+asdadssadsassda
+		list_pass(seq->nodes, ast_node_unref, NULL);
+
+	}
+}
+
 
 ast_node_t *
 ast_node_num_new(int num)
@@ -110,6 +128,23 @@ ast_node_id_new(char *name)
 	AST_NODE(res)->destructor = ast_node_free;
 
 	res->name = name;
+
+	return AST_NODE(res);
+}
+
+
+ast_node_t *
+ast_node_seq_new(struct list *nodes)
+{
+	ast_node_seq_t *res;
+
+	res = malloc_or_die(sizeof(*res));
+	memset(res, 0, sizeof(*res));
+
+	AST_NODE(res)->type = AST_NODE_SEQ;
+	AST_NODE(res)->destructor = ast_node_seq_free;
+
+	res->nodes = nodes;
 
 	return AST_NODE(res);
 }
