@@ -89,10 +89,13 @@ flush_current_tok()
 	switch(current_tok) {
 	case TOK_ID:
 		ufree(lex_item.name);
+		lex_item.name = NULL;
 		break;
 	default:
 		break;
 	}
+	//FIXME: need to clean tok value
+	tok_next();
 }
 
 ret_t
@@ -131,11 +134,23 @@ global_expr()
 static ast_node_t *
 stmts(boolean_t is_global)
 {
+	ast_node_t *result;
 	
 	if (match(TOK_LBRACE)) 
 		return process_scope();
 
-	return  statesment();
+	result = statesment();
+
+	if (match(TOK_EOL) == FALSE &&
+	    match(TOK_EOF) == FALSE &&
+	    match(TOK_SEMICOLON) == FALSE) {
+		nerrors++;
+
+		flush_current_tok();
+		print_warn("expected end of statesment\n");
+	}
+	
+	return  result;
 }
 
 //FIXME: REWRITEME!
@@ -145,19 +160,12 @@ statesment()
 	ast_node_t *result;
 
 	result = logic_disj();
+	if (result == NULL)
+		return NULL;
 
 	//if we have some expression, we must try to assign...
-	if (result != NULL && match(TOK_AS) == TRUE)
-		result = assign(result);
-	
-	if (current_tok != TOK_EOL &&
-	    current_tok != TOK_EOF &&
-	    current_tok != TOK_SEMICOLON) {
-		nerrors++;
-
-		flush_current_tok();
-		print_warn("expected end of statesment\n");
-	}
+	if (match(TOK_AS) == TRUE)
+		return assign(result);
 	
 	return result;
 }
@@ -590,7 +598,7 @@ process_function_body(ast_node_func_t *func)
 	}
 
 	if (match(TOK_RBRACE) == FALSE) {
-		print_warn("identifier required\n");
+		print_warn("'}' missing\n");
 		goto err;
 	}
 	

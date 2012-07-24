@@ -58,6 +58,17 @@ traverse_id(ast_node_t *tree)
 }
 
 static void
+traverse_seq(ast_node_t *tree)
+{
+	print_warn("uncomplited!\n");
+	ast_node_seq_t *seq;
+
+	seq = (ast_node_seq_t *)tree;
+	
+
+}
+
+static void
 traverse_arr(ast_node_t *tree)
 {
 	arr_t *arr;
@@ -320,6 +331,7 @@ struct {
 } node_type [] = {
 	{AST_NODE_AS, traverse_as},
 	{AST_NODE_OP, traverse_op},
+	{AST_NODE_SEQ, traverse_seq},
 	{AST_NODE_ARR, traverse_arr},
 	{AST_NODE_ACCESS, traverse_access},
 	{AST_NODE_DEF, traverse_func_def},

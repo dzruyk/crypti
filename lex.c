@@ -24,7 +24,8 @@ get_next_token()
 		lex_item.num = num;
 		return TOK_NUM;
 	}
-	if (isalpha(peek)) {
+
+	if (isalpha(peek) || peek == '_') {
 		keyword_t kword;
 		char *s = NULL;
 		char *tmp;
@@ -40,7 +41,7 @@ get_next_token()
 			}
 			s[used++] = peek;
 			peek = fgetc(stdin);
-		} while(isdigit(peek) || isalpha(peek));
+		} while(isalnum(peek) || peek == '_');
 
 		//FIXME: now we cant have id with _
 

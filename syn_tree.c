@@ -93,9 +93,10 @@ ast_node_seq_free(ast_node_t *tree)
 
 	if (tree->type == AST_NODE_SEQ) {
 		seq = (ast_node_seq_t *)tree;
-asdadssadsassda
-		list_pass(seq->nodes, ast_node_unref, NULL);
-
+		list_destroy(&(seq->nodes), 
+		    (data_destroy_func_t )ast_node_unref);
+	} else {
+		print_warn_and_die("something wrong, no such type\n");
 	}
 }
 
