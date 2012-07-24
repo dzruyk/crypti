@@ -47,12 +47,14 @@ void list_destroy(struct list **root, data_destroy_func_t func);
 
 
 //list find return ptr if finds, NULL otherwise
-struct list_item *list_find(const struct list *root, const void *data, compare_func_t func);
+struct list_item *list_find(const struct list *root, 
+    const void *data, compare_func_t func);
 
 
 /*
  * Pass list. return list len
- * If list_pass_cb != 0 then list_pass_cb will be implement at every element of list
+ * If list_pass_cb != 0 then list_pass_cb will 
+ * be implement at every element of list
  */
 int list_pass(struct list *root, list_pass_cb func, void *data);
 

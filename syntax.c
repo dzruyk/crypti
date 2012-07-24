@@ -141,9 +141,9 @@ stmts(boolean_t is_global)
 
 	result = statesment();
 
-	if (match(TOK_EOL) == FALSE &&
-	    match(TOK_EOF) == FALSE &&
-	    match(TOK_SEMICOLON) == FALSE) {
+	if (current_tok != TOK_EOL &&
+	    current_tok != TOK_EOF &&
+	    current_tok != TOK_SEMICOLON) {
 		nerrors++;
 
 		flush_current_tok();

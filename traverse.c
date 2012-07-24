@@ -3,6 +3,7 @@
 #include "eval.h"
 #include "id_table.h"
 #include "lex.h"
+#include "list.h"
 #include "macros.h"
 #include "stack.h"
 
@@ -58,13 +59,24 @@ traverse_id(ast_node_t *tree)
 }
 
 static void
+traverse_seq_item(struct list_item *item, void *data)
+{
+	ast_node_t *tree;
+
+	tree = (ast_node_t *)item->data;
+
+	traverse(tree);
+}
+
+static void
 traverse_seq(ast_node_t *tree)
 {
 	print_warn("uncomplited!\n");
 	ast_node_seq_t *seq;
 
 	seq = (ast_node_seq_t *)tree;
-	
+
+	list_pass(seq->nodes, traverse_seq_item, NULL);
 
 }
 
