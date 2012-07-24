@@ -505,7 +505,7 @@ process_function_argu(ast_node_func_t *func)
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"
 		    "at initialisation\n");
-		return ret_err;	
+		goto err;	
 	}
 
 	//get arguments
@@ -513,7 +513,7 @@ process_function_argu(ast_node_func_t *func)
 	while (match(TOK_RPAR) == FALSE) {
 		if (match(TOK_ID) == FALSE) {
 			print_warn("identifier required\n");
-			return ret_err;
+			goto err;
 		}
 
 		id = lex_item_prev.name;
@@ -523,11 +523,20 @@ process_function_argu(ast_node_func_t *func)
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != TOK_RPAR) {
 			print_warn("comma expected");
-			return ret_err;
+			goto err;
 		}
 	}
 
 	return ret_ok;
+
+	err:
+	//FIXME: destroy list
+	if (func->args != NULL) {
+		list_destroy(&(func->args), ufree);
+		printf("debug!: after destroy: func->args = %p\n",
+		    func->args);
+
+	return ret_err;
 }
 
 static ret_t

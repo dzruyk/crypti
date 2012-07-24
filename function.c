@@ -55,6 +55,8 @@ function_table_destroy_cb(func_t *item)
 	//free scope
 	id_table_free(item->id_table);
 
+	//FIXME: free argue list and body
+
 	ufree(item);
 }
 
