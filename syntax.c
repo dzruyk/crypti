@@ -84,18 +84,23 @@ match(const tok_t expect)
 }
 
 static inline void
-flush_current_tok()
+sync_stream()
 {
-	switch(current_tok) {
-	case TOK_ID:
-		ufree(lex_item.name);
-		lex_item.name = NULL;
-		break;
-	default:
-		break;
+	while (current_tok != TOK_EOL &&
+	    current_tok != TOK_EOF &&
+	    current_tok != TOK_SEMICOLON) {
+
+		switch(current_tok) {
+		case TOK_ID:
+			ufree(lex_item.name);
+			lex_item.name = NULL;
+			break;
+		default:
+			break;
+		}
+
+		tok_next();
 	}
-	//FIXME: need to clean tok value
-	tok_next();
 }
 
 ret_t
@@ -146,7 +151,7 @@ stmts(boolean_t is_global)
 	    current_tok != TOK_SEMICOLON) {
 		nerrors++;
 
-		flush_current_tok();
+		sync_stream();
 		print_warn("expected end of statesment\n");
 	}
 	

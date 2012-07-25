@@ -5,10 +5,21 @@
 #include "keyword.h"
 #include "lex.h"
 
+static char peek = ' ';
+
+static void
+skip_comment()
+{
+	do
+		peek = fgetc(stdin);
+	while (peek != '\n');
+}
+
 tok_t
 get_next_token()
 {
-	static char peek = ' ';
+
+begin:
 
 	for (; peek == ' ' || peek == '\t';)
 		peek = fgetc(stdin);
@@ -189,6 +200,11 @@ get_next_token()
 		lex_item.id = lex_item.op = TOK_DIV;
 		
 		return TOK_DIV;
+	case '#':
+
+		skip_comment();
+
+		goto begin;
 	case '\n':
 		peek = ' ';
 		lex_item.id = lex_item.op = TOK_EOL;

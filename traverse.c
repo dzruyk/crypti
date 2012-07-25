@@ -325,6 +325,7 @@ traverse_op(ast_node_t *tree)
 	
 	if (res == NULL) {
 		nerrors++;
+		print_warn("operation error\n");
 		return;
 	}
 	
