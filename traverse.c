@@ -71,13 +71,12 @@ traverse_seq_item(struct list_item *item, void *data)
 static void
 traverse_seq(ast_node_t *tree)
 {
-	print_warn("uncomplited!\n");
+	print_warn("uncomplited traverse seq!\n");
 	ast_node_seq_t *seq;
 
 	seq = (ast_node_seq_t *)tree;
 
 	list_pass(seq->nodes, traverse_seq_item, NULL);
-
 }
 
 static void
