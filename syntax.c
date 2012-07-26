@@ -136,23 +136,61 @@ global_expr()
 	return stmts(TRUE);
 }
 
+boolean_t
+is_stmt_end() 
+{
+	switch (current_tok) {
+	case TOK_EOL:
+	case TOK_EOF:
+	case TOK_SEMICOLON:
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
+
 static ast_node_t *
 stmts(boolean_t is_global)
 {
-	ast_node_t *result;
+	ast_node_t *result, *prev, *tmp;
 	
 	if (match(TOK_LBRACE)) 
 		return process_scope();
 
-	result = statesment();
+	result = prev = NULL;
 
-	if (current_tok != TOK_EOL &&
-	    current_tok != TOK_EOF &&
-	    current_tok != TOK_SEMICOLON) {
-		nerrors++;
+	while (current_tok != TOK_EOF) {
+		if (current_tok == TOK_EOL)
+			continue;
+		
+		tmp = statesment();
 
-		sync_stream();
-		print_warn("expected end of statesment\n");
+		if (result == NULL)
+			result = tmp;
+		
+		if (nerrors != 0)
+			break;
+
+		if (tmp == NULL)
+			continue;
+
+		//FIXME: rewrite me
+		if (is_global == TRUE)
+			break;
+
+		if (prev != NULL) {
+			prev->child = tmp;
+			tmp->parrent = prev;
+		}
+
+		prev = tmp;
+		if (is_stmt_end() == FALSE) {
+			nerrors++;
+
+			sync_stream();
+			print_warn("expected end of statesment\n");
+			break;
+		}
 	}
 	
 	return  result;

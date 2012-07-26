@@ -54,8 +54,6 @@ begin:
 			peek = fgetc(stdin);
 		} while(isalnum(peek) || peek == '_');
 
-		//FIXME: now we cant have id with _
-
 		s[used++] = '\0';
 		if ((tmp = realloc(s, used)) == NULL)
 			print_warn_and_die("realloc_err");

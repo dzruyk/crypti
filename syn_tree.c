@@ -84,23 +84,6 @@ ast_node_func_free(ast_node_t *tree)
 	ufree(tree);
 }
 
-static void
-ast_node_seq_free(ast_node_t *tree)
-{
-	ast_node_seq_t *seq;
-
-	return_if_fail(tree != NULL);
-
-	if (tree->type == AST_NODE_SEQ) {
-		seq = (ast_node_seq_t *)tree;
-		list_destroy(&(seq->nodes), 
-		    (data_destroy_func_t )ast_node_unref);
-	} else {
-		print_warn_and_die("something wrong, no such type\n");
-	}
-}
-
-
 ast_node_t *
 ast_node_num_new(int num)
 {
@@ -132,24 +115,6 @@ ast_node_id_new(char *name)
 
 	return AST_NODE(res);
 }
-
-
-ast_node_t *
-ast_node_seq_new(struct list *nodes)
-{
-	ast_node_seq_t *res;
-
-	res = malloc_or_die(sizeof(*res));
-	memset(res, 0, sizeof(*res));
-
-	AST_NODE(res)->type = AST_NODE_SEQ;
-	AST_NODE(res)->destructor = ast_node_seq_free;
-
-	res->nodes = nodes;
-
-	return AST_NODE(res);
-}
-
 
 ast_node_t *
 ast_node_arr_new(ast_node_t **arr, int sz)

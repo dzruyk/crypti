@@ -50,6 +50,8 @@ typedef struct ast_node {
 	ast_type_t type;
 	struct ast_node *left;
 	struct ast_node *right;
+	struct ast_node *parrent;
+	struct ast_node *child;
 	destructor_t destructor;
 } ast_node_t;	
 
