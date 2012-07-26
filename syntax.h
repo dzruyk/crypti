@@ -4,9 +4,6 @@
 #include "common.h"
 #include "syn_tree.h"
 
-struct syn_ctx {
-	int is_global;
-};
 
 /*
  * flag, sets if TOK_EOF occured in input 

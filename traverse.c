@@ -153,7 +153,7 @@ traverse_func_def(ast_node_t *tree)
 	synfunc = (ast_node_func_t *)tree;
 
 	func = function_table_lookup(synfunc->name);
-	if (func == NULL) {
+	if (func != NULL) {
 		//FIXME: builtin functions?
 		ret = func_table_delete(func);
 		if (ret != ret_ok)

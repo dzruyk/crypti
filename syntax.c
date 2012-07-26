@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <string.h>
+
 #include "common.h"
 #include "function.h"
 #include "keyword.h"
@@ -8,8 +10,45 @@
 #include "lex.h"
 #include "list.h"
 
+
+/*******SYNTAX_CTX***********/
+
+enum ctx_type {
+	CTX_GLOBAL,
+	CTX_FUNCTION,
+	CTX_CYCLE,
+	CTX_UNKNOWN,
+};
+
+struct syn_ctx {
+	int type;
+};
+
+struct syn_ctx *syn_ctx_new();
+
+
+struct syn_ctx *
+syn_ctx_new()
+{
+	struct syn_ctx *ctx;
+
+	ctx = malloc_or_die(sizeof(*ctx));
+	memset(ctx, 0, sizeof(ctx));
+
+	return ctx;
+}
+
+void
+syn_ctx_free(struct syn_ctx *ctx)
+{
+	free(ctx);
+}
+
+/*******SYNTAX_CTX***********/
+
+
 static ast_node_t * global_expr();
-static ast_node_t * stmts(boolean_t is_global);
+static ast_node_t * stmts(struct syn_ctx *ctx);
 static ast_node_t *statesment();
 
 static ast_node_t *assign(ast_node_t *lvalue);
@@ -48,6 +87,7 @@ static int nerrors;
 
 struct lex_item lex_item_prev;
 tok_t current_tok;
+
 
 static void
 update_prev_token()
@@ -122,8 +162,7 @@ is_eof()
 	 if (current_tok == TOK_EOF) {
 		syntax_is_eof = 1;
 		return TRUE;
-	}
-	else
+	} else
 		return FALSE;
 }
 
@@ -152,17 +191,26 @@ program_start(ast_node_t **tree)
 static ast_node_t *
 global_expr()
 {
+	ast_node_t *node;
+	struct syn_ctx *ctx;
+
 	//Define new function
 	if (current_tok == TOK_KEYWORD &&
 	    lex_item.op == KEY_DEF)
 		return process_function();
 
-	return stmts(TRUE);
+	ctx = syn_ctx_new();
+	ctx->type = CTX_GLOBAL;
+
+	node = stmts(ctx);
+
+	syn_ctx_free(ctx);
+
+	return node;
 }
 
-
 static ast_node_t *
-stmts(boolean_t is_global)
+stmts(struct syn_ctx *ctx)
 {
 	ast_node_t *result, *prev, *tmp;
 	
@@ -173,11 +221,19 @@ stmts(boolean_t is_global)
 
 	//FIXME: bad, bad cycle
 	while (is_eof() != TRUE) {
-		if (current_tok == TOK_EOL && is_global == FALSE)
+
+		if (current_tok == TOK_EOL && ctx->type != CTX_GLOBAL)
 			tok_next();
-		if (current_tok == TOK_EOL && is_global == TRUE)
+		if (current_tok == TOK_EOL && ctx->type == CTX_GLOBAL)
 			break;
 		
+		//end of scope
+		if (current_tok == TOK_RBRACE
+		    && (ctx->type == CTX_FUNCTION 
+		    || ctx->type == CTX_CYCLE))
+			break;
+
+	
 		tmp = statesment();
 
 		if (result == NULL)
@@ -202,19 +258,11 @@ stmts(boolean_t is_global)
 		}
 
 		//FIXME: rewrite me
-		if (is_global == TRUE)
-			break;
-
-		//end of scope
-		//WARNING: no lbrace check
-		//and no guarantee that we open new
-		//scope previosly
-		if (current_tok == TOK_RBRACE)
+		if (ctx->type == CTX_GLOBAL)
 			break;
 
 		if (tmp == NULL)
 			continue;
-
 	}
 	
 	return  result;
@@ -651,13 +699,18 @@ process_function_argu(ast_node_func_t *func)
 static ret_t
 process_function_body(ast_node_func_t *func)
 {
+	struct syn_ctx *ctx = NULL;
+	
 	if (match(TOK_LBRACE) == FALSE) {
 		print_warn("LBRACE required\n");
 		goto err;
 	}
 
+	ctx = syn_ctx_new();
+	ctx->type = CTX_FUNCTION;
+
 	//FIXME: void body functions
-	func->body = stmts(FALSE);
+	func->body = stmts(ctx);
 	if (func->body == NULL) {
 		nerrors++;
 		print_warn("cant traverse func body\n");
@@ -677,6 +730,8 @@ process_function_body(ast_node_func_t *func)
 		ast_node_unref(func->body);
 		func->body = NULL;
 	}
+	if (ctx != NULL)
+		syn_ctx_free(ctx);
 
 	return ret_err;
 }
