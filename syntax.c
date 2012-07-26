@@ -103,6 +103,30 @@ sync_stream()
 	}
 }
 
+boolean_t
+is_stmt_end() 
+{
+	switch (current_tok) {
+	case TOK_EOL:
+	case TOK_EOF:
+	case TOK_SEMICOLON:
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
+
+boolean_t
+is_eof()
+{
+	 if (current_tok == TOK_EOF) {
+		syntax_is_eof = 1;
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
 ret_t
 program_start(ast_node_t **tree)
 {
@@ -136,18 +160,6 @@ global_expr()
 	return stmts(TRUE);
 }
 
-boolean_t
-is_stmt_end() 
-{
-	switch (current_tok) {
-	case TOK_EOL:
-	case TOK_EOF:
-	case TOK_SEMICOLON:
-		return TRUE;
-	default:
-		return FALSE;
-	}
-}
 
 static ast_node_t *
 stmts(boolean_t is_global)
@@ -159,31 +171,30 @@ stmts(boolean_t is_global)
 
 	result = prev = NULL;
 
-	while (current_tok != TOK_EOF) {
-		if (current_tok == TOK_EOL)
-			continue;
+	while (is_eof() != TRUE) {
+		if (current_tok == TOK_EOL && is_global == FALSE)
+			tok_next();
+		if (current_tok == TOK_EOL && is_global == TRUE)
+			break;
 		
 		tmp = statesment();
 
 		if (result == NULL)
 			result = tmp;
 		
-		if (nerrors != 0)
-			break;
-
-		if (tmp == NULL)
-			continue;
-
-		//FIXME: rewrite me
-		if (is_global == TRUE)
-			break;
-
 		if (prev != NULL) {
 			prev->child = tmp;
 			tmp->parrent = prev;
 		}
 
 		prev = tmp;
+
+		if (nerrors != 0)
+			break;
+
+		if (tmp == NULL)
+			continue;
+
 		if (is_stmt_end() == FALSE) {
 			nerrors++;
 
@@ -191,6 +202,17 @@ stmts(boolean_t is_global)
 			print_warn("expected end of statesment\n");
 			break;
 		}
+
+		//FIXME: rewrite me
+		if (is_global == TRUE)
+			break;
+
+		//end of scope
+		//WARNING: no lbrace check
+		//and no guarantee that we open new
+		//scope previosly
+		if (current_tok == TOK_RBRACE)
+			break;
 	}
 	
 	return  result;
@@ -497,8 +519,7 @@ factor()
 		
 		return NULL;
 
-	} else if (current_tok == TOK_EOF) {
-		syntax_is_eof = 1;
+	} else if (is_eof() == TRUE) {
 		return NULL;
 	}
 

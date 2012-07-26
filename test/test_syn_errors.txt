@@ -1,0 +1,6 @@
+#this must generate unsupported token
+}
+#this - uncomplitted expression
+a +
+#unsupported token
+a ++ 
