@@ -9,8 +9,8 @@ do
 
 	if [ -n "$err" ]
 	then
-	        echo "$path/test_$i.txt";
-	        echo "$err";
+		echo "$path/test_$i.txt";
+		echo "$err";
 	fi
 
 done
