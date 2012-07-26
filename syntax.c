@@ -183,11 +183,10 @@ stmts(boolean_t is_global)
 		if (result == NULL)
 			result = tmp;
 		
-		if (prev != NULL) {
+		if (prev != NULL && tmp != NULL) {
 			prev->child = tmp;
 			tmp->parrent = prev;
 		}
-		//FIXME: coredump if tmp == NULL
 
 		prev = tmp;
 
@@ -231,7 +230,6 @@ statesment()
 	if (result == NULL)
 		return NULL;
 
-	//if we have some expression, we must try to assign...
 	if (match(TOK_AS) == TRUE)
 		return assign(result);
 	
