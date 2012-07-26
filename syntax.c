@@ -106,25 +106,25 @@ sync_stream()
 boolean_t
 is_stmt_end()
 {
-      switch (current_tok) {
-       case TOK_EOL:
-       case TOK_EOF:
-       case TOK_SEMICOLON:
-               return TRUE;
-       default:
-               return FALSE;
-       }
+	switch (current_tok) {
+	case TOK_EOL:
+	case TOK_EOF:
+	case TOK_SEMICOLON:
+		return TRUE;
+	default:
+		return FALSE;
+	}
 }
 
 boolean_t
 is_eof()
 {
-       if (current_tok == TOK_EOF) {
-               syntax_is_eof = 1;
-               return TRUE;
-       }
-       else
-               return FALSE;
+	if (current_tok == TOK_EOF) {
+		syntax_is_eof = 1;
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 ret_t
