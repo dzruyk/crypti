@@ -103,6 +103,30 @@ sync_stream()
 	}
 }
 
+boolean_t
+is_stmt_end()
+{
+      switch (current_tok) {
+       case TOK_EOL:
+       case TOK_EOF:
+       case TOK_SEMICOLON:
+               return TRUE;
+       default:
+               return FALSE;
+       }
+}
+
+boolean_t
+is_eof()
+{
+       if (current_tok == TOK_EOF) {
+               syntax_is_eof = 1;
+               return TRUE;
+       }
+       else
+               return FALSE;
+}
+
 ret_t
 program_start(ast_node_t **tree)
 {
@@ -146,9 +170,7 @@ stmts(boolean_t is_global)
 
 	result = statesment();
 
-	if (current_tok != TOK_EOL &&
-	    current_tok != TOK_EOF &&
-	    current_tok != TOK_SEMICOLON) {
+	if (is_stmt_end() == FALSE) {
 		nerrors++;
 
 		sync_stream();
@@ -168,7 +190,6 @@ statesment()
 	if (result == NULL)
 		return NULL;
 
-	//if we have some expression, we must try to assign...
 	if (match(TOK_AS) == TRUE)
 		return assign(result);
 	
@@ -455,12 +476,12 @@ factor()
 		
 		return stat;
 
-	} else if (current_tok == TOK_EOL || current_tok == TOK_SEMICOLON) {
+	} else if (current_tok == TOK_EOL 
+	    || current_tok == TOK_SEMICOLON) {
 		
 		return NULL;
 
-	} else if (current_tok == TOK_EOF) {
-		syntax_is_eof = 1;
+	} else if (is_eof() == TRUE) {
 		return NULL;
 	}
 
@@ -594,7 +615,7 @@ process_function_body(ast_node_func_t *func)
 		goto err;
 	}
 
-	//FIXME
+	//FIXME: void body functions
 	func->body = stmts(FALSE);
 	if (func->body == NULL) {
 		nerrors++;
