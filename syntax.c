@@ -171,6 +171,7 @@ stmts(boolean_t is_global)
 
 	result = prev = NULL;
 
+	//FIXME: bad, bad cycle
 	while (is_eof() != TRUE) {
 		if (current_tok == TOK_EOL && is_global == FALSE)
 			tok_next();
@@ -186,14 +187,12 @@ stmts(boolean_t is_global)
 			prev->child = tmp;
 			tmp->parrent = prev;
 		}
+		//FIXME: coredump if tmp == NULL
 
 		prev = tmp;
 
 		if (nerrors != 0)
 			break;
-
-		if (tmp == NULL)
-			continue;
 
 		if (is_stmt_end() == FALSE) {
 			nerrors++;
@@ -213,6 +212,10 @@ stmts(boolean_t is_global)
 		//scope previosly
 		if (current_tok == TOK_RBRACE)
 			break;
+
+		if (tmp == NULL)
+			continue;
+
 	}
 	
 	return  result;
@@ -515,7 +518,9 @@ factor()
 		
 		return stat;
 
-	} else if (current_tok == TOK_EOL || current_tok == TOK_SEMICOLON) {
+	} else if (current_tok == TOK_EOL
+	    || current_tok == TOK_SEMICOLON
+	    || current_tok == TOK_RBRACE) {
 		
 		return NULL;
 
@@ -653,7 +658,7 @@ process_function_body(ast_node_func_t *func)
 		goto err;
 	}
 
-	//FIXME
+	//FIXME: void body functions
 	func->body = stmts(FALSE);
 	if (func->body == NULL) {
 		nerrors++;
