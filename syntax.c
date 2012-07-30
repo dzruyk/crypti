@@ -49,6 +49,7 @@ syn_ctx_free(struct syn_ctx *ctx)
 
 static ast_node_t * global_expr();
 static ast_node_t * stmts(struct syn_ctx *ctx);
+static ast_node_t *block(struct syn_ctx *ctx);
 static ast_node_t *statesment();
 
 static ast_node_t *assign(ast_node_t *lvalue);
@@ -212,27 +213,31 @@ global_expr()
 static ast_node_t *
 stmts(struct syn_ctx *ctx)
 {
-	ast_node_t *result, *prev, *tmp;
 	
 	if (match(TOK_LBRACE)) 
 		return process_scope();
+
+	if (ctx->type != CTX_GLOBAL)
+		return block(ctx);
+	
+	return statesment();
+}
+
+static ast_node_t *
+block(struct syn_ctx *ctx)
+{
+	ast_node_t *result, *prev, *tmp;
 
 	result = prev = NULL;
 
 	//FIXME: bad, bad cycle
 	while (is_eof() != TRUE) {
 
-		if (current_tok == TOK_EOL && ctx->type != CTX_GLOBAL)
-			tok_next();
-		if (current_tok == TOK_EOL && ctx->type == CTX_GLOBAL)
-			break;
-		
 		//end of scope
 		if (current_tok == TOK_RBRACE
 		    && (ctx->type == CTX_FUNCTION 
 		    || ctx->type == CTX_CYCLE))
 			break;
-
 	
 		tmp = statesment();
 
@@ -242,16 +247,16 @@ stmts(struct syn_ctx *ctx)
 		if (prev != NULL && tmp != NULL) {
 			prev->child = tmp;
 			tmp->parrent = prev;
+			prev = tmp;
 		}
-
-		prev = tmp;
 
 		if (nerrors != 0)
 			break;
 
-		if (is_stmt_end() == FALSE) {
+		if (is_stmt_end() == TRUE) {
+			tok_next();
+		} else {
 			nerrors++;
-
 			sync_stream();
 			print_warn("expected end of statesment\n");
 			break;
@@ -264,8 +269,7 @@ stmts(struct syn_ctx *ctx)
 		if (tmp == NULL)
 			continue;
 	}
-	
-	return  result;
+	return result;
 }
 
 //FIXME: REWRITEME!
