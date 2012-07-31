@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "array.h"
 #include "common.h"
 #include "eval.h"
@@ -143,7 +145,7 @@ traverse_access(ast_node_t *tree)
 	stack_push(resev);
 }
 
-void
+static void
 traverse_func_def(ast_node_t *tree)
 {
 	func_t *func;
@@ -166,10 +168,58 @@ traverse_func_def(ast_node_t *tree)
 	func_set_body(func, synfunc->body);
 }
 
+static void
+add_name_to_scope(struct list_item *list, void *data)
+{
+	assert(data != NULL);
+
+	id_item_t *item;
+
+	struct hash_table *table;
+	char *name;
+
+	name = list->data;
+	if (name == NULL)
+		print_warn_and_die("NULL name ptr\n");
+
+	table = (struct hash_table *)data;
+
+	item = id_item_new(name);
+
+	id_table_insert_to(table, item);
+}
+
+static void
+add_argues_to_scope(func_t *func, struct hash_table *table)
+{
+	assert(func != NULL && func->args != NULL);
+
+	list_pass(func->args, add_name_to_scope, table);
+
+}
+
 void
 traverse_func_call(ast_node_t *tree)
 {
 	print_warn_and_die("WIP\n");
+
+	func_t *func;
+	struct hash_table *idtable;
+	ast_node_func_call_t *call;
+
+	call = (ast_node_func_call_t *) tree;
+
+	func = function_table_lookup(call->name);
+	if (func == NULL) {
+		print_warn("function undefined yet\n");
+		return;
+	}
+
+	idtable = id_table_create();
+
+	add_argues_to_scope(func, idtable);
+
+	id_table_free(idtable);
 }
 
 void

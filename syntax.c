@@ -247,8 +247,10 @@ block(struct syn_ctx *ctx)
 		if (prev != NULL && tmp != NULL) {
 			prev->child = tmp;
 			tmp->parrent = prev;
-			prev = tmp;
 		}
+
+		if (tmp != NULL)
+			prev = tmp;
 
 		if (nerrors != 0)
 			break;
@@ -269,6 +271,7 @@ block(struct syn_ctx *ctx)
 		if (tmp == NULL)
 			continue;
 	}
+
 	return result;
 }
 

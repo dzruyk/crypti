@@ -15,7 +15,6 @@ typedef struct {
 	struct list *args;
 	int is_lib;
 	lib_handler_t *handler;
-	void *id_table;
 	void *body;
 } func_t;
 
