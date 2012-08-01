@@ -47,6 +47,16 @@ void id_table_init();
 struct hash_table *id_table_create();
 
 /*
+ * push table to top scope(make them active)
+ */
+void id_table_push(struct hash_table *table);
+
+/*
+ * pop table from top scope(make previos table active)
+ */
+struct hash_table *id_table_pop();
+
+/*
  * try to insert item into current scope 
  * or die if out of range or entry exists
  */

@@ -167,7 +167,18 @@ func_table_delete(func_t *func)
 	return ret_ok;
 }
 
+static void
+func_add_new_argue(struct list_item *item, void *data)
+{
+	struct list *list;
+	char *name;
 
+	list = (struct list *)data;
+
+	name = item->data;
+
+	list_item_add(list, strdup_or_die(name));
+}
 
 //set args and add id_items to scope
 void
@@ -175,11 +186,15 @@ func_set_args(func_t *func, struct list *args)
 {
 	assert(func != NULL && args != NULL);
 
+	struct list *list;
+
 	int n;
 
-	n = list_pass(args, NULL, NULL);
+	list = list_init();
 
-	func->args = args;
+	n = list_pass(args, func_add_new_argue, list);
+
+	func->args = list;
 	func->narg = n;
 }
 

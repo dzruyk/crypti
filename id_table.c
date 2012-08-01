@@ -76,7 +76,9 @@ id_table_init()
 	global = current = id_table_create();
 	
 	scopes->scope = global;
+	scopes->prev = NULL;
 }
+
 
 struct hash_table *
 id_table_create()
@@ -89,6 +91,37 @@ id_table_create()
 	if (table == NULL)
 		print_warn_and_die("error at table table creation\n");
 	
+	return table;
+}
+
+void
+id_table_push(struct hash_table *table)
+{
+	struct scopes *tmp;
+
+	tmp = malloc_or_die(sizeof(*tmp));
+
+	tmp->prev = scopes;
+	tmp->scope = table;
+
+	scopes = tmp;
+}
+
+struct hash_table *
+id_table_pop()
+{
+	assert(scopes != NULL);
+
+	struct hash_table *table;
+	struct scopes *tmp;
+	
+	tmp = scopes;
+
+	scopes = tmp->prev;
+
+	table = tmp->scope;
+	free(tmp);
+
 	return table;
 }
 

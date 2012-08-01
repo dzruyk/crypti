@@ -702,7 +702,6 @@ process_function_argu(ast_node_func_t *func)
 
 	if (func->args != NULL)
 		list_destroy(&(func->args), ufree);
-	
 
 	return ret_err;
 }

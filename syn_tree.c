@@ -73,7 +73,7 @@ ast_node_func_free(ast_node_t *tree)
 	case AST_NODE_CALL:
 		call = (ast_node_func_call_t *) tree;
 		ufree(call->name);
-		list_destroy(&(func->args), 
+		list_destroy(&(call->args), 
 		    (data_destroy_func_t )ast_node_unref);
 
 		break;

@@ -166,6 +166,8 @@ traverse_func_def(ast_node_t *tree)
 
 	func_set_args(func, synfunc->args);
 	func_set_body(func, synfunc->body);
+
+	function_table_insert(func); 
 }
 
 static void
@@ -195,13 +197,11 @@ add_argues_to_scope(func_t *func, struct hash_table *table)
 	assert(func != NULL && func->args != NULL);
 
 	list_pass(func->args, add_name_to_scope, table);
-
 }
 
 void
 traverse_func_call(ast_node_t *tree)
 {
-
 	func_t *func;
 	struct hash_table *idtable;
 	ast_node_func_call_t *call;
@@ -220,6 +220,12 @@ traverse_func_call(ast_node_t *tree)
 	idtable = id_table_create();
 
 	add_argues_to_scope(func, idtable);
+
+	id_table_push(idtable);
+	
+	
+	
+	id_table_pop();
 
 	id_table_free(idtable);
 }
