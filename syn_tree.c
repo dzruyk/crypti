@@ -26,7 +26,7 @@ ast_node_free(ast_node_t *tree)
 		free(id->name);
 		break;
 	case AST_NODE_ARR:
-		//CHECK_ME
+		//FIXME: CHECK_ME
 		arr = (ast_node_arr_t *)tree;
 		n = arr->sz;
 		for (i = 0; i < n; i++)
@@ -63,7 +63,7 @@ ast_node_func_free(ast_node_t *tree)
 	case AST_NODE_DEF:
 		func = (ast_node_func_t *)tree;
 		ufree(func->name);
-		if (func->args == NULL)
+		if (func->args != NULL)
 			list_destroy(&(func->args), ufree);
 
 		//now you must free body manualy!
@@ -159,7 +159,7 @@ ast_node_func_call(char *name)
 
 	res = malloc_or_die(sizeof(*res));
 	
-	AST_NODE(res)->type = AST_NODE_DEF;
+	AST_NODE(res)->type = AST_NODE_CALL;
 	AST_NODE(res)->destructor = ast_node_func_free;
 
 	res->name = name;

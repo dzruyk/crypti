@@ -201,7 +201,6 @@ add_argues_to_scope(func_t *func, struct hash_table *table)
 void
 traverse_func_call(ast_node_t *tree)
 {
-	print_warn_and_die("WIP\n");
 
 	func_t *func;
 	struct hash_table *idtable;
@@ -211,9 +210,12 @@ traverse_func_call(ast_node_t *tree)
 
 	func = function_table_lookup(call->name);
 	if (func == NULL) {
+		nerrors++;
 		print_warn("function undefined yet\n");
 		return;
 	}
+
+	print_warn_and_die("WIP\n");
 
 	idtable = id_table_create();
 

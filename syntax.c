@@ -73,7 +73,7 @@ static ast_node_t * process_function();
 static ret_t process_function_argu(ast_node_func_t *func);
 static ret_t process_function_body(ast_node_func_t *func);
 
-static ast_node_t *call_function();
+static ast_node_t *function_call();
 static ast_node_t *array_access();
 static ast_node_t *array_init();
 
@@ -294,23 +294,23 @@ statesment()
 static ast_node_t *
 assign(ast_node_t *lvalue)
 {
-	ast_node_t *right;
+	ast_node_t *right = NULL;
 	
 	if (lvalue->type != AST_NODE_ID &&
 	    lvalue->type != AST_NODE_ACCESS) {
-		nerrors++;
 		print_warn("assign to not variable\n");
-		ast_node_unref(lvalue);
-		return ast_node_stub_new();
+		goto err;
 	}
 
 	//to array
 	if (match(TOK_LBRACE)) {
 		right = array_init();
-		
+
+		//FIXME: need to return stub
+
 		if (match(TOK_RBRACE) == FALSE) {
 			print_warn("right bracket missed\n");
-			nerrors++;
+			goto err;
 		}
 
 		return ast_node_as_new(lvalue, right);
@@ -320,13 +320,19 @@ assign(ast_node_t *lvalue)
 
 	right = statesment();
 	if (right == NULL) {
-		nerrors++;
 		print_warn("uncomplited as expression\n");
-		ast_node_unref(lvalue);
-		return ast_node_stub_new();
+		goto err;
 	}
 
 	return ast_node_as_new(lvalue, right);
+
+	err:
+		nerrors++;
+		if (right != NULL)
+			ast_node_unref(right);
+		ast_node_unref(lvalue);
+		return ast_node_stub_new();
+
 }
 
 static ast_node_t *
@@ -597,7 +603,7 @@ identifier()
 	case TOK_LBRACKET:
 		return array_access();
 	case TOK_LPAR:
-		return call_function();
+		return function_call();
 	default:
 		return ast_node_id_new(lex_item_prev.name);
 	}
@@ -694,11 +700,9 @@ process_function_argu(ast_node_func_t *func)
 
 	err:
 
-	if (func->args != NULL) {
+	if (func->args != NULL)
 		list_destroy(&(func->args), ufree);
-		printf("debug!: after destroy: func->args = %p\n",
-		    func->args);
-	}
+	
 
 	return ret_err;
 }
@@ -744,14 +748,12 @@ process_function_body(ast_node_func_t *func)
 }
 
 static ast_node_t *
-call_function()
+function_call()
 {
 	ast_node_func_call_t *call;
 	ast_node_t *node;
 	char *name;
 
-	print_warn_and_die("WIP\n");
-	
 	name = lex_item_prev.name;
 	call = (ast_node_func_call_t *)ast_node_func_call(name);
 
@@ -800,12 +802,18 @@ array_access()
 	tok_next();
 	
 	ind = logic_disj();
+	if (ind == NULL) {
+		nerrors++;
+		print_warn("null expression in brackets");
+		return ast_node_stub_new();
+	}
 	
 	if (match(TOK_RBRACKET) == FALSE) {
 		nerrors++;
 		print_warn("unsupported expression\n");
 		return ast_node_stub_new();
 	}
+
 	//FIXME: now arrays only one-dimention
 	
 	return ast_node_access_new(name, ind);
