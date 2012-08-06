@@ -56,7 +56,14 @@ list_item_add_to_end(struct list *root, struct list_item *item)
 	assert(item != NULL && root != NULL);
 	
 	struct list_item *tmp;
-	while ((tmp = root->list) != NULL)
+
+	tmp = root->list;
+	if (tmp == NULL) {
+		root->list = item;
+		item->next=NULL;
+		return;
+	}
+	while ((tmp->next) != NULL)
 		tmp = tmp->next;
 
 	tmp->next = item;

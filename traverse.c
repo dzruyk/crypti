@@ -191,6 +191,9 @@ add_name_to_scope(struct list_item *list, void *data)
 	id_table_insert_to(table, item);
 }
 
+//FIXME: Wrong
+//func_call_t have asts,they need to be traversed and added
+//to name from func_t args
 static void
 add_argues_to_scope(func_t *func, struct hash_table *table)
 {
@@ -205,6 +208,7 @@ traverse_func_call(ast_node_t *tree)
 	func_t *func;
 	struct hash_table *idtable;
 	ast_node_func_call_t *call;
+	int na;
 
 	call = (ast_node_func_call_t *) tree;
 
@@ -215,7 +219,12 @@ traverse_func_call(ast_node_t *tree)
 		return;
 	}
 
-	print_warn_and_die("WIP\n");
+	na = list_pass(call->args, NULL, NULL);
+	if (na != func->nargs) {
+		nerrors++;
+		print_warn("function have %d paramethers\n", func->nargs);
+		return;
+	}
 
 	idtable = id_table_create();
 
@@ -223,7 +232,7 @@ traverse_func_call(ast_node_t *tree)
 
 	id_table_push(idtable);
 	
-	
+	traverse((ast_node_t*) func->body);
 	
 	id_table_pop();
 

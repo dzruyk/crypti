@@ -11,7 +11,7 @@ typedef void (*lib_handler_t)(void);
 
 typedef struct {
 	char *name;
-	int narg;
+	int nargs;
 	struct list *args;
 	int is_lib;
 	lib_handler_t *handler;

@@ -195,7 +195,7 @@ func_set_args(func_t *func, struct list *args)
 	n = list_pass(args, func_add_new_argue, list);
 
 	func->args = list;
-	func->narg = n;
+	func->nargs = n;
 }
 
 void

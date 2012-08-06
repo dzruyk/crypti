@@ -661,7 +661,7 @@ add_next_argu(struct list *arglst, void *data)
 
 	item = list_item_new(data);
 
-	list_item_add(arglst, item);
+	list_item_add_to_end(arglst, item);
 }
 
 //need to flush token stream after errrors
