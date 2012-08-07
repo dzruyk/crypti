@@ -12,4 +12,7 @@
 11) функции и переменные не должны иметь одного имени
 12) function errors context when traverse body
 13) unary minus implementation
+14) assignment traverse fail: may be unused pop eval 
+15) need to travese statesment list in functions
+16) check when assign res of function call to value(can be void)
 
