@@ -306,8 +306,6 @@ assign(ast_node_t *lvalue)
 	if (match(TOK_LBRACE)) {
 		right = array_init();
 
-		//FIXME: need to return stub
-
 		if (match(TOK_RBRACE) == FALSE) {
 			print_warn("right bracket missed\n");
 			goto err;

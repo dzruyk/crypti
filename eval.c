@@ -111,6 +111,25 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	return ev;
 }
 
+/* 
+ * Print array 
+ * debug function
+ * later need to rewrite or replace
+ */
+void
+eval_print_arr(arr_t *arr)
+{
+	int i;
+	int *parr;
+
+	parr = arr->ptr;
+
+	for (i = 0; i < arr->n; i++)
+		printf("%d ", parr[i]);
+	printf("\n");
+}
+
+
 ret_t
 eval_print_val(eval_t *eval)
 {
@@ -125,7 +144,7 @@ eval_print_val(eval_t *eval)
 		printf("%d\n", value);
 		break;
 	case EVAL_ARR:
-		arr_print(eval->arr);	
+		eval_print_arr(eval->arr);	
 		break;
 	default:
 		print_warn_and_die("INTERNAL ERROR: cant get value\n");

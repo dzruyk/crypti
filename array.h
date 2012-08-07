@@ -36,12 +36,5 @@ ret_t arr_get_item(arr_t *arr, int ind, int *value);
  */
 void arr_free(arr_t *arr);
 
-/* 
- * Print array 
- * debug function
- * later need to rewrite or replace
- */
-void arr_print(arr_t *arr);
-
 #endif
 
