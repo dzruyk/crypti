@@ -126,21 +126,6 @@ id_table_pop()
 }
 
 ret_t
-id_table_insert(id_item_t *item)
-{
-	int res;
-	
-	res = hash_table_insert_unique(current, item->name, item);
-	if (res == ret_out_of_memory)
-		print_warn_and_die("error at id table insertion\n");
-	else if (res == ret_entry_exists)
-		print_warn_and_die("internal error, entry exists\n");
-
-	return ret_ok;
-}
-
-
-ret_t
 id_table_insert_to(struct hash_table *table, id_item_t *item)
 {
 	assert(table != NULL);
@@ -156,15 +141,30 @@ id_table_insert_to(struct hash_table *table, id_item_t *item)
 	return ret_ok;
 }
 
+
+ret_t
+id_table_insert(id_item_t *item)
+{
+	return id_table_insert_to(current, item);
+}
+
+
 id_item_t *
-id_table_lookup(char *name)
+id_table_lookup_in(struct hash_table *table, char *name)
 {
 	id_item_t *res;
 	
-	if (hash_table_lookup(current, name, (void**)&res) != ret_ok)
+	if (hash_table_lookup(table, name, (void**)&res) != ret_ok)
 		return NULL;
 	else
 		return res;
+}
+
+
+id_item_t *
+id_table_lookup(char *name)
+{
+	return id_table_lookup_in(current, name);
 }
 
 void

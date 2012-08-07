@@ -171,13 +171,16 @@ static void
 func_add_new_argue(struct list_item *item, void *data)
 {
 	struct list *list;
+	struct list_item *copy;
 	char *name;
 
 	list = (struct list *)data;
 
 	name = item->data;
+	
+	copy = list_item_new(strdup_or_die(name));
 
-	list_item_add(list, strdup_or_die(name));
+	list_item_add(list, copy);
 }
 
 //set args and add id_items to scope

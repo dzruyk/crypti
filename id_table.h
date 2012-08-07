@@ -69,11 +69,19 @@ ret_t id_table_insert(id_item_t *item);
 ret_t id_table_insert_to(struct hash_table *table, id_item_t *item);
 
 /*
- * lookup item with passed name and returns
+ * lookup item with passed name 
+ * in current scope and returns
  * pointer to item if finds
- * NULL if not finds
+ * or NULL 
  */
 id_item_t *id_table_lookup(char *name);
+
+/*
+ * lookup item with passed name
+ * in given scope and returns pointer
+ * to them or NULL
+ */
+id_item_t *id_table_lookup_in(struct hash_table *table, char *name);
 
 /*
  * free current table
