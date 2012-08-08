@@ -8,6 +8,7 @@ typedef enum {
 	KEY_FOR,
 	KEY_DO,
 	KEY_WHILE,
+	KEY_RETURN,
 	KEY_UNKNOWN,
 } keyword_t;
 

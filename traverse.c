@@ -335,23 +335,43 @@ set_value(ast_node_t *ltree, eval_t *ev)
 }
 
 static void
-traverse_as(ast_node_t *tree)
+traverse_as_rest(ast_node_t *tree)
 {
 	ast_node_t *ltree;
 	eval_t *right;
 
 	ltree = (ast_node_t *)tree->left;
 
-	traverse(tree->right);
-	
+	if (tree->right->type == AST_NODE_AS)
+		traverse_as_rest(tree->right);
+	else 
+		traverse(tree->right);
+
 	if (nerrors != 0)
 		return;
-	
 	right = stack_pop();
-	
+
 	set_value(ltree, right);
 
 	stack_push(right);
+}
+
+//FIXME: now just simple fix problem
+//with multiple assignment
+// in top assignment we must pop last eval
+static void
+traverse_as(ast_node_t *tree)
+{
+	eval_t *right;
+
+	traverse_as_rest();
+
+	if (nerrors != 0)
+		return;
+
+
+	right = stack_pop();
+	eval_free(right);
 }
 
 static void

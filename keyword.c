@@ -22,6 +22,7 @@ keyword_table_item_t keywords[] =  {
 	{KEY_FOR, "for"},
 	{KEY_DO, "do"},
 	{KEY_WHILE, "while"},
+	{KEY_RETURN, "return"},
 };
 
 
