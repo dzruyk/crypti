@@ -192,6 +192,8 @@ add_name_to_scope(struct list_item *list, void *data)
 	if (name == NULL)
 		print_warn_and_die("NULL name ptr\n");
 
+	printf("name: %s\n", name);
+
 	args = (struct hash_table *)data;
 
 	item = id_item_new(name);
@@ -364,7 +366,7 @@ traverse_as(ast_node_t *tree)
 {
 	eval_t *right;
 
-	traverse_as_rest();
+	traverse_as_rest(tree);
 
 	if (nerrors != 0)
 		return;

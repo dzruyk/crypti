@@ -296,6 +296,7 @@ assign(ast_node_t *lvalue)
 {
 	ast_node_t *right = NULL;
 	
+	//FIXME: mb need to write special function at future?
 	if (lvalue->type != AST_NODE_ID &&
 	    lvalue->type != AST_NODE_ACCESS) {
 		print_warn("assign to not variable\n");

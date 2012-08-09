@@ -180,7 +180,7 @@ func_add_new_argue(struct list_item *item, void *data)
 	
 	copy = list_item_new(strdup_or_die(name));
 
-	list_item_add(list, copy);
+	list_item_add_to_end(list, copy);
 }
 
 //set args and add id_items to scope
