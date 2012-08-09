@@ -64,13 +64,13 @@ static ast_node_t *expr_rest();
 static ast_node_t *term();
 static ast_node_t *term_rest();
 static ast_node_t *factor();
-static ast_node_t * number();
+static ast_node_t *number();
 
 static ast_node_t *identifier();
 
-static ast_node_t * process_scope();
+static ast_node_t *process_scope();
 
-static ast_node_t * process_function();
+static ast_node_t *process_function();
 static ret_t process_function_argu(ast_node_func_t *func);
 static ret_t process_function_body(ast_node_func_t *func);
 
