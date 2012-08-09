@@ -32,6 +32,7 @@ eval_t *eval_arr_new(arr_t *arr);
 
 /*
  * free passed eval_t
+ * WARNING: you must manualy free eval payload
  */
 void eval_free(eval_t *eval);
 

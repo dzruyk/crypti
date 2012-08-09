@@ -16,4 +16,5 @@
 15) need to travese statesment list in functions
 16) check when assign res of function call to value(can be void)
 17) function argues. replace list with ast_node_t
+18) set value from different scope
 

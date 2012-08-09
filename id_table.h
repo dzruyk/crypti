@@ -28,6 +28,12 @@ typedef struct {
  */
 id_item_t *id_item_new(char *name);
 
+/*
+ * set type and data of item
+ * WARNING: you must manualy free previous setted values
+ *
+ */
+void id_item_set(id_item_t *item, id_type_t type, void *data);
 
 /*
  * free specified item

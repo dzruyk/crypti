@@ -56,6 +56,27 @@ id_item_new(char *name)
 	return item;
 }
 
+void 
+id_item_set(id_item_t *item, id_type_t type, void *data)
+{
+	item->type = type;
+
+	switch (type) {
+	case ID_NUM:
+		//FIXME: something ubnormal
+		item->value = *((int *)data);
+		break;
+	case ID_ARR:
+		item->arr = (arr_t *) data;
+		break;
+	default:
+		//now we cant set to item functions
+		print_warn_and_die("unsupported type tryed to assing\n");
+		break;
+	}
+
+}
+
 void
 id_item_free(id_item_t *item)
 {

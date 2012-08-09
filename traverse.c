@@ -12,6 +12,7 @@
 #include "traverse.h"
 
 static void traverse(ast_node_t *tree);
+void set_value_id(id_item_t *item, eval_t *ev);
 
 typedef void (*traverse_cb)(ast_node_t *tree);
 
@@ -173,32 +174,45 @@ traverse_func_def(ast_node_t *tree)
 void
 exec_function(func_t *func)
 {
-	print_warn_and_die("WIP!\n");
+	//FIXME: write me!
+	traverse(func->body);
+	print_warn_and_die("write exec function!\n");
 }
 
 static void
-add_name_to_scope(struct list_item *list, void *data)
+add_name_to_scope(struct list_item *list, void **data)
 {
 	assert(data != NULL);
 
 	id_item_t *item;
-	struct list *args;
+	struct list_item *current;
+	eval_t *ev;
 	char *name;
-
-
-	//
 
 	name = list->data;
 	if (name == NULL)
 		print_warn_and_die("NULL name ptr\n");
+	
+	current = (struct list_item *)*data;
+	if (current == NULL)
+		print_warn_and_die("this is should not happeneed\n");
 
-	printf("name: %s\n", name);
+	traverse((ast_node_t *)current->data);
 
-	args = (struct hash_table *)data;
+	if (nerrors != 0)
+		return;
+	
+	//printf("name: %s\n", name);
+
+	ev = stack_pop();
 
 	item = id_item_new(name);
 
+	set_value_id(item, ev);
+
 	id_table_insert(item);
+
+	*data = current->next;
 }
 
 //FIXME: Wrong
@@ -209,7 +223,7 @@ add_argues_to_scope(func_t *func, struct list *args)
 {
 	assert(func != NULL && func->args != NULL);
 
-	list_pass(func->args, add_name_to_scope, args);
+	list_pass(func->args, add_name_to_scope, &(args->list));
 }
 
 void
@@ -242,33 +256,27 @@ traverse_func_call(ast_node_t *tree)
 	
 	add_argues_to_scope(func, call->args);
 
+	if (nerrors != 0)
+		goto finalize;
+
 	exec_function(func);
 	
-	id_table_pop();
+	finalize:
 
+	id_table_pop();
 	id_table_free(idtable);
 }
 
 void
-set_value_id(ast_node_id_t *node, eval_t *ev)
+set_value_id(id_item_t *item, eval_t *ev)
 {
-	id_item_t *item;
-
-	item = id_table_lookup(node->name);
-	//if we havent id, then we must define it
-	if (item == NULL) {
-		item = id_item_new(node->name);
-		id_table_insert(item);
-	}
 		
 	switch (ev->type) {
 	case EVAL_NUM:
-		item->type = ID_NUM;
-		item->value = ev->value;
+		id_item_set(item, ID_NUM, &(ev->value));
 		break;
 	case EVAL_ARR:
-		item->type = ID_ARR;
-		item->arr = ev->arr;
+		id_item_set(item, ID_ARR, ev->arr);
 		break;
 	default:
 		print_warn_and_die("WIP\n");
@@ -277,7 +285,7 @@ set_value_id(ast_node_id_t *node, eval_t *ev)
 
 
 static void
-set_value_access(ast_node_access_t *node, eval_t *ev)
+set_value_node_access(ast_node_access_t *node, eval_t *ev)
 {
 	eval_t *ind;
 	id_item_t *item;
@@ -294,12 +302,18 @@ set_value_access(ast_node_access_t *node, eval_t *ev)
 		nerrors++;
 		return;
 	}
+
+	if (item->type != ID_ARR) {
+		print_warn("%s is not array\n", item->name);
+		nerrors++;
+		return;
+	}
 	
 	traverse(node->ind);
 	ind = stack_pop();
 	
 	if (ind->type != EVAL_NUM) {
-		print_warn("try assign to arr not number\n");
+		print_warn("index must be number\n");
 		nerrors++;
 		return;
 	}
@@ -312,22 +326,31 @@ set_value_access(ast_node_access_t *node, eval_t *ev)
 }
 
 static void
-set_value(ast_node_t *ltree, eval_t *ev)
+set_value_node(ast_node_t *ltree, eval_t *ev)
 {
 	ast_node_id_t *id;
 	ast_node_access_t *acc;
 
 	switch (ltree->type) {
-	case AST_NODE_ID:
+	case AST_NODE_ID: {
+		id_item_t *item;
 		
 		id = (ast_node_id_t *)ltree;
-		set_value_id(id, ev);
 
-		break;
+		item = id_table_lookup(id->name);
+		//if we havent id, then we must define it
+		if (item == NULL) {
+			item = id_item_new(id->name);
+			id_table_insert(item);
+		}
+		
+		set_value_id(item, ev);
+
+		break;}
 	case AST_NODE_ACCESS:
 		
 		acc = (ast_node_access_t *)ltree;
-		set_value_access(acc, ev);
+		set_value_node_access(acc, ev);
 		
 		break;
 	default:
@@ -351,9 +374,13 @@ traverse_as_rest(ast_node_t *tree)
 
 	if (nerrors != 0)
 		return;
+
 	right = stack_pop();
 
-	set_value(ltree, right);
+	set_value_node(ltree, right);
+
+	if (nerrors != 0)
+		return;
 
 	stack_push(right);
 }
@@ -370,7 +397,6 @@ traverse_as(ast_node_t *tree)
 
 	if (nerrors != 0)
 		return;
-
 
 	right = stack_pop();
 	eval_free(right);
@@ -458,6 +484,7 @@ traverse_prog(ast_node_t *tree)
 		stack_flush((stack_item_free_t )eval_free);
 		return ret_err;
 	}
+
 	return ret_ok;
 }
 

@@ -64,6 +64,7 @@ static ast_node_t *expr_rest();
 static ast_node_t *term();
 static ast_node_t *term_rest();
 static ast_node_t *factor();
+static ast_node_t * number();
 
 static ast_node_t *identifier();
 
@@ -561,11 +562,7 @@ factor()
 		
 		return 	identifier();
 	
-	} else if (match(TOK_NUM)) {
-		
-		return ast_node_num_new(lex_item_prev.num);
-
-	}  else if (match(TOK_LPAR)) {
+	} else if (match(TOK_LPAR)) {
 		stat = statesment();
 		
 		if (match(TOK_RPAR) == FALSE) {
@@ -585,14 +582,35 @@ factor()
 	} else if (is_eof() == TRUE) {
 		return NULL;
 	}
-
-	nerrors++;
-	print_warn("unsupported token tryed to factor\n");
-	tok_next();
 	
-	stat = ast_node_stub_new();
+	//then we have number
+	return number();
+}
 
-	return stat;
+static ast_node_t *
+number()
+{
+	int sign;
+	sign = 1;
+
+	//unary +- implementation
+	do {
+		if (current_tok == TOK_MINUS)
+			sign = -1;
+		else if (current_tok == TOK_PLUS)
+			sign = 1;
+	} while (match(TOK_PLUS) == TRUE || match(TOK_MINUS) == TRUE);
+
+	if (match(TOK_NUM) == FALSE) {
+		
+		nerrors++;
+		print_warn("unsupported token tryed to factor\n");
+		tok_next();
+		
+		return ast_node_stub_new();
+	}  
+
+	return ast_node_num_new(lex_item_prev.num * sign);
 }
 
 static ast_node_t *
