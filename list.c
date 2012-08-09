@@ -93,8 +93,11 @@ list_destroy(struct list **root, data_destroy_func_t func)
 {
 	assert( root != NULL);
 	
-	if (*root == NULL || (*root)->list == NULL)
+	if (*root == NULL)
 		return;
+	
+	if ((*root)->list == NULL)
+		goto finalize;
 	
 	struct list_item *tmp, *last;
 
@@ -109,8 +112,9 @@ list_destroy(struct list **root, data_destroy_func_t func)
 	func(last->data);
 	free(last);
 
+	finalize:
+
 	free(*root);
-	
 	*root = NULL;
 }
 

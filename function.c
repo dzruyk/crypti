@@ -49,6 +49,7 @@ function_table_destroy_cb(func_t *item)
 	//free list
 	if (item->is_lib == FALSE) {
 		ast_node_unref(item->body);
+		list_destroy(&(item->args), ufree);
 	}
 
 	//FIXME: free argue list and body

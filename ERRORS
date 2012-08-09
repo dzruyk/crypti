@@ -11,6 +11,6 @@ a + a lll
 
 FUCK!!!!!!!!
 
-a = 2
-a[1] = 2
+return b=2
+segfault??
 

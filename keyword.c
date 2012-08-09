@@ -9,20 +9,20 @@
 #define INITIAL_SZ 32
 
 typedef struct {
-	keyword_t id;
+	tok_t id;
 	char *name;
 } keyword_table_item_t;
 
 struct hash_table *key_table;
 
 keyword_table_item_t keywords[] =  {
-	{KEY_DEF, "def"},
-	{KEY_IF, "if"},
-	{KEY_ELSE, "else"},
-	{KEY_FOR, "for"},
-	{KEY_DO, "do"},
-	{KEY_WHILE, "while"},
-	{KEY_RETURN, "return"},
+	{TOK_DEF, "def"},
+	{TOK_IF, "if"},
+	{TOK_ELSE, "else"},
+	{TOK_FOR, "for"},
+	{TOK_DO, "do"},
+	{TOK_WHILE, "while"},
+	{TOK_RETURN, "return"},
 };
 
 
@@ -108,13 +108,13 @@ keyword_table_insert(keyword_table_item_t *item)
 	return ret_ok;
 }
 
-keyword_t
+tok_t
 keyword_table_lookup(char *name)
 {
 	keyword_table_item_t *res;
 
 	if (hash_table_lookup(key_table, name, (void **)&res) != ret_ok)
-		return KEY_UNKNOWN;
+		return TOK_UNKNOWN;
 	else
 		return res->id;
 }

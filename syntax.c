@@ -197,8 +197,7 @@ global_expr()
 	struct syn_ctx *ctx;
 
 	//Define new function
-	if (current_tok == TOK_KEYWORD &&
-	    lex_item.op == KEY_DEF)
+	if (match(TOK_DEF))
 		return process_function();
 
 	ctx = syn_ctx_new();
@@ -562,6 +561,10 @@ factor()
 		
 		return 	identifier();
 	
+	} else if (match(TOK_RETURN)) {
+		
+		return ast_node_return_new();
+	
 	} else if (match(TOK_LPAR)) {
 		stat = statesment();
 		
@@ -640,8 +643,6 @@ process_function()
 {
 	ast_node_func_t *func;
 	int ret;
-
-	tok_next();
 
 	if (match(TOK_ID) == FALSE) {
 		nerrors++;
@@ -739,7 +740,6 @@ process_function_body(ast_node_func_t *func)
 	//FIXME: void body functions
 	func->body = stmts(ctx);
 	if (func->body == NULL) {
-		nerrors++;
 		print_warn("cant traverse func body\n");
 		goto err;
 	}
@@ -749,10 +749,13 @@ process_function_body(ast_node_func_t *func)
 		goto err;
 	}
 	
+	syn_ctx_free(ctx);
+
 	return ret_ok;
 
 	err:
 
+	nerrors++;
 	if (func->body != NULL) {
 		ast_node_unref(func->body);
 		func->body = NULL;

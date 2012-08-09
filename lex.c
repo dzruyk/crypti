@@ -37,7 +37,7 @@ begin:
 	}
 
 	if (isalpha(peek) || peek == '_') {
-		keyword_t kword;
+		tok_t kword;
 		char *s = NULL;
 		char *tmp;
 		int used, len;
@@ -59,11 +59,10 @@ begin:
 			print_warn_and_die("realloc_err");
 		s = tmp;
 
-		if ((kword = keyword_table_lookup(s)) != KEY_UNKNOWN) {
+		if ((kword = keyword_table_lookup(s)) != TOK_UNKNOWN) {
 			free(s);
-			lex_item.id = TOK_KEYWORD;
-			lex_item.op = kword;
-			return TOK_KEYWORD;
+			lex_item.id = lex_item.op = kword;
+			return kword;
 		}
 		
 		lex_item.id = TOK_ID;

@@ -38,6 +38,7 @@ typedef enum {
 	AST_NODE_CALL,
 	AST_NODE_ID,
 	AST_NODE_NUM,
+	AST_NODE_RETURN,
 	AST_NODE_STUB,
 	AST_NODE_UNKNOWN,
 } ast_type_t;
@@ -64,10 +65,13 @@ typedef struct {
 	ast_node_t tree;
 } ast_node_as_t;
 
+/*
+ * freeze
 typedef struct {
 	ast_node_t tree;
 	struct list *nodes;
 } ast_node_seq_t;
+*/
 
 typedef struct {
 	ast_node_t tree;
@@ -107,8 +111,18 @@ typedef struct {
 
 typedef struct {
 	ast_node_t tree;
+} ast_node_return_t;
+
+typedef struct {
+	ast_node_t tree;
 } ast_node_stub_t;
 
+/*
+ * allocate sz bytes for new ast_node with specified type
+ * zeroes all structure, set  destructor
+ */
+ast_node_t *ast_node_new(ast_type_t type, int sz, 
+    destructor_t destructor);
 
 ast_node_t *ast_node_num_new(int num);
 
@@ -130,6 +144,9 @@ ast_node_t *ast_node_op_new(ast_node_t* left, ast_node_t *right, opcode_t opcode
 
 
 ast_node_t *ast_node_as_new(ast_node_t *left, ast_node_t *right);
+
+
+ast_node_t *ast_node_return_new();
 
 
 ast_node_t *ast_node_stub_new();

@@ -46,6 +46,7 @@ ast_node_free(ast_node_t *tree)
 	default:
 		print_warn_and_die("something wrong, no such type\n");
 	}
+	ast_node_unref(tree->child);
 
 	free(tree);
 }
@@ -85,16 +86,28 @@ ast_node_func_free(ast_node_t *tree)
 }
 
 ast_node_t *
+ast_node_new(ast_type_t type, int sz,
+    destructor_t destructor)
+{
+	ast_node_t *res;
+
+	res = malloc_or_die(sz);
+	memset(res, 0, sz);
+
+	res->type = type;
+	res->destructor = destructor;
+
+	return res;
+}
+
+ast_node_t *
 ast_node_num_new(int num)
 {
 	ast_node_num_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
-	memset(res, 0, sizeof(*res));
+	res = (ast_node_num_t *) ast_node_new(AST_NODE_NUM,
+	    sizeof(*res), ast_node_free);
 
-	AST_NODE(res)->type = AST_NODE_NUM;
-	AST_NODE(res)->destructor = ast_node_free;
-	
 	res->num = num;
 	
 	return AST_NODE(res);
@@ -105,11 +118,8 @@ ast_node_id_new(char *name)
 {
 	ast_node_id_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
-	memset(res, 0, sizeof(*res));
-
-	AST_NODE(res)->type = AST_NODE_ID;
-	AST_NODE(res)->destructor = ast_node_free;
+	res = (ast_node_id_t *) ast_node_new(AST_NODE_ID,
+	    sizeof(*res), ast_node_free);
 
 	res->name = name;
 
@@ -121,10 +131,8 @@ ast_node_arr_new(ast_node_t **arr, int sz)
 {
 	ast_node_arr_t *res;
 
-	res = malloc_or_die(sizeof(*res));
-	
-	AST_NODE(res)->type = AST_NODE_ARR;
-	AST_NODE(res)->destructor = ast_node_free;
+	res = (ast_node_arr_t *) ast_node_new(AST_NODE_ARR,
+	    sizeof(*res), ast_node_free);
 
 	res->arr = arr;
 	res->sz = sz;
@@ -137,12 +145,8 @@ ast_node_func_def(char *name)
 {
 	ast_node_func_t *res;
 
-	res = malloc_or_die(sizeof(*res));
-	
-	memset(res, 0, sizeof(*res));
-
-	AST_NODE(res)->type = AST_NODE_DEF;
-	AST_NODE(res)->destructor = ast_node_func_free;
+	res = (ast_node_func_t *) ast_node_new(AST_NODE_DEF,
+	    sizeof(*res), ast_node_func_free);
 
 	res->name = name;
 	res->args = list_init();
@@ -157,10 +161,8 @@ ast_node_func_call(char *name)
 {
 	ast_node_func_call_t *res;
 
-	res = malloc_or_die(sizeof(*res));
-	
-	AST_NODE(res)->type = AST_NODE_CALL;
-	AST_NODE(res)->destructor = ast_node_func_free;
+	res = (ast_node_func_call_t *) ast_node_new(AST_NODE_CALL,
+	    sizeof(*res), ast_node_func_free);
 
 	res->name = name;
 
@@ -176,10 +178,8 @@ ast_node_access_new(char *name, ast_node_t *ind)
 {
 	ast_node_access_t *res;
 
-	res = malloc_or_die(sizeof(*res));
-	
-	AST_NODE(res)->type = AST_NODE_ACCESS;
-	AST_NODE(res)->destructor = ast_node_free;
+	res = (ast_node_access_t *) ast_node_new(AST_NODE_ACCESS,
+	    sizeof(*res), ast_node_free);
 
 	res->name = name;
 	res->ind = ind;
@@ -193,12 +193,11 @@ ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)
 {
 	ast_node_op_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
+	res = (ast_node_op_t *) ast_node_new(AST_NODE_OP,
+	    sizeof(*res), ast_node_free);
 	
-	AST_NODE(res)->type = AST_NODE_OP; 
 	AST_NODE(res)->left = left;
 	AST_NODE(res)->right = right;
-	AST_NODE(res)->destructor = ast_node_free;
 
 	res->opcode = opcode;
 
@@ -210,13 +209,25 @@ ast_node_as_new(ast_node_t *left, ast_node_t *right)
 {
 	ast_node_as_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
-	
-	AST_NODE(res)->type = AST_NODE_AS; 
+	res = (ast_node_as_t *) ast_node_new(AST_NODE_AS,
+	    sizeof(*res), ast_node_free);
+
 	AST_NODE(res)->left = left;
 	AST_NODE(res)->right = right;
-	AST_NODE(res)->destructor = ast_node_free;
 
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_return_new()
+{
+	ast_node_return_t *res;
+
+	res = (ast_node_return_t *) ast_node_new(AST_NODE_RETURN,
+	    sizeof(*res), ast_node_free);
+
+	AST_NODE(res)->type = AST_NODE_RETURN; 
+	
 	return AST_NODE(res);
 }
 

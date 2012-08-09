@@ -40,6 +40,16 @@ typedef enum {
 	TOK_DIV,
 	
 	TOK_EOL,
+
+	/* keyword tokens */
+	TOK_DEF,
+	TOK_IF,
+	TOK_ELSE,
+	TOK_FOR,
+	TOK_DO,
+	TOK_WHILE,
+	TOK_RETURN,
+
 	TOK_EOF,
 	TOK_UNKNOWN,
 } tok_t;
