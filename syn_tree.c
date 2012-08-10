@@ -39,6 +39,7 @@ ast_node_free(ast_node_t *tree)
 		break;
 	case AST_NODE_OP:
 	case AST_NODE_AS:
+	case AST_NODE_RETURN:
 	case AST_NODE_STUB:	
 		ast_node_unref(tree->left);
 		ast_node_unref(tree->right);
