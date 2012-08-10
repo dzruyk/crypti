@@ -46,10 +46,9 @@ begin:
 		do {
 			if (used >= len - 1) {
 				len += 64;
-				if ((tmp = realloc(s, len)) == NULL)
-					print_warn_and_die("realloc_err");
-				s = tmp;
+				s = realloc_or_die(s, len);
 			}
+
 			s[used++] = peek;
 			peek = fgetc(stdin);
 		} while(isalnum(peek) || peek == '_');

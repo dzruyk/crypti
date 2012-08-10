@@ -82,7 +82,7 @@ ast_node_func_free(ast_node_t *tree)
 		ufree(call->name);
 		for (i = 0; i < call->nargs; i++)
 			ast_node_unref(call->args[i]);
-		ufree(func->args);
+		ufree(call->args);
 
 		break;
 	default:

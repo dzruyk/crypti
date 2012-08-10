@@ -165,7 +165,7 @@ traverse_func_def(ast_node_t *tree)
 
 	func = func_new(synfunc->name);
 
-	func_set_args(func, synfunc->args);
+	func_set_args(func, synfunc->args, synfunc->nargs);
 	func_set_body(func, synfunc->body);
 
 	function_table_insert(func); 

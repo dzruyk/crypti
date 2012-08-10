@@ -9,10 +9,6 @@
 #include "lex.h"
 #include "list.h"
 
-enum {
-	ARGS_SZ = 4,
-};
-
 /*******SYNTAX_CTX***********/
 
 enum ctx_type {
@@ -675,14 +671,16 @@ process_function()
 }
 
 static void
-add_next_argu(ast_node_func_t *func, char *name)
+func_add_next_argu(ast_node_func_t *func, char *name)
 {
 	int n;
-	n = func->nargs;
+
+	n = func->nargs++;
+
+	func->args = realloc_or_die(func->args, 
+	    func->nargs * sizeof(*(func->args)));
 
 	func->args[n] = name;
-
-	func->nargs++;
 }
 
 //need to flush token stream after errrors
@@ -691,18 +689,15 @@ static ret_t
 process_function_argu(ast_node_func_t *func)
 {
 	char *id;
-	int sz;
+	int i;
 
-	//initial args array size
-	sz = ARGS_SZ;
+	i = 0;
 
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"
 		    "at initialisation\n");
 		goto err;	
 	}
-
-	func->args = malloc_or_die(ARGS_SZ * sizeof(char *));
 
 	//get arguments
 	while (match(TOK_RPAR) == FALSE) {
@@ -713,7 +708,7 @@ process_function_argu(ast_node_func_t *func)
 
 		id = lex_item_prev.name;
 
-		add_next_argu(func, id);
+		func_add_next_argu(func, id);
 
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != TOK_RPAR) {
@@ -777,6 +772,20 @@ process_function_body(ast_node_func_t *func)
 
 	return ret_err;
 }
+		
+void
+func_call_add_next_argu(ast_node_func_call_t *call, ast_node_t *node)
+{
+	int n;
+
+	n = call->nargs++;
+
+	call->args = realloc_or_die(call->args,
+	    call->nargs * sizeof(*(call->args)));
+
+	call->args[n] = node;
+
+}
 
 static ast_node_t *
 function_call()
@@ -803,7 +812,7 @@ function_call()
 			goto err;
 		}
 
-		add_next_argu(call->args, node);
+		func_call_add_next_argu(call, node);
 
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != TOK_RPAR) {
@@ -869,14 +878,9 @@ array_init()
 		}
 
 		if (len >= sz) {
-			ast_node_t **tmp;
-
 			sz += 4 * sizeof (*arr);
 
-			tmp = realloc(arr, sz);
-			if (tmp == NULL)
-				print_warn_and_die("realloc_err\n");
-			arr = tmp;
+			arr = realloc_or_die(arr, sz);
 		}
 		
 		arr[len++] = item;
