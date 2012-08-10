@@ -3,13 +3,15 @@
 #include <string.h>
 
 #include "common.h"
-#include "function.h"
 #include "keyword.h"
 #include "macros.h"
 #include "syntax.h"
 #include "lex.h"
 #include "list.h"
 
+enum {
+	ARGS_SZ = 4,
+};
 
 /*******SYNTAX_CTX***********/
 
@@ -673,13 +675,14 @@ process_function()
 }
 
 static void
-add_next_argu(struct list *arglst, void *data)
+add_next_argu(ast_node_func_t *func, char *name)
 {
-	struct list_item *item;
+	int n;
+	n = func->nargs;
 
-	item = list_item_new(data);
+	func->args[n] = name;
 
-	list_item_add_to_end(arglst, item);
+	func->nargs++;
 }
 
 //need to flush token stream after errrors
@@ -688,6 +691,10 @@ static ret_t
 process_function_argu(ast_node_func_t *func)
 {
 	char *id;
+	int sz;
+
+	//initial args array size
+	sz = ARGS_SZ;
 
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"
@@ -695,8 +702,9 @@ process_function_argu(ast_node_func_t *func)
 		goto err;	
 	}
 
-	//get arguments
+	func->args = malloc_or_die(ARGS_SZ * sizeof(char *));
 
+	//get arguments
 	while (match(TOK_RPAR) == FALSE) {
 		if (match(TOK_ID) == FALSE) {
 			print_warn("identifier required\n");
@@ -705,7 +713,7 @@ process_function_argu(ast_node_func_t *func)
 
 		id = lex_item_prev.name;
 
-		add_next_argu(func->args, id);
+		add_next_argu(func, id);
 
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != TOK_RPAR) {
@@ -718,8 +726,12 @@ process_function_argu(ast_node_func_t *func)
 
 	err:
 
-	if (func->args != NULL)
-		list_destroy(&(func->args), ufree);
+	if (func->args != NULL) {
+		int i;
+		for (i = 0; i < func->nargs; i++)
+			ufree(func->args[i]);
+		ufree(func->args);
+	}
 
 	return ret_err;
 }

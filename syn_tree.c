@@ -57,26 +57,32 @@ ast_node_func_free(ast_node_t *tree)
 {
 	ast_node_func_call_t *call;
 	ast_node_func_t *func;
+	int i;
 
 	return_if_fail(tree != NULL);
 
 
 	switch (tree->type) {
 	case AST_NODE_DEF:
+
 		func = (ast_node_func_t *)tree;
 		ufree(func->name);
-		if (func->args != NULL)
-			list_destroy(&(func->args), ufree);
+
+		for (i = 0; i < func->nargs; i++)
+			ufree(func->args[i]);
+		ufree(func->args);
 
 		//now you must free body manualy!
 		//ast_node_unref(AST_NODE(func->body));
+		print_warn_and_die("FIXME: ast_node_func_free\n");
 
 		break;
 	case AST_NODE_CALL:
 		call = (ast_node_func_call_t *) tree;
 		ufree(call->name);
-		list_destroy(&(call->args), 
-		    (data_destroy_func_t )ast_node_unref);
+		for (i = 0; i < call->nargs; i++)
+			ast_node_unref(call->args[i]);
+		ufree(func->args);
 
 		break;
 	default:
@@ -106,8 +112,8 @@ ast_node_num_new(int num)
 {
 	ast_node_num_t *res;
 	
-	res = (ast_node_num_t *) ast_node_new(AST_NODE_NUM,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_num_t *) 
+	    ast_node_new(AST_NODE_NUM, sizeof(*res), ast_node_free);
 
 	res->num = num;
 	
@@ -119,8 +125,8 @@ ast_node_id_new(char *name)
 {
 	ast_node_id_t *res;
 	
-	res = (ast_node_id_t *) ast_node_new(AST_NODE_ID,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_id_t *) 
+	    ast_node_new(AST_NODE_ID, sizeof(*res), ast_node_free);
 
 	res->name = name;
 
@@ -132,8 +138,8 @@ ast_node_arr_new(ast_node_t **arr, int sz)
 {
 	ast_node_arr_t *res;
 
-	res = (ast_node_arr_t *) ast_node_new(AST_NODE_ARR,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_arr_t *) 
+	    ast_node_new(AST_NODE_ARR, sizeof(*res), ast_node_free);
 
 	res->arr = arr;
 	res->sz = sz;
@@ -146,13 +152,11 @@ ast_node_func_def(char *name)
 {
 	ast_node_func_t *res;
 
-	res = (ast_node_func_t *) ast_node_new(AST_NODE_DEF,
-	    sizeof(*res), ast_node_func_free);
+	res = (ast_node_func_t *) 
+	    ast_node_new(AST_NODE_DEF, sizeof(*res), ast_node_func_free);
 
 	res->name = name;
-	res->args = list_init();
-	if (res->args == NULL)
-		print_warn_and_die("some_error\n");
+	res->nargs = 0;
 
 	return AST_NODE(res);
 }
@@ -162,14 +166,10 @@ ast_node_func_call(char *name)
 {
 	ast_node_func_call_t *res;
 
-	res = (ast_node_func_call_t *) ast_node_new(AST_NODE_CALL,
-	    sizeof(*res), ast_node_func_free);
+	res = (ast_node_func_call_t *) 
+	    ast_node_new(AST_NODE_CALL, sizeof(*res), ast_node_func_free);
 
 	res->name = name;
-
-	res->args = list_init();
-	if (res->args == NULL)
-		print_warn_and_die("some_error\n");
 
 	return AST_NODE(res);
 }
@@ -179,8 +179,8 @@ ast_node_access_new(char *name, ast_node_t *ind)
 {
 	ast_node_access_t *res;
 
-	res = (ast_node_access_t *) ast_node_new(AST_NODE_ACCESS,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_access_t *) 
+	    ast_node_new(AST_NODE_ACCESS, sizeof(*res), ast_node_free);
 
 	res->name = name;
 	res->ind = ind;
@@ -194,8 +194,8 @@ ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)
 {
 	ast_node_op_t *res;
 	
-	res = (ast_node_op_t *) ast_node_new(AST_NODE_OP,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_op_t *) 
+	    ast_node_new(AST_NODE_OP, sizeof(*res), ast_node_free);
 	
 	AST_NODE(res)->left = left;
 	AST_NODE(res)->right = right;
@@ -210,8 +210,8 @@ ast_node_as_new(ast_node_t *left, ast_node_t *right)
 {
 	ast_node_as_t *res;
 	
-	res = (ast_node_as_t *) ast_node_new(AST_NODE_AS,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_as_t *) 
+	    ast_node_new(AST_NODE_AS, sizeof(*res), ast_node_free);
 
 	AST_NODE(res)->left = left;
 	AST_NODE(res)->right = right;
@@ -224,8 +224,8 @@ ast_node_return_new()
 {
 	ast_node_return_t *res;
 
-	res = (ast_node_return_t *) ast_node_new(AST_NODE_RETURN,
-	    sizeof(*res), ast_node_free);
+	res = (ast_node_return_t *) 
+	    ast_node_new(AST_NODE_RETURN, sizeof(*res), ast_node_free);
 
 	AST_NODE(res)->type = AST_NODE_RETURN; 
 	

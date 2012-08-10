@@ -17,7 +17,6 @@ typedef struct {
 	char *name;
 	union {
 		int value;
-		func_t *func;
 		arr_t *arr;
 	};
 } id_item_t;

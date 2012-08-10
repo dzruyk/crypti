@@ -3,8 +3,6 @@
 
 #define AST_NODE(p)((ast_node_t *)p)
 
-#include "list.h"
-
 typedef enum {
 	OP_AS,
 	OP_NOT,
@@ -99,14 +97,16 @@ typedef struct {
 typedef struct {
 	ast_node_t tree;
 	char *name;
-	struct list *args;
+	char **args;
+	int nargs;
 	ast_node_t *body;
 } ast_node_func_t;
 
 typedef struct {
 	ast_node_t tree;
 	char *name;
-	struct list *args;
+	ast_node_t **args;
+	int nargs;
 } ast_node_func_call_t;
 
 typedef struct {

@@ -47,6 +47,8 @@ do { \
 
 inline void *malloc_or_die(size_t sz);
 
+inline void * realloc_or_die(void *ptr, size_t sz);
+
 inline void *strdup_or_die(char *str);
 
 /*

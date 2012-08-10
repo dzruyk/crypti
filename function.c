@@ -4,7 +4,6 @@
 #include "function.h"
 #include "hash.h"
 #include "id_table.h"
-#include "list.h"
 #include "macros.h"
 #include "syn_tree.h"
 
@@ -38,7 +37,6 @@ function_hash_cb(const void *data)
 	return res;
 }
 
-//FIXME destroy list
 static void
 function_table_destroy_cb(func_t *item)
 {
@@ -46,13 +44,14 @@ function_table_destroy_cb(func_t *item)
 	
 	//FIXME: Library func
 	
-	//free list
 	if (item->is_lib == FALSE) {
+		int i;
 		ast_node_unref(item->body);
-		list_destroy(&(item->args), ufree);
+		
+		for (i = 0; i < item->nargs; i++)
+			ufree(item->args[i]);
+		ufree(item->args);
 	}
-
-	//FIXME: free argue list and body
 
 	ufree(item);
 }
@@ -168,38 +167,20 @@ func_table_delete(func_t *func)
 	return ret_ok;
 }
 
-static void
-func_add_new_argue(struct list_item *item, void *data)
-{
-	struct list *list;
-	struct list_item *copy;
-	char *name;
-
-	list = (struct list *)data;
-
-	name = item->data;
-	
-	copy = list_item_new(strdup_or_die(name));
-
-	list_item_add_to_end(list, copy);
-}
-
 //set args and add id_items to scope
 void
-func_set_args(func_t *func, struct list *args)
+func_set_args(func_t *func, char **args, int nargs)
 {
 	assert(func != NULL && args != NULL);
 
-	struct list *list;
+	int i;
+	
+	func->args = malloc_or_die(sizeof(*args) * nargs);
 
-	int n;
+	for (i = 0; i < nargs; i++)
+		func->args[i] = strdup_or_die(args[i]);
 
-	list = list_init();
-
-	n = list_pass(args, func_add_new_argue, list);
-
-	func->args = list;
-	func->nargs = n;
+	func->nargs = nargs;
 }
 
 void

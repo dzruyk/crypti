@@ -18,6 +18,15 @@ malloc_or_die(size_t sz)
 }
 
 inline void *
+realloc_or_die(void *ptr, size_t sz)
+{
+	void *tmp;
+	if ((tmp = realloc(ptr, sz)) == NULL)
+		print_warn_and_die("malloc_err");
+	return tmp;
+}
+
+inline void *
 strdup_or_die(char *str)
 {
 	char *dup;
