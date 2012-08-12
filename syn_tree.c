@@ -13,6 +13,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_arr_t *arr;
 	ast_node_access_t *acc;
 	ast_node_id_t *id;
+	ast_node_return_t *ret;
 
 	int i, n;
 
@@ -37,9 +38,12 @@ ast_node_free(ast_node_t *tree)
 		free(acc->name);
 		ast_node_unref(acc->ind);
 		break;
+	case AST_NODE_RETURN:
+		ret = (ast_node_return_t *)tree;
+		ast_node_unref(ret->retval);
+		break;
 	case AST_NODE_OP:
 	case AST_NODE_AS:
-	case AST_NODE_RETURN:
 	case AST_NODE_STUB:	
 		ast_node_unref(tree->left);
 		ast_node_unref(tree->right);
@@ -74,7 +78,6 @@ ast_node_func_free(ast_node_t *tree)
 
 		//now you must free body manualy!
 		//ast_node_unref(AST_NODE(func->body));
-		print_warn_and_die("FIXME: ast_node_func_free\n");
 
 		break;
 	case AST_NODE_CALL:
@@ -156,6 +159,7 @@ ast_node_func_def(char *name)
 	    ast_node_new(AST_NODE_DEF, sizeof(*res), ast_node_func_free);
 
 	res->name = name;
+	res->args = NULL;
 	res->nargs = 0;
 
 	return AST_NODE(res);
@@ -220,7 +224,7 @@ ast_node_as_new(ast_node_t *left, ast_node_t *right)
 }
 
 ast_node_t *
-ast_node_return_new()
+ast_node_return_new(ast_node_t *retval)
 {
 	ast_node_return_t *res;
 
@@ -228,6 +232,7 @@ ast_node_return_new()
 	    ast_node_new(AST_NODE_RETURN, sizeof(*res), ast_node_free);
 
 	AST_NODE(res)->type = AST_NODE_RETURN; 
+	res->retval = retval;
 	
 	return AST_NODE(res);
 }

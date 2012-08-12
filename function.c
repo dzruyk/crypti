@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include <stdio.h>
+
 #include "function.h"
 #include "hash.h"
 #include "id_table.h"
@@ -171,11 +173,12 @@ func_table_delete(func_t *func)
 void
 func_set_args(func_t *func, char **args, int nargs)
 {
-	assert(func != NULL && args != NULL);
+	assert(func != NULL);
 
 	int i;
 	
-	func->args = malloc_or_die(sizeof(*args) * nargs);
+	if (nargs > 0)
+		func->args = malloc_or_die(sizeof(*args) * nargs);
 
 	for (i = 0; i < nargs; i++)
 		func->args[i] = strdup_or_die(args[i]);

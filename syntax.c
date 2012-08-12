@@ -14,12 +14,13 @@
 enum ctx_type {
 	CTX_GLOBAL,
 	CTX_FUNCTION,
-	CTX_CYCLE,
 	CTX_UNKNOWN,
 };
 
 struct syn_ctx {
 	int type;
+	int is_cycle;
+	int is_cond;
 };
 
 struct syn_ctx *syn_ctx_new();
@@ -48,7 +49,8 @@ syn_ctx_free(struct syn_ctx *ctx)
 static ast_node_t * global_expr();
 static ast_node_t * stmts(struct syn_ctx *ctx);
 static ast_node_t *block(struct syn_ctx *ctx);
-static ast_node_t *statesment();
+static ast_node_t *statesment(struct syn_ctx *ctx);
+static ast_node_t *expr();
 
 static ast_node_t *assign(ast_node_t *lvalue);
 
@@ -57,16 +59,18 @@ static ast_node_t *logic_conj();
 static ast_node_t *equity();
 static ast_node_t *rel_op();
 
-static ast_node_t *expr();
-static ast_node_t *expr_rest();
+static ast_node_t *add_expr();
+static ast_node_t *add_expr_rest();
+static ast_node_t *mul_expr();
+static ast_node_t *mul_expr_rest();
 static ast_node_t *term();
-static ast_node_t *term_rest();
 static ast_node_t *factor();
 static ast_node_t *number();
 
 static ast_node_t *identifier();
+static ast_node_t *process_return(struct syn_ctx *ctx);
 
-static ast_node_t *process_scope();
+static ast_node_t *process_scope(struct syn_ctx *ctx);
 
 static ast_node_t *process_function();
 static ret_t process_function_argu(ast_node_func_t *func);
@@ -212,13 +216,10 @@ static ast_node_t *
 stmts(struct syn_ctx *ctx)
 {
 	
-	if (match(TOK_LBRACE)) 
-		return process_scope();
-
 	if (ctx->type != CTX_GLOBAL)
 		return block(ctx);
 	
-	return statesment();
+	return statesment(ctx);
 }
 
 static ast_node_t *
@@ -234,10 +235,10 @@ block(struct syn_ctx *ctx)
 		//end of scope
 		if (current_tok == TOK_RBRACE
 		    && (ctx->type == CTX_FUNCTION 
-		    || ctx->type == CTX_CYCLE))
+		    || ctx->is_cycle > 0))
 			break;
 	
-		tmp = statesment();
+		tmp = statesment(ctx);
 
 		if (result == NULL)
 			result = tmp;
@@ -273,12 +274,24 @@ block(struct syn_ctx *ctx)
 	return result;
 }
 
+static ast_node_t *
+statesment(struct syn_ctx *ctx)
+{	
+	if (match(TOK_LBRACE)) 
+		return process_scope(ctx);
+
+	else if (match(TOK_RETURN))
+		return process_return(ctx);
+	
+	return expr();
+}
+
 //FIXME: REWRITEME!
 static ast_node_t *
-statesment()
+expr()
 {
 	ast_node_t *result;
-
+	
 	result = logic_disj();
 	if (result == NULL)
 		return NULL;
@@ -314,8 +327,7 @@ assign(ast_node_t *lvalue)
 	}
 
 	//to number
-
-	right = statesment();
+	right = expr();
 	if (right == NULL) {
 		print_warn("uncomplited as expression\n");
 		goto err;
@@ -425,7 +437,7 @@ rel_op()
 	ast_node_t *right, *result;
 	int op;
 
-	result = expr();
+	result = add_expr();
 
 	if (result == NULL)
 		return NULL;
@@ -449,7 +461,7 @@ rel_op()
 		}
 		tok_next();
 
-		right = expr();
+		right = add_expr();
 		if (right == NULL) {
 			nerrors++;
 			print_warn("uncomplited rel expression\n");
@@ -461,20 +473,20 @@ rel_op()
 
 
 static ast_node_t *
-expr()
+add_expr()
 {
 	ast_node_t *tree;
 
-	tree = term();
+	tree = mul_expr();
 
 	if (tree == NULL)
 		return NULL;
 	
-	return expr_rest(tree);
+	return add_expr_rest(tree);
 }
 
 ast_node_t *
-expr_rest(ast_node_t *left)
+add_expr_rest(ast_node_t *left)
 {
 	ast_node_t *right, *result;
 	int op;
@@ -494,7 +506,7 @@ expr_rest(ast_node_t *left)
 		}
 		tok_next();
 
-		right = term();
+		right = mul_expr();
 		if (right == NULL) {
 			nerrors++;
 			print_warn("uncomplited expr expression\n");
@@ -506,19 +518,19 @@ expr_rest(ast_node_t *left)
 }
 
 static ast_node_t *
-term()
+mul_expr()
 {
 	ast_node_t *tree;
 
-	tree = factor();
+	tree = term();
 	if (tree == NULL) 
 		return NULL;
 
-	return term_rest(tree);
+	return mul_expr_rest(tree);
 }
 
 static ast_node_t *
-term_rest(ast_node_t *left)
+mul_expr_rest(ast_node_t *left)
 {
 	ast_node_t *right, *result;
 	int op;
@@ -538,7 +550,7 @@ term_rest(ast_node_t *left)
 		}
 		tok_next();
 
-		right = factor();
+		right = term();
 		if (right == NULL) {
 			nerrors++;
 			print_warn("uncomplited term expression\n");
@@ -549,22 +561,13 @@ term_rest(ast_node_t *left)
 	}
 }
 
-// may be need to return ast_node_stub_t when RBRACKET or RPAR missed?
 static ast_node_t *
-factor()
+term()
 {
 	ast_node_t *stat;
-	
-	if (match(TOK_ID)) {
-		
-		return 	identifier();
-	
-	} else if (match(TOK_RETURN)) {
-		
-		return ast_node_return_new();
-	
-	} else if (match(TOK_LPAR)) {
-		stat = statesment();
+
+	if (match(TOK_LPAR)) {
+		stat = expr();
 		
 		if (match(TOK_RPAR) == FALSE) {
 			print_warn("right parenthesis missed\n");
@@ -573,7 +576,20 @@ factor()
 		}
 		
 		return stat;
+	}
 
+	return factor();
+}
+
+// may be need to return ast_node_stub_t when RBRACKET or RPAR missed?
+static ast_node_t *
+factor()
+{
+	
+	if (match(TOK_ID)) {
+		
+		return 	identifier();
+	
 	} else if (current_tok == TOK_EOL
 	    || current_tok == TOK_SEMICOLON
 	    || current_tok == TOK_RBRACE) {
@@ -609,7 +625,7 @@ number()
 		tok_next();
 		
 		return ast_node_stub_new();
-	}  
+	}
 
 	return ast_node_num_new(lex_item_prev.num * sign);
 }
@@ -628,7 +644,20 @@ identifier()
 }
 
 static ast_node_t *
-process_scope()
+process_return(struct syn_ctx *ctx)
+{
+	//FIXME: STUB
+	if (ctx->type != CTX_FUNCTION) {
+		print_warn("return not in function\n");
+		nerrors++;
+		return ast_node_stub_new();
+	}
+
+	return ast_node_return_new(NULL);
+}
+
+static ast_node_t *
+process_scope(struct syn_ctx *ctx)
 {
 	print_warn_and_die("WIP\n");
 
@@ -689,9 +718,6 @@ static ret_t
 process_function_argu(ast_node_func_t *func)
 {
 	char *id;
-	int i;
-
-	i = 0;
 
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"
@@ -806,7 +832,7 @@ function_call()
 	while (match(TOK_RPAR) == FALSE) {
 		
 		//get next ast_node
-		node = statesment();
+		node = expr();
 		if (node == NULL) {
 			print_warn("expected statesment");
 			goto err;

@@ -111,6 +111,7 @@ typedef struct {
 
 typedef struct {
 	ast_node_t tree;
+	ast_node_t *retval;
 } ast_node_return_t;
 
 typedef struct {
@@ -146,7 +147,7 @@ ast_node_t *ast_node_op_new(ast_node_t* left, ast_node_t *right, opcode_t opcode
 ast_node_t *ast_node_as_new(ast_node_t *left, ast_node_t *right);
 
 
-ast_node_t *ast_node_return_new();
+ast_node_t *ast_node_return_new(ast_node_t *retval);
 
 
 ast_node_t *ast_node_stub_new();

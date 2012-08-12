@@ -179,51 +179,39 @@ exec_function(func_t *func)
 	print_warn_and_die("write exec function!\n");
 }
 
-static void
-add_name_to_scope(struct list_item *list, void **data)
-{
-	assert(data != NULL);
-
-	id_item_t *item;
-	struct list_item *current;
-	eval_t *ev;
-	char *name;
-
-	name = list->data;
-	if (name == NULL)
-		print_warn_and_die("NULL name ptr\n");
-	
-	current = (struct list_item *)*data;
-	if (current == NULL)
-		print_warn_and_die("this is should not happeneed\n");
-
-	traverse((ast_node_t *)current->data);
-
-	if (nerrors != 0)
-		return;
-	
-	//printf("name: %s\n", name);
-
-	ev = stack_pop();
-
-	item = id_item_new(name);
-
-	set_value_id(item, ev);
-
-	id_table_insert(item);
-
-	*data = current->next;
-}
-
 //FIXME: Wrong
 //func_call_t have asts,they need to be traversed and added
 //to name from func_t args
 static void
-add_argues_to_scope(func_t *func, struct list *args)
+add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
 {
 	assert(func != NULL && func->args != NULL);
 
-	list_pass(func->args, add_name_to_scope, &(args->list));
+	int i;
+	id_item_t *item;
+	eval_t *ev;
+	char *name;
+
+	for (i = 0; i < func->nargs; i++) {
+		name = func->args[i];
+		if (name == NULL)
+			print_warn_and_die("NULL name ptr\n");
+
+		traverse(call->args[i]);
+
+		if (nerrors != 0)
+			return;
+	
+		printf("name: %s\n", name);
+
+		ev = stack_pop();
+
+		item = id_item_new(name);
+
+		set_value_id(item, ev);
+
+		id_table_insert(item);
+	}
 }
 
 void
@@ -232,7 +220,6 @@ traverse_func_call(ast_node_t *tree)
 	func_t *func;
 	struct hash_table *idtable;
 	ast_node_func_call_t *call;
-	int na;
 
 	call = (ast_node_func_call_t *) tree;
 
@@ -243,8 +230,7 @@ traverse_func_call(ast_node_t *tree)
 		return;
 	}
 
-	na = list_pass(call->args, NULL, NULL);
-	if (na != func->nargs) {
+	if (call->nargs != func->nargs) {
 		nerrors++;
 		print_warn("function have %d paramethers\n", func->nargs);
 		return;
@@ -254,7 +240,8 @@ traverse_func_call(ast_node_t *tree)
 
 	id_table_push(idtable);
 	
-	add_argues_to_scope(func, call->args);
+	if (func->nargs != 0)
+		add_argues_to_scope(func, call);
 
 	if (nerrors != 0)
 		goto finalize;
