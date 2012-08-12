@@ -5,16 +5,15 @@
 
 #include "function.h"
 #include "hash.h"
-#include "id_table.h"
+#include "libcall.h"
 #include "macros.h"
-#include "syn_tree.h"
 
 #define INITIAL_SZ 32
 
 static struct hash_table *func_table;
 
 // need to imlement builtin functions
-typedef int (*libcall_handler_t)(eval_t **argues, int *rettype, void **retval);
+typedef int (*libcall_handler_t)(id_item_t **argues, int *rettype, void **retval);
 
 static struct {
 	char *name;

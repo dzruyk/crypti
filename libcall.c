@@ -2,10 +2,8 @@
 #include <libcall.h>
 
 int
-libcall_print(eval_t **ev)
+libcall_print(id_item_t *argues, int *rettype, void **retval)
 {
-	
-
 
 }
 

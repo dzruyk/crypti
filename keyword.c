@@ -4,6 +4,7 @@
 #include "common.h"
 #include "hash.h"
 #include "keyword.h"
+#include "lex.h"
 #include "macros.h"
 
 #define INITIAL_SZ 32
@@ -108,7 +109,7 @@ keyword_table_insert(keyword_table_item_t *item)
 	return ret_ok;
 }
 
-tok_t
+int
 keyword_table_lookup(char *name)
 {
 	keyword_table_item_t *res;

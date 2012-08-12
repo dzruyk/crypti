@@ -2,12 +2,13 @@
 #define __FUNCTION_H__
 
 #include "common.h"
+#include "id_table.h"
 #include "syn_tree.h"
 
 //FIXME: return value?
 
 //FIXME STUB
-typedef void (*lib_handler_t)(void);
+typedef int (*libcall_handler_t)(id_item_t **argues, int *rettype, void **retval);
 
 typedef struct {
 	char *name;
@@ -15,7 +16,7 @@ typedef struct {
 	int nargs;
 	int is_lib;
 	union {
-		lib_handler_t *handler;
+		libcall_handler_t *handler;
 		void *body;
 	};
 } func_t;

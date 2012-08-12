@@ -3,7 +3,6 @@
 
 #include "array.h"
 #include "common.h"
-#include "function.h"
 
 typedef enum {
 	ID_NUM,
