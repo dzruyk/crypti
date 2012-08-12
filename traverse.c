@@ -2,6 +2,7 @@
 
 #include "array.h"
 #include "common.h"
+#include "function.h"
 #include "eval.h"
 #include "id_table.h"
 #include "lex.h"
@@ -157,7 +158,13 @@ traverse_func_def(ast_node_t *tree)
 
 	func = function_table_lookup(synfunc->name);
 	if (func != NULL) {
-		//FIXME: builtin functions?
+		//WARNING: now we can't redefine builtin functions
+		if (func->is_lib != 0) {
+			print_warn("can't redefine builtin function\n");
+			nerrors++;
+			return;
+		}
+		
 		ret = func_table_delete(func);
 		if (ret != ret_ok)
 			print_warn_and_die("cant delete from func table");
@@ -176,12 +183,18 @@ exec_function(func_t *func)
 {
 	//FIXME: write me!
 	traverse(func->body);
+	if (nerrors != 0)
+		return;
 	print_warn_and_die("write exec function!\n");
 }
 
-//FIXME: Wrong
-//func_call_t have asts,they need to be traversed and added
-//to name from func_t args
+void
+exec_library_function(func_t *func, ast_node_func_call_t *call)
+{
+	print_warn_and_die("write library exec function!\n");
+	
+}
+
 static void
 add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
 {
@@ -235,6 +248,9 @@ traverse_func_call(ast_node_t *tree)
 		print_warn("function have %d paramethers\n", func->nargs);
 		return;
 	}
+
+	if (func->is_lib)
+		return exec_library_function(func, call);
 
 	idtable = id_table_create();
 

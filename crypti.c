@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "common.h"
+#include "function.h"
 #include "id_table.h"
 #include "keyword.h"
 #include "syntax.h"

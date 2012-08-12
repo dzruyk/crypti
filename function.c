@@ -13,7 +13,7 @@
 static struct hash_table *func_table;
 
 // need to imlement builtin functions
-typedef int (*libcall_handler_t)(id_item_t **argues, int *rettype, void **retval);
+
 
 static struct {
 	char *name;
@@ -79,10 +79,10 @@ function_table_init()
 	if (func_table == NULL)
 		print_warn_and_die("error at table table creation\n");
 	
-	//function_table_fill();
+	function_table_fill();
 }
 
-/*
+
 // FIXME
 static void
 function_table_fill()
@@ -93,15 +93,19 @@ function_table_fill()
 	if (func_table == NULL)
 		print_warn_and_die("func_table uninit\n");
 	
-	for (i = 0; i < ARRSZ(functions); i++) {
+	for (i = 0; i < ARRSZ(builtin); i++) {
 		tmp = malloc_or_die(sizeof(*tmp));
 		
 		//fill table with built in functions
+		tmp->is_lib = 1;
+		tmp->name = builtin->name;
+		tmp->handler = builtin->handler;
+		tmp->nargs = builtin->nargs;
 
 		function_table_insert(tmp);
 	}
 }
-*/
+
 
 ret_t 
 function_table_insert(func_t *item)

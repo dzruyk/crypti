@@ -1,6 +1,8 @@
-#ifndef __FUNCTION_H__
-#define __FUNCTION_H__
+#ifndef __LIBCALL_H__
+#define __LIBCALL_H__
 
-int libcall_print(id_item_t *argues, int *rettype, void **retval);
+#include "id_table.h"
+
+int libcall_print(id_item_t **argues, int *rettype, void **retval);
 
 #endif
