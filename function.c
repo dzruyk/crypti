@@ -14,7 +14,16 @@
 static struct hash_table *func_table;
 
 // need to imlement builtin functions
-//struct func_t builtin[];
+typedef int (*libcall_handler_t)(eval_t **argues, int *rettype, void **retval);
+
+static struct {
+	char *name;
+	int nargs;
+	libcall_handler_t *handler;
+} builtin [] = {
+	{"print", 1, libcall_print},
+};
+
 
 static void function_table_fill();
 
@@ -148,6 +157,7 @@ func_new(char *name)
 	memset(func, 0, sizeof(*func));
 
 	func->name = strdup_or_die(name);
+	func->is_lib = 0;
 
 	return func;
 }

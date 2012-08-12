@@ -66,8 +66,13 @@ static ast_node_t *mul_expr_rest();
 static ast_node_t *term();
 static ast_node_t *factor();
 static ast_node_t *number();
-
 static ast_node_t *identifier();
+
+static ast_node_t *process_condition(struct syn_ctx *ctx);
+static ast_node_t *process_for(struct syn_ctx *ctx);
+static ast_node_t *process_do(struct syn_ctx *ctx);
+static ast_node_t *process_while(struct syn_ctx *ctx);
+
 static ast_node_t *process_return(struct syn_ctx *ctx);
 
 static ast_node_t *process_scope(struct syn_ctx *ctx);
@@ -282,8 +287,20 @@ statesment(struct syn_ctx *ctx)
 
 	else if (match(TOK_RETURN))
 		return process_return(ctx);
+
+	else if (match(TOK_IF))
+		return process_condition(ctx);
 	
-	return expr();
+	else if (match(TOK_FOR))
+		return process_for(ctx);
+	
+	else if (match(TOK_DO))
+		return process_do(ctx);
+	
+	else if (match(TOK_WHILE))
+		return process_while(ctx);
+	else
+		return expr();
 }
 
 //FIXME: REWRITEME!
@@ -644,16 +661,45 @@ identifier()
 }
 
 static ast_node_t *
+process_condition(struct syn_ctx *ctx)
+{
+	return ast_node_stub_new();
+}
+
+static ast_node_t *
+process_for(struct syn_ctx *ctx)
+{
+	return ast_node_stub_new();
+}
+
+
+static ast_node_t *
+process_do(struct syn_ctx *ctx)
+{
+	return ast_node_stub_new();
+}
+
+static ast_node_t *
+process_while(struct syn_ctx *ctx)
+{
+	return ast_node_stub_new();
+}
+
+
+static ast_node_t *
 process_return(struct syn_ctx *ctx)
 {
-	//FIXME: STUB
+	ast_node_t *node;
+
 	if (ctx->type != CTX_FUNCTION) {
 		print_warn("return not in function\n");
 		nerrors++;
 		return ast_node_stub_new();
 	}
 
-	return ast_node_return_new(NULL);
+	node = expr();
+
+	return ast_node_return_new(node);
 }
 
 static ast_node_t *
