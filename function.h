@@ -16,7 +16,7 @@ typedef struct {
 	int nargs;
 	int is_lib;
 	union {
-		libcall_handler_t *handler;
+		libcall_handler_t handler;
 		void *body;
 	};
 } func_t;

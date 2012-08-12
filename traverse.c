@@ -191,8 +191,43 @@ exec_function(func_t *func)
 void
 exec_library_function(func_t *func, ast_node_func_call_t *call)
 {
-	print_warn_and_die("write library exec function!\n");
+	eval_t *ev;
+	id_item_t **items;
+	int err, i, rtype;
+	void *rval;
 	
+	items = NULL;
+
+	if (call->nargs != 0)
+		items = malloc_or_die(sizeof(*items) * func->nargs);
+
+	for (i = 0; i < func->nargs; i++) {
+		traverse(call->args[i]);
+		if (nerrors != 0)
+			return;
+		ev = stack_pop();
+
+		items[i] = id_item_new("library_arg");
+
+		set_value_id(items[i], ev);
+
+		eval_free(ev);
+	}
+
+	err = func->handler(items, &rtype, &rval);
+	if (err != 0) {
+		print_warn("error when exec %s\n", func->name);
+		nerrors++;
+	}
+	
+	//destruct argues
+	for (i = 0; i < func->nargs; i++)
+		id_item_free(items[i]);
+	
+	if (items != NULL)
+		ufree(items);
+	
+	return;
 }
 
 static void
@@ -224,6 +259,8 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
 		set_value_id(item, ev);
 
 		id_table_insert(item);
+
+		eval_free(ev);
 	}
 }
 

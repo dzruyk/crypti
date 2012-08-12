@@ -18,7 +18,7 @@ static struct hash_table *func_table;
 static struct {
 	char *name;
 	int nargs;
-	libcall_handler_t *handler;
+	libcall_handler_t handler;
 } builtin [] = {
 	{"print", 1, libcall_print},
 };
@@ -50,12 +50,13 @@ function_hash_cb(const void *data)
 static void
 function_table_destroy_cb(func_t *item)
 {
-	ufree(item->name);
 	
 	//FIXME: Library func
 	
 	if (item->is_lib == FALSE) {
 		int i;
+		
+		ufree(item->name);
 		ast_node_unref(item->body);
 		
 		for (i = 0; i < item->nargs; i++)
