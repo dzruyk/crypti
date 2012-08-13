@@ -267,8 +267,9 @@ block(struct syn_ctx *ctx)
 		}
 
 		//FIXME: rewrite me
-		if (ctx->type == CTX_GLOBAL)
-			break;
+		//mb implement CTX_SCOPE?
+		//if (ctx->type == CTX_GLOBAL)
+		//	break;
 
 		if (tmp == NULL)
 			continue;
@@ -350,12 +351,12 @@ assign(ast_node_t *lvalue)
 
 	return ast_node_as_new(lvalue, right);
 
-	err:
-		nerrors++;
-		if (right != NULL)
-			ast_node_unref(right);
-		ast_node_unref(lvalue);
-		return ast_node_stub_new();
+err:
+	nerrors++;
+	if (right != NULL)
+		ast_node_unref(right);
+	ast_node_unref(lvalue);
+	return ast_node_stub_new();
 
 }
 
@@ -746,7 +747,7 @@ process_function()
 	
 	return AST_NODE(func);
 
-	err:
+err:
 
 	nerrors++;
 	//do cleanup
@@ -801,7 +802,7 @@ process_function_argu(ast_node_func_t *func)
 
 	return ret_ok;
 
-	err:
+err:
 
 	if (func->args != NULL) {
 		int i;
@@ -842,7 +843,7 @@ process_function_body(ast_node_func_t *func)
 
 	return ret_ok;
 
-	err:
+err:
 
 	nerrors++;
 	if (func->body != NULL) {
@@ -905,7 +906,7 @@ function_call()
 	
 	return AST_NODE(call);
 
-	err:
+err:
 
 	nerrors++;
 	ast_node_unref((ast_node_t *)call);

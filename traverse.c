@@ -305,15 +305,32 @@ traverse_func_call(ast_node_t *tree)
 
 	exec_function(func);
 	
-	finalize:
+finalize:
 
 	id_table_pop();
 	id_table_free(idtable);
 }
 
 void
+traverse_block(ast_node_t *tree)
+{
+
+}
+
+void
 traverse_scope(ast_node_t *tree)
 {
+	struct hash_table *idtable;
+
+	idtable = id_table_create();
+	id_table_push(idtable);
+	
+	//traverse block next
+	traverse_block(tree->child);
+
+	id_table_pop();
+	id_table_free(idtable);
+
 	print_warn_and_die("WIP!\n");
 }
 
