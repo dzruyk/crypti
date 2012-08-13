@@ -87,6 +87,13 @@ id_item_t *id_table_lookup(char *name);
 id_item_t *id_table_lookup_in(struct hash_table *table, char *name);
 
 /*
+ * lookup item in all accessible scopes
+ * return item_t * if finds
+ * or NULL
+ */
+id_talbe_t *id_table_lookup_all(char *name);
+
+/*
  * free current table
  */
 void id_table_free(struct hash_table *table);

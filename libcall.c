@@ -30,3 +30,14 @@ libcall_print(id_item_t **argues, int *rettype, void **retval)
 	return 0;
 }
 
+int
+libcall_sum(id_item_t **argues, int *rettype, void **retval)
+{
+	assert(argues != NULL && argues[0] != NULL);
+
+	id_item_t *arg;
+
+	//FIXME: stub, wanna implement variable argue funtion
+	
+	return 0;
+}

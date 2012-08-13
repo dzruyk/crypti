@@ -21,6 +21,7 @@ static struct {
 	libcall_handler_t handler;
 } builtin [] = {
 	{"print", 1, libcall_print},
+	{"sum", 1, libcall_sum},
 };
 
 

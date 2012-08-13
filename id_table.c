@@ -188,6 +188,25 @@ id_table_lookup(char *name)
 	return id_table_lookup_in(current, name);
 }
 
+
+id_talbe_t *
+id_table_lookup_all(char *name)
+{
+	id_item_t *item;
+	struct scopes *tmp;
+	
+	tmp = scopes;
+	while (tmp != NULL) {
+		item = id_table_lookup_in(tmp->scope, name)
+		if (item != NULL)
+			return item;
+
+		tmp = tmp->prev;
+	}
+	
+	return NULL;
+}
+
 void
 id_table_free(struct hash_table *table)
 {
