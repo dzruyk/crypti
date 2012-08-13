@@ -23,6 +23,8 @@ keyword_table_item_t keywords[] =  {
 	{TOK_FOR, "for"},
 	{TOK_DO, "do"},
 	{TOK_WHILE, "while"},
+	{TOK_CONTINUE, "continue"},
+	{TOK_BREAK, "break"},
 	{TOK_RETURN, "return"},
 };
 

@@ -1,5 +1,7 @@
 #include <assert.h>
 
+#include <string.h>
+
 #include "array.h"
 #include "common.h"
 #include "function.h"
@@ -16,6 +18,27 @@ static void traverse(ast_node_t *tree);
 void set_value_id(id_item_t *item, eval_t *ev);
 
 typedef void (*traverse_cb)(ast_node_t *tree);
+
+struct trav_ctx {
+	//experimental
+	int is_call;
+	int is_cycle;
+	//
+	
+	int is_return;
+	int is_break;
+	int is_continue;
+};
+
+struct trav_ctx helper;
+
+typedef enum {
+	RES_ERROR,
+	RES_OK,
+	RES_BREAK,
+	RES_CONTINUE,
+	RES_RETURN,
+} res_type_t;
 
 static int nerrors = 0;
 
@@ -184,11 +207,12 @@ exec_function(func_t *func)
 	//FIXME: write me!
 
 	//if body == NULL, then just pass
-	if (func->body == NULL)
+	if (func->body != NULL)
 		traverse(func->body);
 	
 	if (nerrors != 0)
 		return;
+
 	print_warn_and_die("write exec function!\n");
 }
 
@@ -311,27 +335,63 @@ finalize:
 	id_table_free(idtable);
 }
 
-void
-traverse_block(ast_node_t *tree)
+res_type_t
+traverse_body(ast_node_t *tree)
 {
 
+	traverse(tree);
+
+	if (nerrors != 0)
+		return RES_ERROR;
+	else if (helper.is_continue > 0)
+		return RES_CONTINUE;
+	else if (helper.is_break > 0)
+		return RES_BREAK;
+	else if (helper.is_continue > 0)
+		return RES_RETURN;
+	else
+		return RES_OK;
 }
 
 void
 traverse_scope(ast_node_t *tree)
 {
+	ast_node_t *next;
+	res_type_t res;
 	struct hash_table *idtable;
 
 	idtable = id_table_create();
 	id_table_push(idtable);
 	
-	//traverse block next
-	traverse_block(tree->child);
+	//traverse next block
+	//FIXME: work bad with multiple scopes in functions
+	//or cycels
+	next = tree;
+	while (next != NULL) {
+		res = traverse_body(tree->child);
+		switch (res) {
+		case RES_ERROR:
+			print_warn("traverse scope err\n");
+			goto finalize;
+		case RES_CONTINUE:
+			print_warn("unexpected continue\n");
+			goto finalize;
+		case RES_BREAK:
+			print_warn("unexpected break\n");
+			goto finalize;
+		case RES_RETURN:
+			print_warn("unexpected return\n");
+			goto finalize;
+		default:
+			continue;
+		}
+	}
 
+finalize:
 	id_table_pop();
 	id_table_free(idtable);
 
-	print_warn_and_die("WIP!\n");
+	//print_warn_and_die("WIP!\n");
 }
 
 void
@@ -503,6 +563,7 @@ traverse_op(ast_node_t *tree)
 static void
 traverse_return(ast_node_t *tree)
 {
+	helper.is_return++;
 	print_warn_and_die("return node traverse WIP!\n");
 }
 
@@ -549,7 +610,9 @@ traverse_prog(ast_node_t *tree)
 	if (tree == NULL)
 		return ret_ok;
 	
+	//clean vars
 	nerrors = 0;
+	memset(&helper, 0, sizeof(helper));
 
 	traverse(tree);
 	
