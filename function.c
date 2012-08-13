@@ -100,9 +100,9 @@ function_table_fill()
 		
 		//fill table with built in functions
 		tmp->is_lib = 1;
-		tmp->name = builtin->name;
-		tmp->handler = builtin->handler;
-		tmp->nargs = builtin->nargs;
+		tmp->name = builtin[i].name;
+		tmp->handler = builtin[i].handler;
+		tmp->nargs = builtin[i].nargs;
 
 		function_table_insert(tmp);
 	}
