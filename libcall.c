@@ -39,5 +39,28 @@ libcall_sum(id_item_t **argues, int *rettype, void **retval)
 
 	//FIXME: stub, wanna implement variable argue funtion
 	
+	*rettype = ID_UNKNOWN;
+	*retval = NULL;
+
+	return 0;
+}
+
+int
+libcall_del(id_item_t **argues, int *rettype, void **retval)
+{
+	assert(argues != NULL && argues[0] != NULL);
+
+	id_item_t *arg, *item;
+
+	arg = argues[0];
+/* not work now
+	item = id_table_lookup_all(arg->name);
+	if (item == NULL) {
+		print_warn("symbol %s undefined");
+
+
+	*rettype = ID_UNKNOWN;
+	*retval = NULL;
+*/
 	return 0;
 }

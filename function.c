@@ -22,6 +22,7 @@ static struct {
 } builtin [] = {
 	{"print", 1, libcall_print},
 	{"sum", 1, libcall_sum},
+	{"del", 1, libcall_del},
 };
 
 
@@ -204,7 +205,7 @@ func_set_args(func_t *func, char **args, int nargs)
 void
 func_set_body(func_t *func, void *body)
 {
-	assert(func != NULL && body != NULL);
+	assert(func != NULL);
 
 	func->body = body;
 }

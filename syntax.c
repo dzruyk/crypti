@@ -818,7 +818,7 @@ process_function_body(ast_node_func_t *func)
 
 	//FIXME: void body functions
 	func->body = stmts(ctx);
-	if (func->body == NULL) {
+	if (nerrors != 0) {
 		print_warn("cant traverse func body\n");
 		goto err;
 	}

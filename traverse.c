@@ -182,7 +182,11 @@ void
 exec_function(func_t *func)
 {
 	//FIXME: write me!
-	traverse(func->body);
+
+	//if body == NULL, then just pass
+	if (func->body == NULL)
+		traverse(func->body);
+	
 	if (nerrors != 0)
 		return;
 	print_warn_and_die("write exec function!\n");
@@ -250,7 +254,7 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
 		if (nerrors != 0)
 			return;
 	
-		printf("name: %s\n", name);
+		//printf("name: %s\n", name);
 
 		ev = stack_pop();
 
@@ -258,9 +262,9 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
 
 		set_value_id(item, ev);
 
-		id_table_insert(item);
-
 		eval_free(ev);
+
+		id_table_insert(item);
 	}
 }
 
