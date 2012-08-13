@@ -189,7 +189,7 @@ id_table_lookup(char *name)
 }
 
 
-id_talbe_t *
+id_item_t *
 id_table_lookup_all(char *name)
 {
 	id_item_t *item;
@@ -197,7 +197,7 @@ id_table_lookup_all(char *name)
 	
 	tmp = scopes;
 	while (tmp != NULL) {
-		item = id_table_lookup_in(tmp->scope, name)
+		item = id_table_lookup_in(tmp->scope, name);
 		if (item != NULL)
 			return item;
 
