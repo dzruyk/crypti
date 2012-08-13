@@ -44,6 +44,7 @@ ast_node_free(ast_node_t *tree)
 		break;
 	case AST_NODE_OP:
 	case AST_NODE_AS:
+	case AST_NODE_SCOPE:
 	case AST_NODE_STUB:	
 		ast_node_unref(tree->left);
 		ast_node_unref(tree->right);
@@ -176,6 +177,19 @@ ast_node_func_call(char *name)
 	res->name = name;
 
 	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_scope_new(ast_node_t *child)
+{
+	ast_node_scope_t *res;
+
+	res = (ast_node_scope_t *)
+	    ast_node_new(AST_NODE_SCOPE, sizeof(*res), ast_node_free);
+
+	    AST_NODE(res)->child = child;
+
+	    return AST_NODE(res);
 }
 
 ast_node_t *

@@ -312,6 +312,12 @@ traverse_func_call(ast_node_t *tree)
 }
 
 void
+traverse_scope(ast_node_t *tree)
+{
+	print_warn_and_die("WIP!\n");
+}
+
+void
 set_value_id(id_item_t *item, eval_t *ev)
 {
 		
@@ -499,6 +505,7 @@ struct {
 	{AST_NODE_ACCESS, traverse_access},
 	{AST_NODE_DEF, traverse_func_def},
 	{AST_NODE_CALL, traverse_func_call},
+	{AST_NODE_SCOPE, traverse_scope},
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_NUM, traverse_num},
 	{AST_NODE_RETURN, traverse_return},

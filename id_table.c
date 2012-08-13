@@ -126,6 +126,8 @@ id_table_push(struct hash_table *table)
 	tmp->scope = table;
 
 	scopes = tmp;
+
+	current = scopes->scope;
 }
 
 struct hash_table *
@@ -142,6 +144,8 @@ id_table_pop()
 
 	table = tmp->scope;
 	free(tmp);
+
+	current = scopes->scope;
 
 	return table;
 }

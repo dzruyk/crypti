@@ -238,9 +238,7 @@ block(struct syn_ctx *ctx)
 	while (is_eof() != TRUE) {
 
 		//end of scope
-		if (current_tok == TOK_RBRACE
-		    && (ctx->type == CTX_FUNCTION 
-		    || ctx->is_cycle > 0))
+		if (current_tok == TOK_RBRACE)
 			break;
 	
 		tmp = statesment(ctx);
@@ -608,8 +606,7 @@ factor()
 		return 	identifier();
 	
 	} else if (current_tok == TOK_EOL
-	    || current_tok == TOK_SEMICOLON
-	    || current_tok == TOK_RBRACE) {
+	    || current_tok == TOK_SEMICOLON) {
 		
 		return NULL;
 
@@ -705,8 +702,21 @@ process_return(struct syn_ctx *ctx)
 static ast_node_t *
 process_scope(struct syn_ctx *ctx)
 {
-	print_warn_and_die("WIP\n");
+	ast_node_t *node;
 
+	node = block(ctx);
+	if (nerrors != 0) 
+		goto err;
+	
+	if (match(TOK_RBRACE) == FALSE) {
+		nerrors++;
+		goto err;
+	}
+
+	return ast_node_scope_new(node);
+err:
+	
+	ast_node_unref(node);
 	return ast_node_stub_new();
 }
 
