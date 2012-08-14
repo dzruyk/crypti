@@ -40,6 +40,8 @@ typedef enum {
 	RES_RETURN,
 } res_type_t;
 
+res_type_t traverse_body(ast_node_t *tree);
+
 static int nerrors = 0;
 
 static void
@@ -205,15 +207,31 @@ void
 exec_function(func_t *func)
 {
 	//FIXME: write me!
+	ast_node_t *next;
+	res_type_t res;
 
-	//if body == NULL, then just pass
-	if (func->body != NULL)
-		traverse(func->body);
+	next = func->body;
+
+	while (next != NULL) {
+		res = traverse_body(next);
+		switch (res) {
+		case RES_ERROR:
+			print_warn("traverse scope err\n");
+			return;
+		case RES_CONTINUE:
+			print_warn("unexpected continue\n");
+			return;
+		case RES_BREAK:
+			print_warn("unexpected break\n");
+			return;
+		case RES_RETURN:
+			return;
+		default:
+			next = next->child;
+			continue;
+		}
+	}
 	
-	if (nerrors != 0)
-		return;
-
-	print_warn_and_die("write exec function!\n");
 }
 
 void
@@ -366,9 +384,9 @@ traverse_scope(ast_node_t *tree)
 	//traverse next block
 	//FIXME: work bad with multiple scopes in functions
 	//or cycels
-	next = tree;
+	next = tree->child;
 	while (next != NULL) {
-		res = traverse_body(tree->child);
+		res = traverse_body(next);
 		switch (res) {
 		case RES_ERROR:
 			print_warn("traverse scope err\n");
@@ -383,6 +401,7 @@ traverse_scope(ast_node_t *tree)
 			print_warn("unexpected return\n");
 			goto finalize;
 		default:
+			next = next->child;
 			continue;
 		}
 	}
