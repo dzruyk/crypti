@@ -66,7 +66,7 @@ traverse_id(ast_node_t *tree)
 
 	name = ((ast_node_id_t *)tree)->name;
 
-	item = id_table_lookup(name);
+	item = id_table_lookup_all(name);
 	if (item == NULL) {
 		print_warn("symb %s undefined\n", name);
 		nerrors++;
@@ -136,7 +136,7 @@ traverse_access(ast_node_t *tree)
 
 	name = acc->name;
 
-	item = id_table_lookup(name);
+	item = id_table_lookup_all(name);
 	//FIXME
 	if (item == NULL) {
 		print_warn("symb %s undefined\n", name);
@@ -216,7 +216,7 @@ exec_function(func_t *func)
 		res = traverse_body(next);
 		switch (res) {
 		case RES_ERROR:
-			print_warn("traverse scope err\n");
+			print_warn("traverse func err\n");
 			return;
 		case RES_CONTINUE:
 			print_warn("unexpected continue\n");
@@ -276,8 +276,15 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	return;
 }
 
+/* NOTE:
+ * dont remove thrid argue
+ * when we use recursion we must get argues from
+ * previous scope and push in new one, then we need to
+ * exec id_table_push(new scope)
+ */
 static void
-add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
+add_argues_to_scope(func_t *func, ast_node_func_call_t *call,
+    struct hash_table *scope)
 {
 	assert(func != NULL && func->args != NULL);
 
@@ -306,7 +313,7 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call)
 
 		eval_free(ev);
 
-		id_table_insert(item);
+		id_table_insert_to(scope, item);
 	}
 }
 
@@ -337,19 +344,19 @@ traverse_func_call(ast_node_t *tree)
 
 	idtable = id_table_create();
 
-	id_table_push(idtable);
-	
 	if (func->nargs != 0)
-		add_argues_to_scope(func, call);
+		add_argues_to_scope(func, call, idtable);
 
 	if (nerrors != 0)
 		goto finalize;
 
+	id_table_push(idtable);
+	
 	exec_function(func);
 	
-finalize:
-
 	id_table_pop();
+
+finalize:
 	id_table_free(idtable);
 }
 

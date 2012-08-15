@@ -1,0 +1,8 @@
+#recursion
+
+def a(i) {
+	print (i);
+	a(i + 1);
+}
+
+a(0);
