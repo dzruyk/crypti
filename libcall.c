@@ -57,10 +57,10 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 	arg = argues[0];
 
 	//debug
-	printf("delname = %s\n", arg->name);
+	//printf("delname = %s\n", arg->name);
 
 	//FIXME: rly need reserve some name?
-	if (strcmp(arg->name, "library_arg") == 0) {
+	if (strcmp(arg->name, "") == 0) {
 		print_warn("cant delete not variable\n");
 		return 1;
 	}
@@ -72,7 +72,8 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 		print_warn("symbol %s undefined\n", arg->name);
 		return 1;
 	}
-
+	
+	argues[0] = NULL;
 
 	*rettype = ID_UNKNOWN;
 	*retval = NULL;

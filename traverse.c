@@ -241,12 +241,17 @@ get_next_argue(ast_node_t *argnode, char *hint)
 {
 	eval_t *ev;
 	ast_node_id_t *id;
-	id_item_t *item;
+	id_item_t *item, *res;
 
 	//try to get argues by value(not by copy)
 	if (argnode->type == AST_NODE_ID) {
 		id = (ast_node_id_t *) argnode;
-		return id_table_lookup_all(id->name);
+		res = id_table_lookup_all(id->name);
+		if (res == NULL) {
+			print_warn("cant get id %s\n", id->name);
+			nerrors++;
+		}
+		return res;
 	}
 
 	traverse(argnode);
@@ -258,7 +263,7 @@ get_next_argue(ast_node_t *argnode, char *hint)
 	
 	if (hint == NULL)
 		print_warn_and_die("hint is NULL");
-
+	
 	item = id_item_new(hint);
 	
 	set_value_id(item, ev);
@@ -277,23 +282,32 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	
 	items = NULL;
 
-	if (call->nargs != 0)
+	if (call->nargs != 0) {
 		items = malloc_or_die(sizeof(*items) * func->nargs);
+		memset(items, 0, sizeof(*items) * func->nargs);
+	}
 
 	for (i = 0; i < func->nargs; i++) {
-		items[i] = get_next_argue(call->args[i], "library_arg");
+		//FIXME: now we use empty name to indicate
+		//that variable didn't inserted to scope
+		//may be more usefull to pass at libcall
+		//new type?
+		items[i] = get_next_argue(call->args[i], "");
 
 		//FIXME: may be memory leak
 		if (items[i] == NULL || nerrors != 0)
-			return;
+			goto finalize;
 		}
 
+	//double free(if we exec libcall_del)
 	err = func->handler(items, &rtype, &rval);
 	if (err != 0) {
 		print_warn("error when exec %s\n", func->name);
 		nerrors++;
 	}
 	
+finalize:
+
 	//destruct argues
 	for (i = 0; i < func->nargs; i++) {
 		if (items[i] != NULL)
@@ -320,7 +334,6 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call,
 
 	int i;
 	id_item_t *item;
-	eval_t *ev;
 	char *name;
 
 	for (i = 0; i < func->nargs; i++) {
@@ -435,6 +448,20 @@ finalize:
 	id_table_free(idtable);
 
 	//print_warn_and_die("WIP!\n");
+}
+
+void
+traverse_cond(ast_node_t *tree)
+{
+	ast_node_if_t *ifnode;
+	eval_t *ev;
+
+	ifnode = (ast_node_if_t *) tree;
+	
+	traverse(ifnode->cond);
+	ev = stack_pop();
+
+	print_warn_and_die("WIP!");
 }
 
 void
@@ -627,6 +654,7 @@ struct {
 	{AST_NODE_DEF, traverse_func_def},
 	{AST_NODE_CALL, traverse_func_call},
 	{AST_NODE_SCOPE, traverse_scope},
+	{AST_NODE_IF, traverse_cond},
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_NUM, traverse_num},
 	{AST_NODE_RETURN, traverse_return},

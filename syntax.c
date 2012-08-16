@@ -671,7 +671,7 @@ process_condition(struct syn_ctx *ctx)
 	}
 
 	//FIXME: check nerrors(now haven't time)
-	cond = expr();
+	cond = logic_disj();
 	if (cond == NULL) {
 		print_warn("expected expression\n");
 		goto err;

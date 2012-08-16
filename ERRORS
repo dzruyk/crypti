@@ -16,3 +16,6 @@ segfault??
 
 a--a
 error
+
+if ((a = 2) < 1) ...
+segfault?

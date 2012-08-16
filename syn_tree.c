@@ -10,9 +10,10 @@
 static void
 ast_node_free(ast_node_t *tree)
 {
-	ast_node_arr_t *arr;
 	ast_node_access_t *acc;
+	ast_node_arr_t *arr;
 	ast_node_id_t *id;
+	ast_node_if_t *ifnode;
 	ast_node_return_t *ret;
 
 	int i, n;
@@ -41,6 +42,11 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_RETURN:
 		ret = (ast_node_return_t *)tree;
 		ast_node_unref(ret->retval);
+		break;
+	case AST_NODE_IF:
+		ifnode = (ast_node_if_t *)tree;
+		ast_node_unref(ifnode->cond);
+		ast_node_unref(ifnode->body);
 		break;
 	case AST_NODE_OP:
 	case AST_NODE_AS:
@@ -187,8 +193,8 @@ ast_node_if_new(ast_node_t *condition, ast_node_t *body)
 	res = (ast_node_if_t *)
 	    ast_node_new(AST_NODE_IF, sizeof(*res), ast_node_func_free);
 
-	
-	print_warn_and_die("COMPLETE_ME!\n");
+	res->cond = condition;
+	res->body = body;
 
 	return AST_NODE(res);
 }

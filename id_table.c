@@ -245,6 +245,7 @@ id_table_remove_from(struct hash_table *table, char *name)
 	if (hash_table_remove(table, (void *)name) == FALSE)
 		return ret_err;
 	
+	printf("id_table remove %s\n", item->name);
 	id_item_free(item);
 
 	return ret_ok;
