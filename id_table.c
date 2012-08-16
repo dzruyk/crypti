@@ -211,6 +211,46 @@ id_table_lookup_all(char *name)
 	return NULL;
 }
 
+
+ret_t
+id_table_remove(char *name)
+{
+	struct scopes *tmp;
+	ret_t ret;
+	
+	tmp = scopes;
+
+	while (tmp != NULL) {
+		ret = id_table_remove_from(tmp->scope, name);
+		if (ret == ret_ok)
+			return ret_ok;
+
+		tmp = tmp->prev;
+	}
+	return ret_err;
+
+}
+
+
+ret_t 
+id_table_remove_from(struct hash_table *table, char *name)
+{
+	id_item_t *item;
+	
+	item = id_table_lookup_in(table, name);
+	if (item == NULL)
+		return ret_err;
+
+	//normaly never be triggered
+	if (hash_table_remove(table, (void *)name) == FALSE)
+		return ret_err;
+	
+	id_item_free(item);
+
+	return ret_ok;
+}
+
+
 void
 id_table_free(struct hash_table *table)
 {

@@ -661,6 +661,47 @@ identifier()
 static ast_node_t *
 process_condition(struct syn_ctx *ctx)
 {
+	ast_node_t *cond, *body;
+
+	body = cond = NULL;
+
+	if (match(TOK_LPAR) == FALSE) {
+		print_warn("'(' is missed\n");
+		goto err;
+	}
+
+	//FIXME: check nerrors(now haven't time)
+	cond = expr();
+	if (cond == NULL) {
+		print_warn("expected expression\n");
+		goto err;
+	}
+
+	if (match(TOK_RPAR) == FALSE) {
+		print_warn("')' is missed\n");
+		goto err;
+	}
+	
+	if (match(TOK_LBRACE) == FALSE)
+		body = expr();
+	else
+		body = process_scope(ctx);
+	
+	if (body == NULL) {
+		print_warn("cant proc condition body");
+		goto err;
+	}
+
+	//FIXME: else if implementation...
+	return ast_node_if_new(cond, body);
+
+err:
+	if (cond != NULL)
+		ast_node_unref(cond);
+	if (body != NULL)
+		ast_node_unref(body);
+	
+	nerrors++;
 	return ast_node_stub_new();
 }
 

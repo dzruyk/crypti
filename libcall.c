@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "eval.h"
 #include "libcall.h"
@@ -50,24 +51,32 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 {
 	assert(argues != NULL && argues[0] != NULL);
 
-	id_item_t *arg, *item;
+	id_item_t *arg;
+	ret_t ret;
 
 	arg = argues[0];
 
 	//debug
 	printf("delname = %s\n", arg->name);
+
+	//FIXME: rly need reserve some name?
+	if (strcmp(arg->name, "library_arg") == 0) {
+		print_warn("cant delete not variable\n");
+		return 1;
+	}
 	
 	//then delete
 
-/* not work now
-	item = id_table_lookup_all(arg->name);
-	if (item == NULL) {
-		print_warn("symbol %s undefined");
+	ret = id_table_remove(arg->name);
+	if (ret != ret_ok) {
+		print_warn("symbol %s undefined\n", arg->name);
+		return 1;
+	}
 
 
 	*rettype = ID_UNKNOWN;
 	*retval = NULL;
-*/
+
 	return 0;
 }
 

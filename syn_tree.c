@@ -180,6 +180,20 @@ ast_node_func_call(char *name)
 }
 
 ast_node_t *
+ast_node_if_new(ast_node_t *condition, ast_node_t *body)
+{
+	ast_node_if_t *res;
+
+	res = (ast_node_if_t *)
+	    ast_node_new(AST_NODE_IF, sizeof(*res), ast_node_func_free);
+
+	
+	print_warn_and_die("COMPLETE_ME!\n");
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
 ast_node_scope_new(ast_node_t *child)
 {
 	ast_node_scope_t *res;

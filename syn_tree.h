@@ -37,6 +37,7 @@ typedef enum {
 	AST_NODE_ID,
 	AST_NODE_NUM,
 	AST_NODE_RETURN,
+	AST_NODE_IF,
 	AST_NODE_SCOPE,
 	AST_NODE_STUB,
 	AST_NODE_UNKNOWN,
@@ -98,6 +99,12 @@ typedef struct {
 	ast_node_t tree;
 } ast_node_scope_t;
 
+typedef struct {
+	ast_node_t tree;
+	ast_node_t *cond;
+	ast_node_t *body;
+} ast_node_if_t;
+
 //now body not free with ast_node_unref
 typedef struct {
 	ast_node_t tree;
@@ -141,6 +148,8 @@ ast_node_t *ast_node_arr_new(ast_node_t **arr, int sz);
 ast_node_t *ast_node_access_new(char *name, ast_node_t *ind);
 
 //WIP
+ast_node_t *ast_node_if_new(ast_node_t *condition, ast_node_t *body);
+
 
 ast_node_t *ast_node_scope_new(ast_node_t *child);
 

@@ -94,6 +94,20 @@ id_item_t *id_table_lookup_in(struct hash_table *table, char *name);
 id_item_t *id_table_lookup_all(char *name);
 
 /*
+ * try to find item with "key" and remove it
+ * returns:
+ * ret_ok if success
+ * ret_err otherwise
+ */
+ret_t id_table_remove(char *name);
+
+/*
+ * same as id_table_remove, but search in passed hash_table
+ */
+ret_t id_table_remove_from(struct hash_table *table, char *name);
+
+
+/*
  * free current table
  */
 void id_table_free(struct hash_table *table);
