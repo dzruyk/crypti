@@ -682,9 +682,11 @@ process_condition(struct syn_ctx *ctx)
 		goto err;
 	}
 	
-	if (match(TOK_LBRACE) == FALSE)
+	if (match(TOK_LBRACE) == FALSE) {
+		if (current_tok == TOK_EOL)
+			tok_next();
 		body = expr();
-	else
+	} else
 		body = process_scope(ctx);
 	
 	if (body == NULL) {
