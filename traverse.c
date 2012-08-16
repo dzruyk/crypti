@@ -295,8 +295,10 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	}
 	
 	//destruct argues
-	for (i = 0; i < func->nargs; i++)
-		id_item_free(items[i]);
+	for (i = 0; i < func->nargs; i++) {
+		if (items[i] != NULL)
+			id_item_free(items[i]);
+	}
 	
 	if (items != NULL)
 		ufree(items);
@@ -326,20 +328,7 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call,
 		if (name == NULL)
 			print_warn_and_die("NULL name ptr\n");
 
-		traverse(call->args[i]);
-
-		if (nerrors != 0)
-			return;
-	
-		//printf("name: %s\n", name);
-
-		ev = stack_pop();
-
-		item = id_item_new(name);
-
-		set_value_id(item, ev);
-
-		eval_free(ev);
+		item = get_next_argue(call->args[i], name);
 
 		id_table_insert_to(scope, item);
 	}

@@ -53,6 +53,12 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 	id_item_t *arg, *item;
 
 	arg = argues[0];
+
+	//debug
+	printf("delname = %s\n", arg->name);
+	
+	//then delete
+
 /* not work now
 	item = id_table_lookup_all(arg->name);
 	if (item == NULL) {

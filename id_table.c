@@ -80,8 +80,8 @@ id_item_set(id_item_t *item, id_type_t type, void *data)
 void
 id_item_free(id_item_t *item)
 {
-	free(item->name);
-	free(item);
+	ufree(item->name);
+	ufree(item);
 }
 
 
