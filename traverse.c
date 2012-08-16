@@ -234,10 +234,43 @@ exec_function(func_t *func)
 	
 }
 
+//get next func argue
+//if fails return errors and/or inc nerrors
+id_item_t *
+get_next_argue(ast_node_t *argnode, char *hint)
+{
+	eval_t *ev;
+	ast_node_id_t *id;
+	id_item_t *item;
+
+	//try to get argues by value(not by copy)
+	if (argnode->type == AST_NODE_ID) {
+		id = (ast_node_id_t *) argnode;
+		return id_table_lookup_all(id->name);
+	}
+
+	traverse(argnode);
+
+	if (nerrors != 0)
+		return NULL;
+	
+	ev = stack_pop();
+	
+	if (hint == NULL)
+		print_warn_and_die("hint is NULL");
+
+	item = id_item_new(hint);
+	
+	set_value_id(item, ev);
+	
+	eval_free(ev);
+
+	return item;
+}
+
 void
 exec_library_function(func_t *func, ast_node_func_call_t *call)
 {
-	eval_t *ev;
 	id_item_t **items;
 	int err, i, rtype;
 	void *rval;
@@ -248,17 +281,12 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 		items = malloc_or_die(sizeof(*items) * func->nargs);
 
 	for (i = 0; i < func->nargs; i++) {
-		traverse(call->args[i]);
-		if (nerrors != 0)
+		items[i] = get_next_argue(call->args[i], "library_arg");
+
+		//FIXME: may be memory leak
+		if (items[i] == NULL || nerrors != 0)
 			return;
-		ev = stack_pop();
-
-		items[i] = id_item_new("library_arg");
-
-		set_value_id(items[i], ev);
-
-		eval_free(ev);
-	}
+		}
 
 	err = func->handler(items, &rtype, &rval);
 	if (err != 0) {

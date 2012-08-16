@@ -1,7 +1,10 @@
 def a(b,c,d) {
 	a = 2
 }
-
 a(1,2,3)
+
+#builtin functions test
+b = 44
+print(2 - b)
 
 	

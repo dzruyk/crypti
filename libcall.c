@@ -64,3 +64,4 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 */
 	return 0;
 }
+
