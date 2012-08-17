@@ -7,7 +7,6 @@
 
 typedef enum {
 	EVAL_NUM,
-	EVAL_FUNC,
 	EVAL_ARR,
 } eval_type_t;
 
@@ -35,6 +34,13 @@ eval_t *eval_arr_new(arr_t *arr);
  * WARNING: you must manualy free eval payload
  */
 void eval_free(eval_t *eval);
+
+
+/*
+ * return TRUE if eval is zero
+ * return FALSE otherwise
+ */
+boolean_t eval_is_zero(eval_t *eval);
 
 /*
  * process expression, returns result

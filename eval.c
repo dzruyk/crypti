@@ -1,9 +1,17 @@
+#include <assert.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "common.h"
 #include "eval.h"
 #include "macros.h"
+
+
+eval_t ev_zero = {
+	EVAL_NUM,
+	{0},
+};
 
 eval_t *
 eval_num_new(int value)
@@ -45,6 +53,20 @@ eval_free(eval_t *eval)
 	default:
 		print_warn_and_die("WIP\n");
 	}
+}
+
+boolean_t
+eval_is_zero(eval_t *eval)
+{
+	assert(eval != NULL);
+
+	//FIXME: WIP, may be some errors
+	if (eval->type != EVAL_NUM)
+		return 0;
+	else if (eval->value == 0)
+		return 0;
+	else
+		return 1;
 }
 
 eval_t *

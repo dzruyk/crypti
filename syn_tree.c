@@ -191,7 +191,7 @@ ast_node_if_new(ast_node_t *condition, ast_node_t *body)
 	ast_node_if_t *res;
 
 	res = (ast_node_if_t *)
-	    ast_node_new(AST_NODE_IF, sizeof(*res), ast_node_func_free);
+	    ast_node_new(AST_NODE_IF, sizeof(*res), ast_node_free);
 
 	res->cond = condition;
 	res->body = body;
