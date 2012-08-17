@@ -343,6 +343,9 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call,
 
 		item = get_next_argue(call->args[i], name);
 
+		if (item == NULL)
+			return;
+
 		id_table_insert_to(scope, item);
 	}
 }
