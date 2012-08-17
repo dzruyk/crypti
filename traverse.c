@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "array.h"
+#include "crypti.h"
 #include "common.h"
 #include "function.h"
 #include "eval.h"
@@ -260,9 +261,15 @@ get_next_argue(ast_node_t *argnode, char *hint)
 		return NULL;
 	
 	ev = stack_pop();
+
+	//FIXME: rewrite me
+	if (ev == NULL) {
+		print_warn("cant get value\n");
+		return NULL;
+	}
 	
 	if (hint == NULL)
-		print_warn_and_die("hint is NULL");
+		print_warn_and_die("hint is NULL\n");
 	
 	item = id_item_new(hint);
 	
@@ -345,7 +352,6 @@ add_argues_to_scope(func_t *func, ast_node_func_call_t *call,
 
 		if (item == NULL)
 			return;
-
 		id_table_insert_to(scope, item);
 	}
 }
@@ -385,6 +391,9 @@ traverse_func_call(ast_node_t *tree)
 
 	id_table_push(idtable);
 	
+#ifdef DEBUG
+	id_table_show_all_items();
+#endif
 	exec_function(func);
 	
 	id_table_pop();

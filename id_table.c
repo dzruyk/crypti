@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "crypti.h"
 #include "hash.h"
 #include "id_table.h"
 #include "lex.h"
@@ -162,6 +163,8 @@ id_table_insert_to(struct hash_table *table, id_item_t *item)
 		print_warn_and_die("error at id table insertion\n");
 	else if (res == ret_entry_exists)
 		print_warn_and_die("internal error, entry exists\n");
+	else if (res != ret_ok)
+		print_warn_and_die("internal error, should not happen\n");
 
 	return ret_ok;
 }
@@ -280,3 +283,35 @@ id_table_destroy()
 	}
 }
 
+/* DEBUG */
+#ifdef DEBUG
+void
+id_table_show_all_items()
+{
+	id_item_t *item;
+	struct scopes *tmp;
+	
+	tmp = scopes;
+	
+	printf("getting info about id_items...\n");
+	while (tmp != NULL) {
+		id_item_t *item;
+		struct hash_table_iter *iter;
+		void *key;
+
+		iter = hash_table_iterate_init(tmp->scope);
+		
+		while (hash_table_iterate(iter, &key, (void **)&item) == TRUE) {
+			printf("name = %s, type = %d\n",
+			    item->name, item->type);
+		}
+
+		hash_table_iterate_deinit(&iter);
+
+		tmp = tmp->prev;
+	}
+	
+	printf("finishing...\n");
+}
+
+#endif
