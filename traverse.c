@@ -241,11 +241,13 @@ id_item_t *
 get_next_argue(ast_node_t *argnode, char *hint)
 {
 	eval_t *ev;
-	ast_node_id_t *id;
-	id_item_t *item, *res;
+	id_item_t *item;
 
+	/* warning! conflict when free */
 	//try to get argues by value(not by copy)
 	if (argnode->type == AST_NODE_ID) {
+		ast_node_id_t *id;
+		id_item_t *res;
 		id = (ast_node_id_t *) argnode;
 		res = id_table_lookup_all(id->name);
 		if (res == NULL) {
@@ -280,6 +282,12 @@ get_next_argue(ast_node_t *argnode, char *hint)
 	return item;
 }
 
+/*
+ * add argues to func array, then
+ * try to execute library function
+ * WARN: we must be care with global argues(passed by name)
+ * bcs may be double free situation
+ */
 void
 exec_library_function(func_t *func, ast_node_func_call_t *call)
 {
@@ -316,8 +324,10 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 finalize:
 
 	//destruct argues
+	//NOTE: we can't touch not internal argues
 	for (i = 0; i < func->nargs; i++) {
-		if (items[i] != NULL)
+		if (items[i] != NULL && 
+		    strcmp(items[i]->name, "") == 0)
 			id_item_free(items[i]);
 	}
 	
@@ -391,9 +401,6 @@ traverse_func_call(ast_node_t *tree)
 
 	id_table_push(idtable);
 	
-#ifdef DEBUG
-	id_table_show_all_items();
-#endif
 	exec_function(func);
 	
 	id_table_pop();

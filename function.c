@@ -57,9 +57,15 @@ function_table_destroy_cb(func_t *item)
 	
 	if (item->is_lib == FALSE) {
 		int i;
+		ast_node_t *tmp, *prev;
 		
 		ufree(item->name);
-		ast_node_unref(item->body);
+		
+
+		for (tmp = prev = item->body; tmp != NULL; prev = tmp) {
+			tmp = prev->child;
+			ast_node_unref(prev);
+		}
 		
 		for (i = 0; i < item->nargs; i++)
 			ufree(item->args[i]);

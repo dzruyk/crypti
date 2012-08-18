@@ -117,5 +117,11 @@ void id_table_free(struct hash_table *table);
  */
 void id_table_destroy();
 
+#ifdef DEBUG
+
+void id_table_show_all_items();
+
+#endif
+
 #endif
 

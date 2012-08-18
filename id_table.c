@@ -248,7 +248,6 @@ id_table_remove_from(struct hash_table *table, char *name)
 	if (hash_table_remove(table, (void *)name) == FALSE)
 		return ret_err;
 	
-	printf("id_table remove %s\n", item->name);
 	id_item_free(item);
 
 	return ret_ok;
@@ -288,7 +287,6 @@ id_table_destroy()
 void
 id_table_show_all_items()
 {
-	id_item_t *item;
 	struct scopes *tmp;
 	
 	tmp = scopes;

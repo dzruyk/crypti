@@ -1,0 +1,22 @@
+
+#recursion
+
+def a(i) {
+	if (i < 10) {
+		print(i)
+		a(i+1)
+	}
+}
+
+a(0);
+
+#recursion r2
+
+def a(i) {
+	if (i < 10) {
+		a(i+1)
+		print(i)
+	}
+}
+a(-1);
+
