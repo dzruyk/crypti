@@ -45,8 +45,9 @@ ast_node_free(ast_node_t *tree)
 		break;
 	case AST_NODE_IF:
 		ifnode = (ast_node_if_t *)tree;
-		ast_node_unref(ifnode->cond);
+		ast_node_unref(ifnode->_if);
 		ast_node_unref(ifnode->body);
+		ast_node_unref(ifnode->_else);
 		break;
 	case AST_NODE_OP:
 	case AST_NODE_AS:
@@ -186,15 +187,16 @@ ast_node_func_call(char *name)
 }
 
 ast_node_t *
-ast_node_if_new(ast_node_t *condition, ast_node_t *body)
+ast_node_if_new(ast_node_t *_if, ast_node_t *body, ast_node_t *_else)
 {
 	ast_node_if_t *res;
 
 	res = (ast_node_if_t *)
 	    ast_node_new(AST_NODE_IF, sizeof(*res), ast_node_free);
 
-	res->cond = condition;
+	res->_if = _if;
 	res->body = body;
+	res->_else = _else;
 
 	return AST_NODE(res);
 }

@@ -477,15 +477,19 @@ traverse_cond(ast_node_t *tree)
 
 	ifnode = (ast_node_if_t *) tree;
 	
-	traverse(ifnode->cond);
+	traverse(ifnode->_if);
 	if (nerrors != 0)
 		return;
 
 	ev = stack_pop();
 
-	if (eval_is_zero(ev) == TRUE)
+	if (eval_is_zero(ev) == FALSE) {
 		traverse(ifnode->body);
+	} else if (ifnode->_else != NULL) {
+		traverse(ifnode->_else);
+	}
 
+	eval_free(ev);
 }
 
 void

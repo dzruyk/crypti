@@ -55,6 +55,7 @@ eval_free(eval_t *eval)
 	}
 }
 
+
 boolean_t
 eval_is_zero(eval_t *eval)
 {
@@ -62,11 +63,11 @@ eval_is_zero(eval_t *eval)
 
 	//FIXME: WIP, may be some errors
 	if (eval->type != EVAL_NUM)
-		return 0;
+		return FALSE;
 	else if (eval->value == 0)
-		return 0;
+		return TRUE;
 	else
-		return 1;
+		return FALSE;
 }
 
 eval_t *

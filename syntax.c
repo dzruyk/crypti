@@ -661,9 +661,9 @@ identifier()
 static ast_node_t *
 process_condition(struct syn_ctx *ctx)
 {
-	ast_node_t *cond, *body;
+	ast_node_t *_if, *body, *_else;
 
-	body = cond = NULL;
+	body = _if = _else = NULL;
 
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
@@ -671,8 +671,8 @@ process_condition(struct syn_ctx *ctx)
 	}
 
 	//FIXME: check nerrors(now haven't time)
-	cond = logic_disj();
-	if (cond == NULL) {
+	_if = logic_disj();
+	if (_if == NULL) {
 		print_warn("expected expression\n");
 		goto err;
 	}
@@ -690,16 +690,28 @@ process_condition(struct syn_ctx *ctx)
 		body = process_scope(ctx);
 	
 	if (body == NULL) {
-		print_warn("cant proc condition body");
+		print_warn("cant proc cond body\n");
 		goto err;
+	}
+	
+	while (match(TOK_EOL) == TRUE);
+
+	if (match(TOK_ELSE) == TRUE) {
+		if (current_tok == TOK_EOL)
+			tok_next();
+		_else = statesment(ctx);
+		if (_else == NULL) {
+			print_warn("cant get stmt after 'else'\n");
+			goto err;
+		}
 	}
 
 	//FIXME: else if implementation...
-	return ast_node_if_new(cond, body);
+	return ast_node_if_new(_if, body, _else);
 
 err:
-	if (cond != NULL)
-		ast_node_unref(cond);
+	if (_if != NULL)
+		ast_node_unref(_if);
 	if (body != NULL)
 		ast_node_unref(body);
 	
