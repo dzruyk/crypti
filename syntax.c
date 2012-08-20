@@ -741,6 +741,18 @@ process_for(struct syn_ctx *ctx)
 		goto err;
 	}
 
+	expr1 = expr();
+
+	
+	print_warn_and_die("WIP!\n");
+
+
+	if (match(TOK_RPAR) == FALSE) {
+		print_warn("')' is missed\n");
+		goto err;
+	}
+	
+
 
 	return ast_node_for_new(expr1, expr2, expr3, body);
 

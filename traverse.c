@@ -254,6 +254,7 @@ get_next_argue(ast_node_t *argnode, char *hint)
 			print_warn("cant get id %s\n", id->name);
 			nerrors++;
 		}
+
 		return res;
 	}
 
@@ -494,6 +495,33 @@ traverse_cond(ast_node_t *tree)
 void
 traverse_for(ast_node_t *tree)
 {
+	ast_node_for_t *fornode;
+	eval_t *ev;
+
+	fornode = (ast_node_for_t *)tree;
+
+	traverse(fornode->expr1);
+
+	if (nerrors != 0)
+		return;
+
+	traverse(fornode->expr2);
+
+	ev = stack_pop();
+	
+	while(1) {
+
+		if (eval_is_zero(ev) == TRUE)
+			goto finalize;
+
+		eval_free(ev);
+
+		traverse(fornode->body);
+	}
+
+finalize:
+	
+	eval_free(ev);
 	print_warn_and_die("WIP!\n");
 }
 
