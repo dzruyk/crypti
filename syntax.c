@@ -303,10 +303,10 @@ statesment(struct syn_ctx *ctx)
 	
 	else if (match(TOK_FOR))
 		return process_for(ctx);
-	
+	/* not implemented yet
 	else if (match(TOK_DO))
 		return process_do(ctx);
-	
+	*/
 	else if (match(TOK_WHILE))
 		return process_while(ctx);
 	else

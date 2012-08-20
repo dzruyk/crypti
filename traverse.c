@@ -505,7 +505,7 @@ traverse_for(ast_node_t *tree)
 	if (nerrors != 0)
 		return;
 
-	while(1) {
+	while (1) {
 
 		traverse(fornode->expr2);
 
@@ -521,7 +521,7 @@ traverse_for(ast_node_t *tree)
 		traverse(fornode->expr3);
 
 		if (nerrors != 0)
-			break;
+			return;
 	}
 
 	eval_free(ev);
@@ -533,9 +533,25 @@ traverse_while(ast_node_t *tree)
 	ast_node_while_t *whilenode;
 	eval_t *ev;
 
-	whilenode = (ast_node_while_t) tree;
-	
-	print_warn_and_die("WIP!\n");
+	whilenode = (ast_node_while_t *) tree;
+
+	while (1) {
+		traverse(whilenode->cond);
+
+		ev = stack_pop();
+
+		if (eval_is_zero(ev) == TRUE)
+			break;
+
+		eval_free(ev);
+
+		traverse(whilenode->body);
+
+		if (nerrors != 0)
+			return;
+	}
+
+	eval_free(ev);
 }
 
 void
@@ -567,7 +583,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *ev)
 		return;
 	}
 	
-	item = id_table_lookup(node->name);
+	item = id_table_lookup_all(node->name);
 	if (item == NULL) {
 		print_warn("symb undefined\n");
 		nerrors++;
@@ -608,7 +624,7 @@ set_value_node(ast_node_t *ltree, eval_t *ev)
 		
 		id = (ast_node_id_t *)ltree;
 
-		item = id_table_lookup(id->name);
+		item = id_table_lookup_all(id->name);
 		//if we havent id, then we must define it
 		if (item == NULL) {
 			item = id_item_new(id->name);

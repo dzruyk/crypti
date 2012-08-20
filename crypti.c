@@ -9,6 +9,16 @@
 #include "traverse.h"
 
 void
+print_programme_info()
+{
+	printf("=======================================\n");
+	printf("*Simple language for crypto researches*\n");
+	printf("*Now work without libbignum           *\n");
+	printf("*but Work In Process                  *\n");
+	printf("=======================================\n");
+}
+
+void
 initialisation()
 {
 	id_table_init();
@@ -30,9 +40,13 @@ main(int argc, char *argv[])
 	ast_node_t *tree;
 	ret_t ret;
 
+	print_programme_info();
+
 	initialisation();
 
 	do {
+		printf(">>>");
+
 		ret = program_start(&tree);
 		if (tree == NULL || ret != ret_ok)
 			continue;
@@ -42,6 +56,8 @@ main(int argc, char *argv[])
 	} while (syntax_is_eof != 1);
 
 	deinitialisation();
+	
+	printf("\n");
 
 	return 0;
 }

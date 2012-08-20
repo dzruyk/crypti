@@ -14,12 +14,19 @@ FUCK!!!!!!!!
 return b=2
 segfault??
 
+-----
+
 a--a
 error
+
+-----
 
 if ((a = 2) < 1) ...
 segfault?
 
+-----
+must be infinitie loop
 for (;;) {
 	something
 }
+
