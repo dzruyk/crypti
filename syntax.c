@@ -792,13 +792,47 @@ process_for(struct syn_ctx *ctx)
 static ast_node_t *
 process_do(struct syn_ctx *ctx)
 {
+	print_warn_and_die("WIP!\n");
+
 	return ast_node_stub_new();
 }
 
 static ast_node_t *
 process_while(struct syn_ctx *ctx)
 {
-	print_warn_and_die("WIP!\n");
+	ast_node_t *cond, *body;
+
+	body = cond = NULL;
+	
+	if (match(TOK_LPAR) == FALSE) {
+		print_warn("'(' is missed\n");
+		goto err;
+	}
+
+	cond = logic_disj();
+
+	if (match(TOK_RPAR) == FALSE) {
+		print_warn("')' is missed\n");
+		goto err;
+	}
+
+	if (match(TOK_LBRACE) == FALSE) {
+		skip_eol();
+		body = expr();
+	} else
+		body = process_scope(ctx);
+	
+	if (nerrors != 0) {
+		print_warn("errors happen\n");
+		goto err;
+	}
+
+	return ast_node_while_new(cond, body);
+
+	err:
+
+	if (cond != NULL)
+		ast_node_unref(cond);
 
 	return ast_node_stub_new();
 }

@@ -116,6 +116,12 @@ typedef struct {
 	ast_node_t *body;
 } ast_node_for_t;
 
+typedef struct {
+	ast_node_t tree;
+	ast_node_t *cond;
+	ast_node_t *body;
+} ast_node_while_t;
+
 //now body not free with ast_node_unref
 typedef struct {
 	ast_node_t tree;
@@ -156,13 +162,19 @@ ast_node_t *ast_node_id_new(char *name);
 
 ast_node_t *ast_node_arr_new(ast_node_t **arr, int sz);
 
+
 ast_node_t *ast_node_access_new(char *name, ast_node_t *ind);
 
 //WIP
 ast_node_t *ast_node_if_new(ast_node_t *_if, ast_node_t *body, ast_node_t *_else);
 
+
 ast_node_t *ast_node_for_new(ast_node_t *expr1, ast_node_t *expr2,
     ast_node_t *expr3, ast_node_t *body);
+
+
+ast_node_t *ast_node_while_new(ast_node_t *cond, ast_node_t *body);
+
 
 ast_node_t *ast_node_scope_new(ast_node_t *child);
 

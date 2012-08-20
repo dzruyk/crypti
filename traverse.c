@@ -528,6 +528,17 @@ traverse_for(ast_node_t *tree)
 }
 
 void
+traverse_while(ast_node_t *tree)
+{
+	ast_node_while_t *whilenode;
+	eval_t *ev;
+
+	whilenode = (ast_node_while_t) tree;
+	
+	print_warn_and_die("WIP!\n");
+}
+
+void
 set_value_id(id_item_t *item, eval_t *ev)
 {
 		
@@ -719,6 +730,7 @@ struct {
 	{AST_NODE_SCOPE, traverse_scope},
 	{AST_NODE_IF, traverse_cond},
 	{AST_NODE_FOR, traverse_for},
+	{AST_NODE_WHILE, traverse_while},
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_NUM, traverse_num},
 	{AST_NODE_RETURN, traverse_return},

@@ -15,6 +15,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_id_t *id;
 	ast_node_if_t *ifnode;
 	ast_node_for_t *fornode;
+	ast_node_while_t *whilenode;
 	ast_node_return_t *ret;
 
 	int i, n;
@@ -50,6 +51,11 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(ifnode->body);
 		ast_node_unref(ifnode->_else);
 		break;
+	case AST_NODE_WHILE:
+		whilenode = (ast_node_while_t *)tree;
+		ast_node_unref(whilenode->cond);
+		ast_node_unref(whilenode->body);
+		break;
 	case AST_NODE_FOR:
 		fornode = (ast_node_for_t *)tree;
 		ast_node_unref(fornode->expr1);
@@ -67,6 +73,7 @@ ast_node_free(ast_node_t *tree)
 	default:
 		print_warn_and_die("something wrong, no such type\n");
 	}
+
 	ast_node_unref(tree->child);
 
 	free(tree);
@@ -221,6 +228,21 @@ ast_node_for_new(ast_node_t *expr1, ast_node_t *expr2,
 	res->expr1 = expr1;
 	res->expr2 = expr2,
 	res->expr3 = expr3;
+
+	res->body = body;
+	
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_while_new(ast_node_t *cond, ast_node_t *body)
+{
+	ast_node_while_t *res;
+
+	res = (ast_node_while_t *)
+	    ast_node_new(AST_NODE_WHILE, sizeof(*res), ast_node_free);
+	
+	res->cond = cond;
 
 	res->body = body;
 	
