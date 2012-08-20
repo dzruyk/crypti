@@ -72,6 +72,8 @@ static ast_node_t *process_condition(struct syn_ctx *ctx);
 static ast_node_t *process_for(struct syn_ctx *ctx);
 static ast_node_t *process_do(struct syn_ctx *ctx);
 static ast_node_t *process_while(struct syn_ctx *ctx);
+static ast_node_t *process_break(struct syn_ctx *ctx);
+static ast_node_t *process_continue(struct syn_ctx *ctx);
 
 static ast_node_t *process_return(struct syn_ctx *ctx);
 
@@ -295,20 +297,28 @@ statesment(struct syn_ctx *ctx)
 	if (match(TOK_LBRACE)) 
 		return process_scope(ctx);
 
-	else if (match(TOK_RETURN))
-		return process_return(ctx);
-
 	else if (match(TOK_IF))
 		return process_condition(ctx);
 	
 	else if (match(TOK_FOR))
 		return process_for(ctx);
+	
+	else if (match(TOK_WHILE))
+		return process_while(ctx);
+
+	else if (match(TOK_BREAK))
+		return process_break(ctx);
+
+	else if (match(TOK_CONTINUE))
+		return process_continue(ctx);
+	
+	else if (match(TOK_RETURN))
+		return process_return(ctx);
+
 	/* not implemented yet
 	else if (match(TOK_DO))
 		return process_do(ctx);
 	*/
-	else if (match(TOK_WHILE))
-		return process_while(ctx);
 	else
 		return expr();
 }
@@ -837,6 +847,33 @@ process_while(struct syn_ctx *ctx)
 	return ast_node_stub_new();
 }
 
+static ast_node_t *
+process_break(struct syn_ctx *ctx)
+{
+	ast_node_t *node;
+
+	if (ctx->is_cycle == 0) {
+		print_warn("break outside cycle\n");
+		nerrors++;
+		return ast_node_stub_new();
+	}
+	
+	return ast_node_break_new();
+}
+
+static ast_node_t *
+process_continue(struct syn_ctx *ctx)
+{
+	ast_node_t *node;
+
+	if (ctx->is_cycle == 0) {
+		print_warn("continue outside cycle\n");
+		nerrors++;
+		return ast_node_stub_new();
+	}
+	
+	return ast_node_continue_new();
+}
 
 static ast_node_t *
 process_return(struct syn_ctx *ctx)
@@ -875,7 +912,6 @@ err:
 	return ast_node_stub_new();
 }
 
-// FIXME: memory management
 static ast_node_t *
 process_function()
 {

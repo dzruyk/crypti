@@ -37,6 +37,8 @@ typedef enum {
 	AST_NODE_ID,
 	AST_NODE_NUM,
 	AST_NODE_RETURN,
+	AST_NODE_BREAK,
+	AST_NODE_CONTINUE,
 	AST_NODE_IF,
 	AST_NODE_FOR,
 	AST_NODE_WHILE,
@@ -191,6 +193,9 @@ ast_node_t *ast_node_as_new(ast_node_t *left, ast_node_t *right);
 
 ast_node_t *ast_node_return_new(ast_node_t *retval);
 
+ast_node_t *ast_node_break_new();
+
+ast_node_t *ast_node_continue_new();
 
 ast_node_t *ast_node_stub_new();
 

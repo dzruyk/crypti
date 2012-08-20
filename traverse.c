@@ -728,6 +728,18 @@ traverse_return(ast_node_t *tree)
 }
 
 static void
+traverse_break(ast_node_t *tree)
+{
+	print_warn_and_die("return node traverse WIP!\n");
+}
+
+static void
+traverse_continue(ast_node_t *tree)
+{
+	print_warn_and_die("return node traverse WIP!\n");
+}
+
+static void
 traverse_stub(ast_node_t *tree)
 {
 	return;
@@ -750,6 +762,8 @@ struct {
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_NUM, traverse_num},
 	{AST_NODE_RETURN, traverse_return},
+	{AST_NODE_BREAK, traverse_break},
+	{AST_NODE_CONTINUE, traverse_continue},
 	{AST_NODE_STUB, traverse_stub},
 	{AST_NODE_UNKNOWN, NULL},
 };

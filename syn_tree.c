@@ -67,6 +67,8 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_AS:
 	case AST_NODE_SCOPE:
 	case AST_NODE_STUB:	
+	case AST_NODE_BREAK:
+	case AST_NODE_CONTINUE:
 		ast_node_unref(tree->left);
 		ast_node_unref(tree->right);
 		break;
@@ -315,9 +317,30 @@ ast_node_return_new(ast_node_t *retval)
 	res = (ast_node_return_t *) 
 	    ast_node_new(AST_NODE_RETURN, sizeof(*res), ast_node_free);
 
-	AST_NODE(res)->type = AST_NODE_RETURN; 
 	res->retval = retval;
 	
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_break_new()
+{
+	ast_node_break_t *res;
+
+	res = (ast_node_break_t *)
+	    ast_node_new(AST_NODE_BREAK, sizeof(*res), ast_node_free);
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_continue_new()
+{
+	ast_node_continue_t *res;
+
+	res = (ast_node_break_t *)
+	    ast_node_new(AST_NODE_CONTINUE, sizeof(*res), ast_node_free);
+
 	return AST_NODE(res);
 }
 

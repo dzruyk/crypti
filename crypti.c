@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 	initialisation();
 
 	do {
-		printf(">>>");
+		printf(">>> ");
 
 		ret = program_start(&tree);
 		if (tree == NULL || ret != ret_ok)
