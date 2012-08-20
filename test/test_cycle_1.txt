@@ -1,0 +1,6 @@
+#for cycle test
+
+for (i = 2; i < 5; i=i+1){
+	print(i)
+}
+

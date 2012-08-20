@@ -505,24 +505,26 @@ traverse_for(ast_node_t *tree)
 	if (nerrors != 0)
 		return;
 
-	traverse(fornode->expr2);
-
-	ev = stack_pop();
-	
 	while(1) {
 
+		traverse(fornode->expr2);
+
+		ev = stack_pop();
+
 		if (eval_is_zero(ev) == TRUE)
-			goto finalize;
+			break;
 
 		eval_free(ev);
 
 		traverse(fornode->body);
+
+		traverse(fornode->expr3);
+
+		if (nerrors != 0)
+			break;
 	}
 
-finalize:
-	
 	eval_free(ev);
-	print_warn_and_die("WIP!\n");
 }
 
 void

@@ -736,23 +736,43 @@ process_for(struct syn_ctx *ctx)
 
 	body = expr1 = expr2 = expr3 = NULL;
 	
-	if (match(TOK_LPAR == FALSE)) {
+	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
 		goto err;
 	}
 
 	expr1 = expr();
-
 	
-	print_warn_and_die("WIP!\n");
+	if (match(TOK_SEMICOLON) == FALSE) {
+		print_warn("semicolon expected\n");
+		goto err;
+	}
 
+	expr2 = logic_disj();
+
+	if (match(TOK_SEMICOLON) == FALSE) {
+		print_warn("semicolon expected\n");
+		goto err;
+	}
+
+	expr3 = expr();
+	
 
 	if (match(TOK_RPAR) == FALSE) {
 		print_warn("')' is missed\n");
 		goto err;
 	}
-	
 
+	if (match(TOK_LBRACE) == FALSE) {
+		skip_eol();
+		body = expr();
+	} else
+		body = process_scope(ctx);
+	
+	if (nerrors != 0) {
+		print_warn("errors happen\n");
+		goto err;
+	}
 
 	return ast_node_for_new(expr1, expr2, expr3, body);
 
@@ -764,7 +784,6 @@ process_for(struct syn_ctx *ctx)
 		ast_node_unref(expr2);
 	if (expr3 != NULL)
 		ast_node_unref(expr3);
-
 
 	return ast_node_stub_new();
 }
@@ -779,6 +798,8 @@ process_do(struct syn_ctx *ctx)
 static ast_node_t *
 process_while(struct syn_ctx *ctx)
 {
+	print_warn_and_die("WIP!\n");
+
 	return ast_node_stub_new();
 }
 
