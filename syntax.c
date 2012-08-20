@@ -850,8 +850,6 @@ process_while(struct syn_ctx *ctx)
 static ast_node_t *
 process_break(struct syn_ctx *ctx)
 {
-	ast_node_t *node;
-
 	if (ctx->is_cycle == 0) {
 		print_warn("break outside cycle\n");
 		nerrors++;
@@ -864,8 +862,6 @@ process_break(struct syn_ctx *ctx)
 static ast_node_t *
 process_continue(struct syn_ctx *ctx)
 {
-	ast_node_t *node;
-
 	if (ctx->is_cycle == 0) {
 		print_warn("continue outside cycle\n");
 		nerrors++;

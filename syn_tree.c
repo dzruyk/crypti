@@ -338,7 +338,7 @@ ast_node_continue_new()
 {
 	ast_node_continue_t *res;
 
-	res = (ast_node_break_t *)
+	res = (ast_node_continue_t *)
 	    ast_node_new(AST_NODE_CONTINUE, sizeof(*res), ast_node_free);
 
 	return AST_NODE(res);

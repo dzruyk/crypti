@@ -147,6 +147,14 @@ typedef struct {
 
 typedef struct {
 	ast_node_t tree;
+} ast_node_break_t;
+
+typedef struct {
+	ast_node_t tree;
+} ast_node_continue_t;
+
+typedef struct {
+	ast_node_t tree;
 } ast_node_stub_t;
 
 /*
