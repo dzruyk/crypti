@@ -40,12 +40,12 @@ main(int argc, char *argv[])
 	ast_node_t *tree;
 	ret_t ret;
 
-	print_programme_info();
+	//print_programme_info();
 
 	initialisation();
 
 	do {
-		printf(">>> ");
+		//printf(">>> ");
 
 		ret = program_start(&tree);
 		if (tree == NULL || ret != ret_ok)
@@ -57,7 +57,7 @@ main(int argc, char *argv[])
 
 	deinitialisation();
 	
-	printf("\n");
+	//printf("\n");
 
 	return 0;
 }

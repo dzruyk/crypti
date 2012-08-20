@@ -730,13 +730,13 @@ traverse_return(ast_node_t *tree)
 static void
 traverse_break(ast_node_t *tree)
 {
-	print_warn_and_die("return node traverse WIP!\n");
+	helper.is_break++;
 }
 
 static void
 traverse_continue(ast_node_t *tree)
 {
-	print_warn_and_die("return node traverse WIP!\n");
+	helper.is_continue++;
 }
 
 static void

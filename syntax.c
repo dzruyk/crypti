@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "common.h"
+#include "crypti.h"
 #include "keyword.h"
 #include "macros.h"
 #include "syntax.h"
@@ -32,7 +33,7 @@ syn_ctx_new()
 	struct syn_ctx *ctx;
 
 	ctx = malloc_or_die(sizeof(*ctx));
-	memset(ctx, 0, sizeof(ctx));
+	memset(ctx, 0, sizeof(*ctx));
 
 	return ctx;
 }
@@ -705,7 +706,7 @@ process_condition(struct syn_ctx *ctx)
 	
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = expr();
+		body = statesment(ctx);
 	} else
 		body = process_scope(ctx);
 	
@@ -723,9 +724,13 @@ process_condition(struct syn_ctx *ctx)
 			print_warn("cant get stmt after 'else'\n");
 			goto err;
 		}
+	} else {
+		//FIXME: rewrite me
+		//try to pop current_tok if it is TOK_EOL
+		if (lex_item_prev.id == TOK_EOL)
+			current_tok = TOK_EOL;
 	}
 
-	//FIXME: else if implementation...
 	return ast_node_if_new(_if, body, _else);
 
 err:
@@ -767,18 +772,21 @@ process_for(struct syn_ctx *ctx)
 
 	expr3 = expr();
 	
-
 	if (match(TOK_RPAR) == FALSE) {
 		print_warn("')' is missed\n");
 		goto err;
 	}
 
+	ctx->is_cycle++;
+
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = expr();
+		body = statesment(ctx);
 	} else
 		body = process_scope(ctx);
 	
+	ctx->is_cycle--;
+
 	if (nerrors != 0) {
 		print_warn("errors happen\n");
 		goto err;
@@ -826,12 +834,16 @@ process_while(struct syn_ctx *ctx)
 		goto err;
 	}
 
+	ctx->is_cycle++;
+
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = expr();
+		body = statesment(ctx);
 	} else
 		body = process_scope(ctx);
 	
+	ctx->is_cycle--;
+
 	if (nerrors != 0) {
 		print_warn("errors happen\n");
 		goto err;
@@ -850,6 +862,8 @@ process_while(struct syn_ctx *ctx)
 static ast_node_t *
 process_break(struct syn_ctx *ctx)
 {
+	//D(printf("process_break is-cycle = %d\n", ctx->is_cycle));
+
 	if (ctx->is_cycle == 0) {
 		print_warn("break outside cycle\n");
 		nerrors++;
