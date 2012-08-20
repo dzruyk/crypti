@@ -132,6 +132,17 @@ match(const tok_t expect)
 	return FALSE;
 }
 
+/*
+ * try to skip next EOL,
+ * returns TRUE if next EOL skipped
+ * returns FALSE if current_tok not EOL
+ */
+static inline boolean_t
+skip_eol()
+{
+	return match(TOK_EOL);
+}
+
 static inline void
 sync_stream()
 {
@@ -683,8 +694,7 @@ process_condition(struct syn_ctx *ctx)
 	}
 	
 	if (match(TOK_LBRACE) == FALSE) {
-		if (current_tok == TOK_EOL)
-			tok_next();
+		skip_eol();
 		body = expr();
 	} else
 		body = process_scope(ctx);
@@ -694,11 +704,10 @@ process_condition(struct syn_ctx *ctx)
 		goto err;
 	}
 	
-	while (match(TOK_EOL) == TRUE);
+	skip_eol();
 
 	if (match(TOK_ELSE) == TRUE) {
-		if (current_tok == TOK_EOL)
-			tok_next();
+		skip_eol();
 		_else = statesment(ctx);
 		if (_else == NULL) {
 			print_warn("cant get stmt after 'else'\n");
@@ -722,6 +731,29 @@ err:
 static ast_node_t *
 process_for(struct syn_ctx *ctx)
 {
+	ast_node_t *expr1, *expr2, *expr3;
+	ast_node_t *body;
+
+	body = expr1 = expr2 = expr3 = NULL;
+	
+	if (match(TOK_LPAR == FALSE)) {
+		print_warn("'(' is missed\n");
+		goto err;
+	}
+
+
+	return ast_node_for_new(expr1, expr2, expr3, body);
+
+	err:
+
+	if (expr1 != NULL)
+		ast_node_unref(expr1);
+	if (expr2 != NULL)
+		ast_node_unref(expr2);
+	if (expr3 != NULL)
+		ast_node_unref(expr3);
+
+
 	return ast_node_stub_new();
 }
 

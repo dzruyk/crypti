@@ -466,7 +466,6 @@ finalize:
 	id_table_pop();
 	id_table_free(idtable);
 
-	//print_warn_and_die("WIP!\n");
 }
 
 void
@@ -490,6 +489,12 @@ traverse_cond(ast_node_t *tree)
 	}
 
 	eval_free(ev);
+}
+
+void
+traverse_for(ast_node_t *tree)
+{
+	print_warn_and_die("WIP!\n");
 }
 
 void
@@ -683,6 +688,7 @@ struct {
 	{AST_NODE_CALL, traverse_func_call},
 	{AST_NODE_SCOPE, traverse_scope},
 	{AST_NODE_IF, traverse_cond},
+	{AST_NODE_FOR, traverse_for},
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_NUM, traverse_num},
 	{AST_NODE_RETURN, traverse_return},

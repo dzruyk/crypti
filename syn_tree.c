@@ -14,6 +14,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_arr_t *arr;
 	ast_node_id_t *id;
 	ast_node_if_t *ifnode;
+	ast_node_for_t *fornode;
 	ast_node_return_t *ret;
 
 	int i, n;
@@ -48,6 +49,13 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(ifnode->_if);
 		ast_node_unref(ifnode->body);
 		ast_node_unref(ifnode->_else);
+		break;
+	case AST_NODE_FOR:
+		fornode = (ast_node_for_t *)tree;
+		ast_node_unref(fornode->expr1);
+		ast_node_unref(fornode->expr2);
+		ast_node_unref(fornode->expr3);
+		ast_node_unref(fornode->body);
 		break;
 	case AST_NODE_OP:
 	case AST_NODE_AS:
@@ -198,6 +206,24 @@ ast_node_if_new(ast_node_t *_if, ast_node_t *body, ast_node_t *_else)
 	res->body = body;
 	res->_else = _else;
 
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_for_new(ast_node_t *expr1, ast_node_t *expr2,
+    ast_node_t *expr3, ast_node_t *body)
+{
+	ast_node_for_t *res;
+
+	res = (ast_node_for_t *)
+	    ast_node_new(AST_NODE_FOR, sizeof(*res), ast_node_free);
+	
+	res->expr1 = expr1;
+	res->expr2 = expr2,
+	res->expr3 = expr3;
+
+	res->body = body;
+	
 	return AST_NODE(res);
 }
 
