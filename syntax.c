@@ -710,7 +710,7 @@ process_condition(struct syn_ctx *ctx)
 	} else
 		body = process_scope(ctx);
 	
-	if (body == NULL) {
+	if (nerrors != 0) {
 		print_warn("cant proc cond body\n");
 		goto err;
 	}
@@ -729,6 +729,11 @@ process_condition(struct syn_ctx *ctx)
 		//try to pop current_tok if it is TOK_EOL
 		if (lex_item_prev.id == TOK_EOL)
 			current_tok = TOK_EOL;
+	}
+
+	if (nerrors != 0) {
+		print_warn("processing if fail\n");
+		goto err;
 	}
 
 	return ast_node_if_new(_if, body, _else);

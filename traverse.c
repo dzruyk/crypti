@@ -532,11 +532,29 @@ traverse_while(ast_node_t *tree)
 {
 	ast_node_while_t *whilenode;
 	eval_t *ev;
+	res_type_t res;
 
 	whilenode = (ast_node_while_t *) tree;
 
+	helper.is_cycle++;
 	while (1) {
-		traverse(whilenode->cond);
+		res = traverse_body(whilenode->cond);
+
+		switch (res) {
+		case RES_ERROR:
+			print_warn("traverse while err\n");
+			goto finalize;
+		case RES_CONTINUE:
+			continue;
+		case RES_BREAK:
+			print_warn("break catch!\n");
+			goto finalize;
+		case RES_RETURN:
+			print_warn("unexpected return\n");
+			goto finalize;
+		default:
+			break;
+		}
 
 		ev = stack_pop();
 
@@ -545,13 +563,19 @@ traverse_while(ast_node_t *tree)
 
 		eval_free(ev);
 
-		traverse(whilenode->body);
+		if (whilenode->body != NULL)
+			traverse(whilenode->body);
 
 		if (nerrors != 0)
 			return;
 	}
 
+	helper.is_cycle--;
+
 	eval_free(ev);
+
+finalize:
+	return;
 }
 
 void
