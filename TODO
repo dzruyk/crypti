@@ -13,10 +13,10 @@
 12) function errors context when traverse body
 15) need to travese statesment list in functions
 16) check when assign res of function call to value(can be void)
-17) function argues. replace list with ast_node_t
-18) set value from different scope
 19) unused lex item field(op)??
 20) ast_node_return_t
 21) pass argues to funtion call by value, not by copy
 22) traverse_ctx( sad but need to dynamically allocate)
 23) may be need to get rel_op() between LPAR and RPAR
+24) stack of lex items(need to implement tok_prev()
+
