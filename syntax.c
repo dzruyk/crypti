@@ -715,7 +715,7 @@ process_condition(struct syn_ctx *ctx)
 		goto err;
 	}
 	
-	skip_eol();
+	//skip_eol();
 
 	if (match(TOK_ELSE) == TRUE) {
 		skip_eol();
@@ -727,8 +727,8 @@ process_condition(struct syn_ctx *ctx)
 	} else {
 		//FIXME: rewrite me
 		//try to pop current_tok if it is TOK_EOL
-		if (lex_item_prev.id == TOK_EOL)
-			current_tok = TOK_EOL;
+		//if (lex_item_prev.id == TOK_EOL)
+		//	current_tok = TOK_EOL;
 	}
 
 	if (nerrors != 0) {

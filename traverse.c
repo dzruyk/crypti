@@ -410,22 +410,55 @@ finalize:
 	id_table_free(idtable);
 }
 
+/*
+ * traverse tree and check trav_ctx structure
+ * returns:
+ * RES_CONTINUE, RES_BREAK - if traversal break/continue
+ * inside cycle(work with nesting)
+ * RES_RETURN - if traversal return inside function
+ * RES_OK if no errors recognised and without 
+ * break/continue/return meeting
+ * RES_ERROR otherwise
+ */
 res_type_t
 traverse_body(ast_node_t *tree)
 {
+	res_type_t res;
 
+	//FIXME: mb need rewrite me?
 	traverse(tree);
 
 	if (nerrors != 0)
 		return RES_ERROR;
-	else if (helper.is_continue > 0)
-		return RES_CONTINUE;
-	else if (helper.is_break > 0)
-		return RES_BREAK;
-	else if (helper.is_continue > 0)
-		return RES_RETURN;
-	else
-		return RES_OK;
+
+	else if (helper.is_continue > 0) {
+		if(helper.is_cycle > 0) {
+			res = RES_CONTINUE;
+		} else {
+			res = RES_ERROR;
+			helper.is_continue--;
+		}
+	} else if (helper.is_break > 0) {
+		if (helper.is_cycle > 0) {
+			res =  RES_BREAK;
+		} else {
+			res = RES_ERROR;
+			helper.is_break--;
+		}
+	} else if (helper.is_return > 0) {
+		if (helper.is_call > 0) {
+			res = RES_RETURN;
+		} else {
+			res = RES_ERROR;
+			helper.is_return--;
+		}
+	} else
+		res = RES_OK;
+	
+	if (res == RES_ERROR)
+		nerrors++;
+
+	return res;
 }
 
 void
@@ -446,16 +479,9 @@ traverse_scope(ast_node_t *tree)
 		res = traverse_body(next);
 		switch (res) {
 		case RES_ERROR:
-			print_warn("traverse scope err\n");
-			goto finalize;
 		case RES_CONTINUE:
-			print_warn("unexpected continue\n");
-			goto finalize;
 		case RES_BREAK:
-			print_warn("unexpected break\n");
-			goto finalize;
 		case RES_RETURN:
-			print_warn("unexpected return\n");
 			goto finalize;
 		default:
 			next = next->child;
@@ -537,24 +563,10 @@ traverse_while(ast_node_t *tree)
 	whilenode = (ast_node_while_t *) tree;
 
 	helper.is_cycle++;
-	while (1) {
-		res = traverse_body(whilenode->cond);
 
-		switch (res) {
-		case RES_ERROR:
-			print_warn("traverse while err\n");
-			goto finalize;
-		case RES_CONTINUE:
-			continue;
-		case RES_BREAK:
-			print_warn("break catch!\n");
-			goto finalize;
-		case RES_RETURN:
-			print_warn("unexpected return\n");
-			goto finalize;
-		default:
-			break;
-		}
+	while (1) {
+
+		traverse(whilenode->cond);
 
 		ev = stack_pop();
 
@@ -563,19 +575,35 @@ traverse_while(ast_node_t *tree)
 
 		eval_free(ev);
 
-		if (whilenode->body != NULL)
-			traverse(whilenode->body);
+		if (whilenode->body == NULL)
+			continue;
+			
+		res = traverse_body(whilenode->body);
 
+		switch (res) {
+		case RES_ERROR:
+			goto finalize;
+		case RES_CONTINUE:
+			helper.is_continue--;
+			continue;
+		case RES_BREAK:
+			helper.is_break--;
+			print_warn("break catch!\n");
+			goto finalize;
+		case RES_RETURN:
+			goto finalize;
+		default:
+			break;
+		}
 		if (nerrors != 0)
-			return;
+			goto finalize;
 	}
-
-	helper.is_cycle--;
 
 	eval_free(ev);
 
 finalize:
-	return;
+
+	helper.is_cycle--;
 }
 
 void
