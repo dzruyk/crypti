@@ -799,6 +799,20 @@ traverse_op(ast_node_t *tree)
 static void
 traverse_return(ast_node_t *tree)
 {
+	ast_node_return_t *rettree;
+
+	rettree = (ast_node_return_t *) tree;
+
+	if (rettree->retval == NULL) {
+		//FIXME: stub now(may be need to implement
+		// None type.
+		return;
+	} else {
+		traverse(rettree->retval);
+		//FIXME: return check?
+		return;
+	}
+	
 	helper.is_return++;
 	print_warn_and_die("return node traverse WIP!\n");
 }
