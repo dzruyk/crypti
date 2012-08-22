@@ -523,6 +523,7 @@ traverse_for(ast_node_t *tree)
 {
 	ast_node_for_t *fornode;
 	eval_t *ev;
+	res_type_t res;
 
 	fornode = (ast_node_for_t *)tree;
 
@@ -530,6 +531,8 @@ traverse_for(ast_node_t *tree)
 
 	if (nerrors != 0)
 		return;
+
+	helper.is_cycle++;
 
 	while (1) {
 
@@ -542,7 +545,24 @@ traverse_for(ast_node_t *tree)
 
 		eval_free(ev);
 
-		traverse(fornode->body);
+		res = traverse_body(fornode->body);
+
+		switch (res) {
+		case RES_ERROR:
+			goto finalize;
+		case RES_CONTINUE:
+			helper.is_continue--;
+			D(print_warn("continue catch!\n"));
+			break;
+		case RES_BREAK:
+			helper.is_break--;
+			D(print_warn("break catch!\n"));
+			goto finalize;
+		case RES_RETURN:
+			goto finalize;
+		default:
+			break;
+		}
 
 		traverse(fornode->expr3);
 
@@ -551,6 +571,9 @@ traverse_for(ast_node_t *tree)
 	}
 
 	eval_free(ev);
+
+finalize:
+	helper.is_cycle--;
 }
 
 void
@@ -585,10 +608,11 @@ traverse_while(ast_node_t *tree)
 			goto finalize;
 		case RES_CONTINUE:
 			helper.is_continue--;
+			D(print_warn("continue catch!\n"));
 			continue;
 		case RES_BREAK:
 			helper.is_break--;
-			print_warn("break catch!\n");
+			D(print_warn("break catch!\n"));
 			goto finalize;
 		case RES_RETURN:
 			goto finalize;
