@@ -26,3 +26,12 @@ a = {1,2,3,4}
 for (i=0; i < 4; i= i + 1)
 	print(a[i])
 
+
+#factorial function
+def factorial(i) {
+	if (i <= 0) {
+		return (1)
+	} else {
+		return i * factorial(i - 1);
+	}
+}
