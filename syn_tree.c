@@ -116,6 +116,7 @@ ast_node_func_free(ast_node_t *tree)
 	default:
 		print_warn_and_die("something wrong, no such type\n");
 	}
+	ast_node_unref(tree->child);
 
 	ufree(tree);
 }

@@ -23,6 +23,7 @@ typedef enum {
 	TOK_L_OR,
 	
 	TOK_B_AND,
+	TOK_B_XOR,
 	TOK_B_OR,
 
 	TOK_LPAR,

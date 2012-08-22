@@ -57,16 +57,21 @@ function_table_destroy_cb(func_t *item)
 	
 	if (item->is_lib == FALSE) {
 		int i;
-		ast_node_t *tmp, *prev;
 		
 		ufree(item->name);
 		
+
+		//FIXME: need to write non recursion finalize?
+		/*
+		ast_node_t *tmp, *prev;
 
 		for (tmp = prev = item->body; tmp != NULL; prev = tmp) {
 			tmp = prev->child;
 			ast_node_unref(prev);
 		}
-		
+		*/
+		ast_node_unref(item->body);
+
 		for (i = 0; i < item->nargs; i++)
 			ufree(item->args[i]);
 		ufree(item->args);

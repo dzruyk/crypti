@@ -57,6 +57,9 @@ static ast_node_t *assign(ast_node_t *lvalue);
 
 static ast_node_t *logic_disj();
 static ast_node_t *logic_conj();
+static ast_node_t *bool_or();
+static ast_node_t *bool_xor();
+static ast_node_t *bool_and();
 static ast_node_t *equity();
 static ast_node_t *rel_op();
 
@@ -379,7 +382,6 @@ err:
 		ast_node_unref(right);
 	ast_node_unref(lvalue);
 	return ast_node_stub_new();
-
 }
 
 static ast_node_t *
@@ -404,8 +406,6 @@ logic_disj()
 		}
 		result = ast_node_op_new(result, right, OP_L_OR);
 	}
-	return result;
-
 }
 
 static ast_node_t *
@@ -413,7 +413,7 @@ logic_conj()
 {
 	ast_node_t *right, *result;
 
-	result = equity();
+	result = bool_or();
 
 	if (result == NULL)
 		return NULL;
@@ -422,13 +422,85 @@ logic_conj()
 		if(match(TOK_L_AND) == FALSE)
 			return result;
 		
-		right = equity();
+		right = bool_or();
 		if (right == NULL) {
 			nerrors++;
 			print_warn("uncomplited eq expression\n");
 			right = ast_node_stub_new();
 		}
 		result = ast_node_op_new(result, right, OP_L_AND);
+	}
+}
+
+static ast_node_t *
+bool_or()
+{
+	ast_node_t *right, *result;
+
+	result = bool_xor();
+
+	if (result == NULL)
+		return NULL;
+
+	while (TRUE) {
+		if (match(TOK_B_OR) == FALSE)
+			return result;
+
+		right = bool_xor();
+		if (right == NULL) {
+			nerrors++;
+			print_warn("uncomplited bool or expression\n");
+			right = ast_node_stub_new();
+		}
+		result = ast_node_op_new(result, right, OP_B_OR);
+	}
+}
+
+static ast_node_t *
+bool_xor()
+{
+	ast_node_t *right, *result;
+
+	result = bool_and();
+
+	if (result == NULL)
+		return NULL;
+
+	while (TRUE) {
+		if (match(TOK_B_XOR) == FALSE)
+			return result;
+
+		right = bool_and();
+		if (right == NULL) {
+			nerrors++;
+			print_warn("uncomplited bool or expression\n");
+			right = ast_node_stub_new();
+		}
+		result = ast_node_op_new(result, right, OP_B_XOR);
+	}
+}
+
+static ast_node_t *
+bool_and()
+{
+	ast_node_t *right, *result;
+
+	result = equity();
+
+	if (result == NULL)
+		return NULL;
+
+	while (TRUE) {
+		if (match(TOK_B_AND) == FALSE)
+			return result;
+
+		right = equity();
+		if (right == NULL) {
+			nerrors++;
+			print_warn("uncomplited bool or expression\n");
+			right = ast_node_stub_new();
+		}
+		result = ast_node_op_new(result, right, OP_B_AND);
 	}
 	return result;
 }
@@ -466,7 +538,6 @@ equity()
 		result = ast_node_op_new(result, right, op);
 	}
 	return result;
-
 }
 
 static ast_node_t *

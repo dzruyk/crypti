@@ -136,6 +136,11 @@ begin:
 		lex_item.id = lex_item.op = TOK_B_OR;
 		
 		return TOK_B_OR;
+	case '^':
+		peek = ' ';
+		lex_item.id = lex_item.op = TOK_B_XOR;
+
+		return TOK_B_XOR;
 	case '(':
 		peek = ' ';
 		lex_item.id = lex_item.op = TOK_LPAR;
