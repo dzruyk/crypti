@@ -19,4 +19,4 @@
 22) traverse_ctx( sad but need to dynamically allocate)
 23) may be need to get rel_op() between LPAR and RPAR
 24) stack of lex items(need to implement tok_prev()
-
+25) implement STACK_POP_OR_WARN wrapper (need to reduce overhead in traverse.c)

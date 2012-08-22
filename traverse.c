@@ -21,10 +21,8 @@ void set_value_id(id_item_t *item, eval_t *ev);
 typedef void (*traverse_cb)(ast_node_t *tree);
 
 struct trav_ctx {
-	//experimental
 	int is_call;
 	int is_cycle;
-	//
 	
 	int is_return;
 	int is_break;
@@ -154,6 +152,11 @@ traverse_access(ast_node_t *tree)
 	traverse(acc->ind);
 	
 	evnum = stack_pop();
+	if (evnum == NULL) {
+		print_warn("cant get operand\n");
+		nerrors++;
+		return;
+	}
 	
 	switch (evnum->type) {
 	case EVAL_NUM:
@@ -168,6 +171,8 @@ traverse_access(ast_node_t *tree)
 		nerrors++;
 		return;
 	}
+
+	eval_free(evnum);
 
 	resev = eval_num_new(num);
 	stack_push(resev);
@@ -508,6 +513,12 @@ traverse_cond(ast_node_t *tree)
 		return;
 
 	ev = stack_pop();
+	if (ev == NULL) {
+		print_warn("cant get operand\n");
+		nerrors++;
+		return;
+	}
+
 
 	if (eval_is_zero(ev) == FALSE) {
 		traverse(ifnode->body);
@@ -539,6 +550,11 @@ traverse_for(ast_node_t *tree)
 		traverse(fornode->expr2);
 
 		ev = stack_pop();
+		if (ev == NULL) {
+			print_warn("cant get operand\n");
+			nerrors++;
+			goto finalize;
+		}
 
 		if (eval_is_zero(ev) == TRUE)
 			break;
@@ -592,6 +608,11 @@ traverse_while(ast_node_t *tree)
 		traverse(whilenode->cond);
 
 		ev = stack_pop();
+		if (ev == NULL) {
+			print_warn("cant get operand\n");
+			nerrors++;
+			goto finalize;
+		}
 
 		if (eval_is_zero(ev) == TRUE)
 			break;
@@ -626,7 +647,6 @@ traverse_while(ast_node_t *tree)
 	eval_free(ev);
 
 finalize:
-
 	helper.is_cycle--;
 }
 
@@ -759,7 +779,7 @@ traverse_as_rest(ast_node_t *tree)
 static void
 traverse_as(ast_node_t *tree)
 {
-	return_if_fail(tree == NULL);
+	return_if_fail(tree != NULL);
 
 	eval_t *right;
 
@@ -769,6 +789,12 @@ traverse_as(ast_node_t *tree)
 		return;
 
 	right = stack_pop();
+	if (right == NULL) {
+		nerrors++;
+		print_warn("cant get operand");
+		return;
+	}
+
 	eval_free(right);
 }
 

@@ -26,6 +26,10 @@ a = {1,2,3,4}
 for (i=0; i < 4; i= i + 1)
 	print(a[i])
 
+#double for test
+for (i = 0; i < 15; i = i + 1)
+	for(j = 0; j < 15; j = j + 1)
+		print(j*i);
 
 #factorial function
 def factorial(i) {
