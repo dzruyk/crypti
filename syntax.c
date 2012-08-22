@@ -1166,9 +1166,9 @@ array_init()
 		}
 
 		if (len >= sz) {
-			sz += 4 * sizeof (*arr);
+			sz += 4;
 
-			arr = realloc_or_die(arr, sz);
+			arr = realloc_or_die(arr, sz * sizeof (*arr));
 		}
 		
 		arr[len++] = item;

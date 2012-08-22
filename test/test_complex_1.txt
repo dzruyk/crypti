@@ -20,3 +20,9 @@ for (i = 0; i < 25; i = i+1) {
 	print(i)
 }
 
+#for/array test
+a = {1,2,3,4}
+
+for (i=0; i < 4; i= i + 1)
+	print(a[i])
+
