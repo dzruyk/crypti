@@ -7,6 +7,7 @@
 typedef enum {
 	ID_NUM,
 	ID_ARR,
+	ID_NONE,
 	ID_UNKNOWN,
 } id_type_t;
 

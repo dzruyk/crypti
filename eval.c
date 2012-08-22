@@ -40,7 +40,8 @@ eval_arr_new(arr_t *arr)
 void
 eval_free(eval_t *eval)
 {
-	return_if_fail(eval);
+	if (eval == NULL)
+		return;
 	
 	switch(eval->type) {
 	case EVAL_NUM:
@@ -73,6 +74,8 @@ eval_is_zero(eval_t *eval)
 eval_t *
 eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 {
+	assert(left != NULL && right != NULL);
+
 	eval_t *ev;
 	int l, r, res;
 	

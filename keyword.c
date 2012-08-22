@@ -26,6 +26,7 @@ keyword_table_item_t keywords[] =  {
 	{TOK_CONTINUE, "continue"},
 	{TOK_BREAK, "break"},
 	{TOK_RETURN, "return"},
+	{TOK_NONE, "None"},
 };
 
 

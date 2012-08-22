@@ -52,6 +52,9 @@ typedef enum {
 	TOK_BREAK,
 	TOK_RETURN,
 
+	/* specific tokens */
+	TOK_NONE,
+
 	TOK_EOF,
 	TOK_UNKNOWN,
 } tok_t;

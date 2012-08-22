@@ -739,6 +739,11 @@ traverse_as_rest(ast_node_t *tree)
 		return;
 
 	right = stack_pop();
+	if (right == NULL) {
+		nerrors++;
+		print_warn("cant get operand");
+		return;
+	}
 
 	set_value_node(ltree, right);
 
@@ -754,6 +759,8 @@ traverse_as_rest(ast_node_t *tree)
 static void
 traverse_as(ast_node_t *tree)
 {
+	return_if_fail(tree == NULL);
+
 	eval_t *right;
 
 	traverse_as_rest(tree);
@@ -781,19 +788,28 @@ traverse_op(ast_node_t *tree)
 	
 	right = stack_pop();
 	left = stack_pop();
+
+	if (right == NULL || left == NULL) {
+		nerrors++;
+		print_warn("cant get operand\n");
+		goto finalize;
+	}
 	
 	res = eval_process_op(left, right, optree->opcode);
-
-	eval_free(left);
-	eval_free(right);
 	
 	if (res == NULL) {
 		nerrors++;
 		print_warn("operation error\n");
-		return;
+		goto finalize;
 	}
 	
 	stack_push(res);
+
+finalize:
+
+	eval_free(left);
+	eval_free(right);
+
 }
 
 static void
