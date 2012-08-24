@@ -846,7 +846,8 @@ process_for(struct syn_ctx *ctx)
 		goto err;
 	}
 
-	expr3 = expr();
+	if (current_tok != TOK_RPAR)
+		expr3 = expr();
 	
 	if (match(TOK_RPAR) == FALSE) {
 		print_warn("')' is missed\n");
@@ -903,6 +904,8 @@ process_while(struct syn_ctx *ctx)
 		goto err;
 	}
 
+	//FIXME: need to handle (void) and print appropriate
+	//error message.
 	cond = logic_disj();
 
 	if (match(TOK_RPAR) == FALSE) {

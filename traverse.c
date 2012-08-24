@@ -500,45 +500,72 @@ finalize:
 
 }
 
-void
+
+/*
+ * Traverse condition, check result,
+ * inc error counter if need.
+ * returns:
+ * TRUE if condition true,
+ * FALSE otherwise(condition false or errors occured)
+ */
+boolean_t
 traverse_cond(ast_node_t *tree)
 {
-	ast_node_if_t *ifnode;
 	eval_t *ev;
+	boolean_t ret;
 
-	ifnode = (ast_node_if_t *) tree;
-	
-	traverse(ifnode->_if);
+	traverse(tree);
+
 	if (nerrors != 0)
-		return;
+		return FALSE;
 
 	ev = stack_pop();
 	if (ev == NULL) {
 		print_warn("cant get operand\n");
 		nerrors++;
-		return;
+		return FALSE;
 	}
+	
+	if (eval_is_zero(ev) == TRUE)
+		ret = FALSE;
+	else
+		ret = TRUE;
 
+	eval_free(ev);
 
-	if (eval_is_zero(ev) == FALSE) {
+	return ret;
+}
+
+void
+traverse_if(ast_node_t *tree)
+{
+	ast_node_if_t *ifnode;
+	boolean_t ret;
+
+	ifnode = (ast_node_if_t *) tree;
+
+	ret = traverse_cond(ifnode->_if);
+
+	if (nerrors != 0)
+		return;
+
+	if (ret == TRUE) {
 		traverse(ifnode->body);
 	} else if (ifnode->_else != NULL) {
 		traverse(ifnode->_else);
 	}
-
-	eval_free(ev);
 }
 
 void
 traverse_for(ast_node_t *tree)
 {
 	ast_node_for_t *fornode;
-	eval_t *ev;
 	res_type_t res;
 
 	fornode = (ast_node_for_t *)tree;
 
-	traverse(fornode->expr1);
+	if (fornode->expr1 != NULL)
+		traverse(fornode->expr1);
 
 	if (nerrors != 0)
 		return;
@@ -547,19 +574,14 @@ traverse_for(ast_node_t *tree)
 
 	while (1) {
 
-		traverse(fornode->expr2);
+		if (fornode->expr2 != NULL) {
+			boolean_t ret;
 
-		ev = stack_pop();
-		if (ev == NULL) {
-			print_warn("cant get operand\n");
-			nerrors++;
-			goto finalize;
+			ret = traverse_cond(fornode->expr2);
+			
+			if (ret == FALSE)
+				goto finalize;
 		}
-
-		if (eval_is_zero(ev) == TRUE)
-			break;
-
-		eval_free(ev);
 
 		res = traverse_body(fornode->body);
 
@@ -580,13 +602,12 @@ traverse_for(ast_node_t *tree)
 			break;
 		}
 
-		traverse(fornode->expr3);
+		if (fornode->expr3 != NULL)
+			traverse(fornode->expr3);
 
 		if (nerrors != 0)
 			return;
 	}
-
-	eval_free(ev);
 
 finalize:
 	helper.is_cycle--;
@@ -596,7 +617,6 @@ void
 traverse_while(ast_node_t *tree)
 {
 	ast_node_while_t *whilenode;
-	eval_t *ev;
 	res_type_t res;
 
 	whilenode = (ast_node_while_t *) tree;
@@ -604,20 +624,12 @@ traverse_while(ast_node_t *tree)
 	helper.is_cycle++;
 
 	while (1) {
+		boolean_t ret;
 
-		traverse(whilenode->cond);
+		ret = traverse_cond(whilenode->cond);
 
-		ev = stack_pop();
-		if (ev == NULL) {
-			print_warn("cant get operand\n");
-			nerrors++;
+		if (ret == FALSE)
 			goto finalize;
-		}
-
-		if (eval_is_zero(ev) == TRUE)
-			break;
-
-		eval_free(ev);
 
 		if (whilenode->body == NULL)
 			continue;
@@ -643,8 +655,6 @@ traverse_while(ast_node_t *tree)
 		if (nerrors != 0)
 			goto finalize;
 	}
-
-	eval_free(ev);
 
 finalize:
 	helper.is_cycle--;
@@ -888,7 +898,7 @@ struct {
 	{AST_NODE_DEF, traverse_func_def},
 	{AST_NODE_CALL, traverse_func_call},
 	{AST_NODE_SCOPE, traverse_scope},
-	{AST_NODE_IF, traverse_cond},
+	{AST_NODE_IF, traverse_if},
 	{AST_NODE_FOR, traverse_for},
 	{AST_NODE_WHILE, traverse_while},
 	{AST_NODE_ID, traverse_id},
