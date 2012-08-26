@@ -1,116 +1,65 @@
 Description.
 
 SYNTAX:
-	prog 	->	statement
+	prog 		->	global_expr
 	
-	statement->	expr = statement
-		 |	expr
+	global_expr	->	def func_name(argues) stmts
+			|	stmts
+
+	stmts		->	statesment
 	
-	expr	->	expr + term
-		|	expr - term
-		|	term
+	statesment	->	{ stmts }
+			|	if (logic_or) statesment [else statesment]
+			|	for (expr; logic_or; expr) statesment
+			|	while(logic_or) statesment
+			|	break
+			|	continue
+			|	return [expr]
+			|	expr
 	
-	term	->	term * factor
-		|	term / factor
-		|	factor
-	
-	factor	->	number
-		|	id
-		|	(statement)
+	expr		->	logic_or [ = expr]
 
+	logic_or	->	logic_and [ || logic_or]
 
-ADAPTED SYNTAX:
-	prog 		->	body
-	
+	logic_and	->	bool_or [ && bool_and]
 
-	decls		->	func EOL decls
-			|	something EOL decls
-			|	EMPTY
+	bool_or		->	bool_xor [ | bool_or]
 
+	bool_xor	->	bool_and [ ^ bool_xor]
 
-	func		->	"def" id(list_decl) block
+	bool_and	->	equity	[ & bool_and]
 
-	list_decl	->	id list_decl_rest
-			|	EMPTY
-	
-	list_decl_rest	->	, id list_call_rest
-			|	EMPTY
+	equity		->	rel_op [ == equity]
+
+	rel_op		->	add_expr [ > rel_op]
+			|	add_expr [ >= rel_op]
+			|	add_expr [ < rel_op]
+			|	add_expr [ <= rel_op]
 	
 
-	stmts		->	statement EOL stmts
+	add_expr	->	mul_expr [ + add_expr]
+			|	mul_expr [ - add_expr]
+
+	mul_expr	->	term [ * mul_expr]
+			|	term [ / mul_expr]
+
 	
-	statesent	->	IF (boolean) block ELSE block
-			|	DO block WHILE (boolean)
-			|	WHILE(boolean) block
-			|	FOR (boolean; boolean; boolean) block
-			|	identifier = boolean						//FIXME!
-			|	identifier = { tuple_set }
-			|	block
-
-
-	block		->	{stmts block}
-			|	EMPTY								//FIXME!
-
-	boolean		->	join || boolean
+	term		->	(expr)
+			|	factor
 	
-	join		->	equity && join 
-	
-	equity		->	rel == equity
-			|	rel != equity
-
-	rel		->	expr > rel
-			|	expr >= rel
-			|	expr < rel
-			|	expr <= rel
-	
-	expr		->	term expr_rest
-
-	expr_rest	->	+ term expr_rest
-			|	- term expr_rest
-			|	EMPTY
-
-	term		->	factor term_rest
-	
-	term_rest	->	* factor term_rest
-			|	/ factor term_rest
-			|	EMPTY
-
 	factor		->	identifier
 			|	number
-			|	(boolean)
 			|	EMPTY
 
 	identifier	->	id
-			|	id[boolean]			//array reference
-			|	id (tuple_set)			//function call
+			|	id[logic_or]			//array reference
+			|	id ([expr, ...])			//function call
 	
 
-	tuple_set	->	boolean tuple_rest
-			|	EMPTY
-
-	tuple_rest	->	, boolean tuple_rest
-			|	EMPTY
-
-
-TERMINALS:
-	ID	(name, value)
-	NUMBER	(value)
-	LPARENTH
-	RPARENTH
-	EQ
-	PLUS
-	MINUS
-	MUL
-	DIV
-	EOL
-	EOF
-	UNKNOWN
 
 
 REMARK:
 1)	in	id[statesment] statesment cant be EMPTY
 2)	in functions we cant define functions
 3)	we can assign only to variables
-
-
 

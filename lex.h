@@ -54,7 +54,6 @@ typedef enum {
 	TOK_RETURN,
 
 	/* specific tokens */
-	TOK_NONE,
 
 	TOK_EOF,
 	TOK_UNKNOWN,

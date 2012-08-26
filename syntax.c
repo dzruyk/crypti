@@ -55,8 +55,8 @@ static ast_node_t *expr();
 
 static ast_node_t *assign(ast_node_t *lvalue);
 
-static ast_node_t *logic_disj();
-static ast_node_t *logic_conj();
+static ast_node_t *logic_or();
+static ast_node_t *logic_and();
 static ast_node_t *bool_or();
 static ast_node_t *bool_xor();
 static ast_node_t *bool_and();
@@ -72,7 +72,7 @@ static ast_node_t *factor();
 static ast_node_t *number();
 static ast_node_t *identifier();
 
-static ast_node_t *process_condition(struct syn_ctx *ctx);
+static ast_node_t *process_if(struct syn_ctx *ctx);
 static ast_node_t *process_for(struct syn_ctx *ctx);
 static ast_node_t *process_do(struct syn_ctx *ctx);
 static ast_node_t *process_while(struct syn_ctx *ctx);
@@ -302,7 +302,7 @@ statesment(struct syn_ctx *ctx)
 		return process_scope(ctx);
 
 	else if (match(TOK_IF))
-		return process_condition(ctx);
+		return process_if(ctx);
 	
 	else if (match(TOK_FOR))
 		return process_for(ctx);
@@ -333,7 +333,7 @@ expr()
 {
 	ast_node_t *result;
 	
-	result = logic_disj();
+	result = logic_or();
 	if (result == NULL)
 		return NULL;
 
@@ -385,11 +385,11 @@ err:
 }
 
 static ast_node_t *
-logic_disj()
+logic_or()
 {
 	ast_node_t *right, *result;
 
-	result = logic_conj();
+	result = logic_and();
 
 	if (result == NULL)
 		return NULL;
@@ -398,7 +398,7 @@ logic_disj()
 		if (match(TOK_L_OR) == FALSE)
 			return result;
 
-		right = logic_conj();
+		right = logic_and();
 		if (right == NULL) {
 			nerrors++;
 			print_warn("uncomplited eq expression\n");
@@ -409,7 +409,7 @@ logic_disj()
 }
 
 static ast_node_t *
-logic_conj()
+logic_and()
 {
 	ast_node_t *right, *result;
 
@@ -752,7 +752,7 @@ identifier()
 }
 
 static ast_node_t *
-process_condition(struct syn_ctx *ctx)
+process_if(struct syn_ctx *ctx)
 {
 	ast_node_t *_if, *body, *_else;
 
@@ -764,7 +764,7 @@ process_condition(struct syn_ctx *ctx)
 	}
 
 	//FIXME: check nerrors(now haven't time)
-	_if = logic_disj();
+	_if = logic_or();
 	if (_if == NULL) {
 		print_warn("expected expression\n");
 		goto err;
@@ -839,7 +839,7 @@ process_for(struct syn_ctx *ctx)
 		goto err;
 	}
 
-	expr2 = logic_disj();
+	expr2 = logic_or();
 
 	if (match(TOK_SEMICOLON) == FALSE) {
 		print_warn("semicolon expected\n");
@@ -906,7 +906,7 @@ process_while(struct syn_ctx *ctx)
 
 	//FIXME: need to handle (void) and print appropriate
 	//error message.
-	cond = logic_disj();
+	cond = logic_or();
 
 	if (match(TOK_RPAR) == FALSE) {
 		print_warn("')' is missed\n");
@@ -1203,7 +1203,7 @@ array_access()
 	
 	tok_next();
 	
-	ind = logic_disj();
+	ind = logic_or();
 	if (ind == NULL) {
 		nerrors++;
 		print_warn("null expression in brackets");
@@ -1232,7 +1232,7 @@ array_init()
 	len = sz = 0;
 
 	do {
-		item = logic_disj();
+		item = logic_or();
 		if (item == NULL) {
 			nerrors++;
 			print_warn("uncomplited tuple\n");

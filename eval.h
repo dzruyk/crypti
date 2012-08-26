@@ -6,7 +6,6 @@
 #include "syn_tree.h"
 
 typedef enum {
-	EVAL_NONE,
 	EVAL_NUM,
 	EVAL_ARR,
 } eval_type_t;
@@ -19,11 +18,6 @@ typedef struct {
 		arr_t *arr;
 	};
 } eval_t;
-
-/*
- * create new None eval
- */
-eval_t *eval_none_new();
 
 /*
  * create new num eval

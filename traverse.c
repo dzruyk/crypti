@@ -771,7 +771,7 @@ traverse_as_rest(ast_node_t *tree)
 	right = stack_pop();
 	if (right == NULL) {
 		nerrors++;
-		print_warn("cant get operand");
+		print_warn("cant get operand\n");
 		return;
 	}
 
@@ -856,8 +856,8 @@ traverse_return(ast_node_t *tree)
 	rettree = (ast_node_return_t *) tree;
 
 	if (rettree->retval == NULL) {
-		//FIXME: stub now(may be need to implement
-		// None type.
+		//NOTE: if func res is NULL and it
+		//assign to some val then runtime err
 		return;
 	} else {
 		traverse(rettree->retval);
