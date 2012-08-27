@@ -27,7 +27,7 @@ ast_node_free(ast_node_t *tree)
 		break;
 	case AST_NODE_ID:
 		id = (ast_node_id_t *)tree;
-		free(id->name);
+		ufree(id->name);
 		break;
 	case AST_NODE_ARR:
 		//FIXME: CHECK_ME
@@ -35,10 +35,11 @@ ast_node_free(ast_node_t *tree)
 		n = arr->sz;
 		for (i = 0; i < n; i++)
 			ast_node_unref(arr->arr[i]);
+		ufree(arr->arr);
 		break;
 	case AST_NODE_ACCESS:
 		acc = (ast_node_access_t *)tree;
-		free(acc->name);
+		ufree(acc->name);
 		ast_node_unref(acc->ind);
 		break;
 	case AST_NODE_RETURN:
@@ -78,7 +79,7 @@ ast_node_free(ast_node_t *tree)
 
 	ast_node_unref(tree->child);
 
-	free(tree);
+	ufree(tree);
 }
 
 static void

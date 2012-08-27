@@ -1,5 +1,4 @@
 
-#FIXME: buggy implementation
 #array test script
 
 arr = {5, 6, 1, 12, 4, 0, -2}
@@ -15,7 +14,7 @@ for (i = 0; i < arr_len; i = i + 1) {
 	if (min != i) {
 		tmp = arr[min]
 		arr[min] = arr[i]
-		arr[i] = arr[min]
+		arr[i] = tmp
 	}
 
 }
@@ -23,3 +22,5 @@ for (i = 0; i < arr_len; i = i + 1) {
 for (i = 0; i < arr_len; i = i + 1) {
 	print(arr[i])
 }
+
+del(arr)

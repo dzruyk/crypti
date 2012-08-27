@@ -113,6 +113,8 @@ traverse_arr(ast_node_t *tree)
 
 		if (arr_set_item(arr, i, res) != ret_ok)
 			print_warn_and_die("cant set item\n");
+
+		eval_free(ev);
 	}
 	
 	ev = eval_arr_new(arr);
@@ -683,23 +685,22 @@ set_value_node_access(ast_node_access_t *node, eval_t *ev)
 	eval_t *ind;
 	id_item_t *item;
 
+	ind = NULL;
+
 	if (ev->type != EVAL_NUM) {
 		print_warn("try assign to arr not number\n");
-		nerrors++;
-		return;
+		goto err;
 	}
 	
 	item = id_table_lookup_all(node->name);
 	if (item == NULL) {
 		print_warn("symb undefined\n");
-		nerrors++;
-		return;
+		goto err;
 	}
 
 	if (item->type != ID_ARR) {
 		print_warn("%s is not array\n", item->name);
-		nerrors++;
-		return;
+		goto err;
 	}
 	
 	traverse(node->ind);
@@ -707,15 +708,23 @@ set_value_node_access(ast_node_access_t *node, eval_t *ev)
 	
 	if (ind->type != EVAL_NUM) {
 		print_warn("index must be number\n");
-		nerrors++;
-		return;
+		goto err;
 	}
 
 	if (arr_set_item(item->arr, ind->value, ev->value) != ret_ok) {
 		print_warn("out of range\n");
-		nerrors++;
-		return;
+		goto err;
 	}
+
+	eval_free(ind);
+
+	return;
+err:
+	nerrors++;
+
+	if (ind != NULL)
+		eval_free(ind);
+
 }
 
 static void
