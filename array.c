@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "array.h"
 
@@ -12,11 +13,13 @@ arr_new(int n, int item_sz)
 	arr->n = n;
 	arr->item_sz = item_sz;
 	arr->ptr = malloc_or_die(item_sz * n);
+	
+	memset(arr->ptr, 0, item_sz * n);
 
 	return arr;
 }
 
-//WARNING: be care when will introduce large numbers
+//FIXME: be care when will introduce large numbers
 ret_t
 arr_set_item(arr_t *arr, int ind, int value)
 {
@@ -49,8 +52,14 @@ arr_get_item(arr_t *arr, int ind, int *value)
 void
 arr_free(arr_t *arr)
 {
-	free(arr->ptr);
-	free(arr);
+	int i;
+
+	/*
+	for (i = 0; i < arr->n; i++)
+		ufree(arr->ptr[i]);
+	*/
+	ufree(arr->ptr);
+	ufree(arr);
 }
 
 
