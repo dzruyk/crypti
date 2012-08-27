@@ -84,6 +84,8 @@ static ast_node_t *process_return(struct syn_ctx *ctx);
 
 static ast_node_t *process_scope(struct syn_ctx *ctx);
 
+static ast_node_t *process_import();
+
 static ast_node_t *process_function();
 static ret_t process_function_argu(ast_node_func_t *func);
 static ret_t process_function_body(ast_node_func_t *func);
@@ -92,6 +94,7 @@ static ast_node_t *function_call();
 static ast_node_t *array_access();
 static ast_node_t *array_init();
 
+extern struct lex_item lex_item_future;
 extern struct lex_item lex_item;
 extern struct lex_item lex_item_prev;
 extern tok_t current_tok;
@@ -102,30 +105,63 @@ int syntax_is_eof = 0;
 static int nerrors;
 
 struct lex_item lex_item_prev;
-tok_t current_tok;
+struct lex_item lex_item_future;
 
+tok_t current_tok;
+int exist_stored_tokens = FALSE;
 
 static void
-update_prev_token()
+update_token(struct lex_item *dst, const struct lex_item *src)
 {
-	lex_item_prev.id = lex_item.id;
-	switch(lex_item.id) {
+	dst->id = src->id;
+	switch(src->id) {
 	case TOK_ID:
-		lex_item_prev.name = lex_item.name;
+		dst->name = src->name;
 		break;
 	case TOK_NUM:
-		lex_item_prev.num = lex_item.num;
+		dst->num = src->num;
 		break;
 	default:
-		lex_item_prev.op = lex_item.op;
+		dst->op = src->op;
 	}
 }
 
 static void
+update_prev_token()
+{
+	update_token(&lex_item_prev, &lex_item);
+}
+
+
+static void
 tok_next()
 {
-	update_prev_token();
-	current_tok = get_next_token();
+	if (exist_stored_tokens) {
+		update_prev_token();
+		update_token(&lex_item, &lex_item_future);
+		current_tok = lex_item.id;
+		exist_stored_tokens = FALSE;
+	} else {
+		// no buffered tokens
+		update_prev_token();
+		current_tok = get_next_token();
+	}
+}
+
+/*
+ * pops last token to token stream
+ * WARN: only one pushback guaranteed
+ */
+static void
+tok_pop()
+{
+	exist_stored_tokens = TRUE;
+
+	update_token(&lex_item_future, &lex_item);
+	update_token(&lex_item, &lex_item_prev);
+
+	current_tok = lex_item.id;
+
 }
 
 static inline boolean_t
@@ -224,6 +260,9 @@ global_expr()
 	//Define new function
 	if (match(TOK_DEF))
 		return process_function();
+	
+	else if (match(TOK_IMPORT))
+		return process_import();
 
 	ctx = syn_ctx_new();
 	ctx->type = CTX_GLOBAL;
@@ -790,6 +829,7 @@ static ast_node_t *
 process_if(struct syn_ctx *ctx)
 {
 	ast_node_t *_if, *body, *_else;
+	boolean_t skipped;
 
 	body = _if = _else = NULL;
 
@@ -809,7 +849,7 @@ process_if(struct syn_ctx *ctx)
 		print_warn("')' is missed\n");
 		goto err;
 	}
-	
+
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
 		body = statesment(ctx);
@@ -821,7 +861,7 @@ process_if(struct syn_ctx *ctx)
 		goto err;
 	}
 	
-	//skip_eol();
+	skipped = skip_eol();
 
 	if (match(TOK_ELSE) == TRUE) {
 		skip_eol();
@@ -832,9 +872,8 @@ process_if(struct syn_ctx *ctx)
 		}
 	} else {
 		//FIXME: rewrite me
-		//try to pop current_tok if it is TOK_EOL
-		//if (lex_item_prev.id == TOK_EOL)
-		//	current_tok = TOK_EOL;
+		if (skipped)
+			tok_pop();
 	}
 
 	if (nerrors != 0) {
@@ -1033,6 +1072,13 @@ process_scope(struct syn_ctx *ctx)
 err:
 	
 	ast_node_unref(node);
+	return ast_node_stub_new();
+}
+
+static ast_node_t *
+process_import()
+{
+	print_warn_and_die("import WIP!\n");
 	return ast_node_stub_new();
 }
 

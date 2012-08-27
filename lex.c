@@ -7,11 +7,15 @@
 
 static char peek = ' ';
 
+//FILE *input = stdin;
+//simple_stub
+#define input stdin
+
 static void
 skip_comment()
 {
 	do
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 	while (peek != '\n');
 }
 
@@ -22,13 +26,13 @@ get_next_token()
 begin:
 
 	for (; peek == ' ' || peek == '\t';)
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 	
 	if (isdigit(peek)) {
 		int num = 0;
 		do {
 			num = num * 10 + peek - '0';
-			peek = fgetc(stdin);
+			peek = fgetc(input);
 		} while (isdigit(peek));
 		
 		lex_item.id = TOK_NUM;
@@ -50,7 +54,7 @@ begin:
 			}
 
 			s[used++] = peek;
-			peek = fgetc(stdin);
+			peek = fgetc(input);
 		} while(isalnum(peek) || peek == '_');
 
 		s[used++] = '\0';
@@ -72,7 +76,7 @@ begin:
 
 	switch (peek) {
 	case '=':
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 		if (peek == '=') {
 			lex_item.id = lex_item.op = TOK_EQ;
 			peek = ' ';
@@ -82,7 +86,7 @@ begin:
 		
 		return TOK_AS;
 	case '!':
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 		if (peek == '=') {
 			peek = ' ';
 			lex_item.id = lex_item.op = TOK_NEQ;
@@ -93,7 +97,7 @@ begin:
 
 		return TOK_NOT;
 	case '<':
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 		if (peek == '=') {
 			peek = ' ';
 			lex_item.id = lex_item.op = TOK_LE;
@@ -109,7 +113,7 @@ begin:
 		
 		return TOK_LO;
 	case '>':
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 		if (peek == '=') {
 			peek = ' ';
 			lex_item.id = lex_item.op = TOK_GE;
@@ -125,7 +129,7 @@ begin:
 		
 		return TOK_GR;
 	case '&':
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 		if (peek == '&') {
 			peek = ' ';
 			lex_item.id = lex_item.op = TOK_L_AND;
@@ -136,7 +140,7 @@ begin:
 		
 		return TOK_B_AND;
 	case '|':
-		peek = fgetc(stdin);
+		peek = fgetc(input);
 		if (peek == '|') {
 			peek = ' ';
 			lex_item.id = lex_item.op = TOK_L_OR;

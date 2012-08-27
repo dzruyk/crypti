@@ -54,6 +54,7 @@ typedef enum {
 	TOK_CONTINUE,
 	TOK_BREAK,
 	TOK_RETURN,
+	TOK_IMPORT,
 
 	/* specific tokens */
 
