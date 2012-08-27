@@ -1,0 +1,25 @@
+
+#FIXME: buggy implementation
+#array test script
+
+arr = {5, 6, 1, 12, 4, 0, -2}
+arr_len = 7
+
+for (i = 0; i < arr_len; i = i + 1) {
+	min = i;
+	for (j = i + 1; j < arr_len; j = j + 1) {
+		if (arr[min] > arr[j]) {
+			min = j
+		}
+	}
+	if (min != i) {
+		tmp = arr[min]
+		arr[min] = arr[i]
+		arr[i] = arr[min]
+	}
+
+}
+
+for (i = 0; i < arr_len; i = i + 1) {
+	print(arr[i])
+}
