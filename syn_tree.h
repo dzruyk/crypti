@@ -15,6 +15,8 @@ typedef enum {
 	OP_LE,
 	OP_L_AND,
 	OP_L_OR,
+	OP_SHL,
+	OP_SHR,
 	
 	OP_B_AND,
 	OP_B_XOR,

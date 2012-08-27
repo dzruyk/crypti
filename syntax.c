@@ -62,6 +62,7 @@ static ast_node_t *bool_xor();
 static ast_node_t *bool_and();
 static ast_node_t *equity();
 static ast_node_t *rel_op();
+static ast_node_t *shift_expr();
 
 static ast_node_t *add_expr();
 static ast_node_t *add_expr_rest();
@@ -546,7 +547,7 @@ rel_op()
 	ast_node_t *right, *result;
 	int op;
 
-	result = add_expr();
+	result = shift_expr();
 
 	if (result == NULL)
 		return NULL;
@@ -570,10 +571,44 @@ rel_op()
 		}
 		tok_next();
 
-		right = add_expr();
+		right = shift_expr();
 		if (right == NULL) {
 			nerrors++;
 			print_warn("uncomplited rel expression\n");
+			right = ast_node_stub_new();
+		}
+		result = ast_node_op_new(result, right, op);
+	}
+}
+
+static ast_node_t *
+shift_expr()
+{
+	ast_node_t *right, *result;
+	int op;
+
+	result = add_expr();
+
+	if (result == NULL)
+		return NULL;
+	
+	while (TRUE) {
+		switch (current_tok) {
+		case TOK_SHL:
+			op = OP_SHL;
+			break;
+		case TOK_SHR:
+			op = OP_SHR;
+			break;
+		default:
+			return result;
+		}
+		tok_next();
+
+		right = add_expr();
+		if (right == NULL) {
+			nerrors++;
+			print_warn("uncomplited shift expression\n");
 			right = ast_node_stub_new();
 		}
 		result = ast_node_op_new(result, right, op);

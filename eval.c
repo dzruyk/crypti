@@ -138,7 +138,12 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	case OP_B_AND:
 		res = (l & r);
 		break;
-	
+	case OP_SHR:
+		res = l >> r;
+		break;
+	case OP_SHL:
+		res = l << r;
+		break;
 	default:
 		print_warn_and_die("unsupported tock recognised when eval\n");
 	}

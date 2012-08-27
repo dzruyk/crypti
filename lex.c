@@ -99,6 +99,11 @@ begin:
 			lex_item.id = lex_item.op = TOK_LE;
 			
 			return TOK_LE;
+		} else if (peek == '<') {
+			peek = ' ';
+			lex_item.id = lex_item.op = TOK_SHL;
+			
+			return TOK_SHL;
 		}
 		lex_item.op = TOK_LO;
 		
@@ -110,6 +115,11 @@ begin:
 			lex_item.id = lex_item.op = TOK_GE;
 			
 			return TOK_GE;
+		} else if (peek == '>') {
+			peek = ' ';
+			lex_item.id = lex_item.op = TOK_SHR;
+			
+			return TOK_SHR;
 		}
 		lex_item.id = lex_item.op = TOK_GR;
 		

@@ -10,13 +10,19 @@ typedef enum {
 	ID_UNKNOWN,
 } id_type_t;
 
-typedef struct {
+struct id_item;
+
+typedef void (*id_item_release_t)(struct id_item *item);
+
+typedef struct id_item {
 	id_type_t type;
 	char *name;
 	union {
 		int value;
 		arr_t *arr;
 	};
+
+	id_item_release_t destructor;
 } id_item_t;
 
 /*

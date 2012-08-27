@@ -44,6 +44,19 @@ id_hash_cb(const void *data)
 	return res;
 }
 
+void
+id_item_default_release(id_item_t *item)
+{
+	switch (item->type) {
+	case ID_UNKNOWN:
+	case ID_NUM:
+		break;
+	case ID_ARR:
+		arr_free(item->arr);
+
+	}
+}
+
 /* ID_ITEM FUNCTIONS*/
 id_item_t *
 id_item_new(char *name)
@@ -53,6 +66,7 @@ id_item_new(char *name)
 	item = malloc_or_die(sizeof(*item));
 	item->name = strdup_or_die(name);
 	item->type = ID_UNKNOWN;
+	item->destructor = id_item_default_release;
 
 	return item;
 }
@@ -81,6 +95,8 @@ id_item_set(id_item_t *item, id_type_t type, void *data)
 void
 id_item_free(id_item_t *item)
 {
+	item->destructor(item);
+
 	ufree(item->name);
 	ufree(item);
 }
