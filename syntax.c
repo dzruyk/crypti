@@ -398,11 +398,8 @@ assign(ast_node_t *lvalue)
 	//to array
 	if (match(TOK_LBRACE)) {
 		right = array_init();
-
-		if (match(TOK_RBRACE) == FALSE) {
-			print_warn("right bracket missed\n");
+		if (right == NULL)
 			goto err;
-		}
 
 		return ast_node_as_new(lvalue, right);
 	}
@@ -1302,6 +1299,11 @@ array_access()
 	return ast_node_access_new(name, ind);
 }
 
+/*
+ * try to init new ast_node_arr_t
+ * print warn and return NULL if some error occured
+ * return ast_node_arr_t otherwise
+ */
 static ast_node_t *
 array_init()
 {
@@ -1330,6 +1332,11 @@ array_init()
 
 	} while (match(TOK_COMMA) != FALSE);
 
+	if (match(TOK_RBRACE) == FALSE) {
+		print_warn("right bracket missed\n");
+		goto error;
+	}
+
 	return ast_node_arr_new(arr, len);
 
 error:
@@ -1337,6 +1344,6 @@ error:
 		ast_node_unref(arr[i]);
 	
 	free(arr);
-	return ast_node_stub_new();
+	return NULL;
 }
 

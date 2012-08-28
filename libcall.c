@@ -47,6 +47,33 @@ libcall_sum(id_item_t **argues, int *rettype, void **retval)
 }
 
 int
+libcall_type(id_item_t **argues, int *rettype, void **retval)
+{
+	assert(argues != NULL && argues[0] != NULL);
+
+	id_item_t *arg;
+	
+	arg = argues[0];
+
+	switch (arg->type) {
+	case ID_NUM:
+		printf("<type num>\n");
+		break;
+	case ID_ARR:
+		printf("<type arr>\n");
+		break;
+	default:
+		printf("<type unknown>\n");
+		break;
+	}
+
+	*rettype = ID_UNKNOWN;
+	*retval = NULL;
+
+	return 0;
+}
+
+int
 libcall_del(id_item_t **argues, int *rettype, void **retval)
 {
 	assert(argues != NULL && argues[0] != NULL);
@@ -56,12 +83,9 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 
 	arg = argues[0];
 
-	//debug
-	//printf("delname = %s\n", arg->name);
-
 	//FIXME: rly need reserve some name?
 	if (strcmp(arg->name, "") == 0) {
-		print_warn("cant delete not variable\n");
+		print_warn("cant delete, its not variable\n");
 		return 1;
 	}
 	

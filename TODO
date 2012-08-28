@@ -1,6 +1,4 @@
 1) sync stream after errors
-3) array memory management
-4) function memory management
 5) library funtions(can user redefine reserved names for lib funcs?)
 8) pay attention for blocks of insturctions
 9) libbignum integration
@@ -16,9 +14,11 @@
 22) traverse_ctx( sad but need to dynamically allocate)
 23) may be need to get rel_op() between LPAR and RPAR
 24) stack of lex items(need to implement tok_prev()
-25) implement STACK_POP_OR_WARN wrapper (need to reduce overhead in traverse.c)
 26) implement copy-on-write val inside new scope + global modificator
 27) variable lenght argues functions(builtin and user defined)
 
 28) 2 data types - bignum and string(bytes)
-29) 
+29) multidimentional arrays
+30) Rewrite Makefile
+31) len() builtin function(or array attribute
+

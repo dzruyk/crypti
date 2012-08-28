@@ -272,7 +272,6 @@ get_next_argue(ast_node_t *argnode, char *hint)
 	
 	ev = stack_pop();
 
-	//FIXME: rewrite me
 	if (ev == NULL) {
 		print_warn("cant get value\n");
 		return NULL;
