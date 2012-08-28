@@ -4,7 +4,8 @@
 #include "common.h"
 
 typedef struct {
-	int n;
+	int dims;
+	int *len;	//i'th dimention lenght
 	int item_sz;
 	void *ptr;
 } arr_t;
@@ -12,7 +13,7 @@ typedef struct {
 /* 
  * Create new array with given size and item_sz, and return pointer to it 
  */
-arr_t *arr_new(int n, int item_sz);
+arr_t *arr_new(int dims, int *len, int item_sz);
 
 /* 
  * Sets value of arr[ind]
@@ -20,7 +21,7 @@ arr_t *arr_new(int n, int item_sz);
  * ret_ok if all ok
  * ret_invalid if ind out of range
  */
-ret_t arr_set_item(arr_t *arr, int ind, int value);
+ret_t arr_set_item(arr_t *arr, int *ind, int value);
 
 /* 
  * set value with content of arr[ind]
@@ -28,7 +29,7 @@ ret_t arr_set_item(arr_t *arr, int ind, int value);
  * ret_ok if all ok
  * ret_invalid if ind out of range
  */
-ret_t arr_get_item(arr_t *arr, int ind, int *value);
+ret_t arr_get_item(arr_t *arr, int *ind, int *value);
 
 /* 
  * Free memory allocated by arr and arr->ptr

@@ -1274,29 +1274,48 @@ err:
 static ast_node_t *
 array_access()
 {
+	ast_node_t **ind, *item;
 	char *name;
-	ast_node_t *ind;
+	int i, dim, sz;
+
+	ind = NULL;
+	sz = dim = 0;
 
 	name = lex_item_prev.name;
-	
 	tok_next();
 	
-	ind = logic_or();
-	if (ind == NULL) {
-		nerrors++;
-		print_warn("null expression in brackets");
-		return ast_node_stub_new();
-	}
-	
-	if (match(TOK_RBRACKET) == FALSE) {
-		nerrors++;
-		print_warn("unsupported expression\n");
-		return ast_node_stub_new();
-	}
+	do {
+		item = logic_or();
+		if (item == NULL) {
+			nerrors++;
+			print_warn("null expression in brackets");
+			return ast_node_stub_new();
+		}
+
+		if (dim >= sz) {
+			sz += 4;
+			ind = realloc_or_die(ind, sz * sizeof(*ind));
+		}
+		
+		if (match(TOK_RBRACKET) == FALSE) {
+			print_warn("unsupported expression\n");
+			goto error;
+		}
+
+		ind[dim++] = item;
+
+	} while (match(TOK_LBRACKET));
 
 	//FIXME: now arrays only one-dimention
 	
-	return ast_node_access_new(name, ind);
+	return ast_node_access_new(name, dim, ind);
+
+error:
+	for (i = 0; i < dim; i++)
+		ast_node_unref(ind[i]);
+
+	nerrors++;
+	return ast_node_stub_new();
 }
 
 /*
@@ -1309,35 +1328,77 @@ array_init()
 {
 	ast_node_t *item, **arr;
 
-	int i, len, sz;
+	int i, len, sz, dims, depth;
+	int *dimlen;
 	
 	arr = NULL;
+	dims = depth = 0;
 	len = sz = 0;
 
+	//try to get most depth construction
+	while (match(TOK_RBRACE))
+		dims++;
+	
+	dimlen = malloc_or_die(sizeof(*dimlen) * depth);
+	memset(dimlen, 0, sizeof(*dimlen) * depth);
+
+	depth = dims;
+	i = 0;
+
 	do {
+		if (match(TOK_RBRACE)) {
+			if (depth == 0)
+				break;
+			if (i == 0) {
+				print_warn("empty scalar initilaizer\n");
+				goto error;
+			} else if (dimlen[depth] == 0) {
+				dimlen[depth] = i;
+				i = 0;
+			} else if (dimlen[depth] != i) {
+				print_warn("not expected len\n");
+				goto error;
+			}
+			depth--;
+			continue;
+		}
+
+		if (match(TOK_LBRACE)) {
+			depth++;
+			if (depth > dims) {
+				print_warn("unexpected depth\n");
+				goto error;
+			}
+			continue;
+		}
+		
 		item = logic_or();
 		if (item == NULL) {
-			nerrors++;
 			print_warn("uncomplited tuple\n");
 			goto error;
 		}
 
 		if (len >= sz) {
 			sz += 4;
-
 			arr = realloc_or_die(arr, sz * sizeof (*arr));
 		}
-		
+
+		i++;
 		arr[len++] = item;
 
-	} while (match(TOK_COMMA) != FALSE);
+		if (match(TOK_COMMA) == FALSE && 
+		    current_tok != TOK_RBRACE) {
+			print_warn("unexpected symbol at arr initialisation\n");
+			goto error;
+		}
+	} while (1);
 
-	if (match(TOK_RBRACE) == FALSE) {
-		print_warn("right bracket missed\n");
+	if (len == 0) {
+		print_warn("empty scalar initializer\n");
 		goto error;
 	}
 
-	return ast_node_arr_new(arr, len);
+	return ast_node_arr_new(arr, dims, dimlen);
 
 error:
 	for (i = 0; i < len; i++)

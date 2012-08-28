@@ -32,7 +32,11 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_ARR:
 		//FIXME: CHECK_ME
 		arr = (ast_node_arr_t *)tree;
-		n = arr->sz;
+		n = 1;
+		//get total len
+		for (i = 0; i < arr->dims; i++)
+			n *= arr->len[i];
+
 		for (i = 0; i < n; i++)
 			ast_node_unref(arr->arr[i]);
 		ufree(arr->arr);
@@ -40,7 +44,9 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_ACCESS:
 		acc = (ast_node_access_t *)tree;
 		ufree(acc->name);
-		ast_node_unref(acc->ind);
+		for (i = 0; i < acc->dims; i++)
+			ast_node_unref(acc->ind[i]);
+		ufree(acc->ind);
 		break;
 	case AST_NODE_RETURN:
 		ret = (ast_node_return_t *)tree;
@@ -164,7 +170,7 @@ ast_node_id_new(char *name)
 }
 
 ast_node_t *
-ast_node_arr_new(ast_node_t **arr, int sz)
+ast_node_arr_new(ast_node_t **arr, int dims, int *len)
 {
 	ast_node_arr_t *res;
 
@@ -172,7 +178,10 @@ ast_node_arr_new(ast_node_t **arr, int sz)
 	    ast_node_new(AST_NODE_ARR, sizeof(*res), ast_node_free);
 
 	res->arr = arr;
-	res->sz = sz;
+	res->dims = dims;
+
+	res->len = malloc_or_die(sizeof(*len) * dims);
+	memcpy(res->len, len, dims * sizeof(len));
 
 	return AST_NODE(res);
 }
@@ -267,7 +276,7 @@ ast_node_scope_new(ast_node_t *child)
 }
 
 ast_node_t *
-ast_node_access_new(char *name, ast_node_t *ind)
+ast_node_access_new(char *name, int dims, ast_node_t **ind)
 {
 	ast_node_access_t *res;
 
@@ -275,6 +284,7 @@ ast_node_access_new(char *name, ast_node_t *ind)
 	    ast_node_new(AST_NODE_ACCESS, sizeof(*res), ast_node_free);
 
 	res->name = name;
+	res->dims = dims;
 	res->ind = ind;
 
 	return AST_NODE(res);

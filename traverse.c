@@ -92,13 +92,18 @@ traverse_arr(ast_node_t *tree)
 	arr_t *arr;
 	eval_t *ev;
 	ast_node_t **synarr;
-	int i, sz, res;
+	int i, dims, res;
+	int *len;
+	int *index;
 	
 	synarr = ((ast_node_arr_t *)tree)->arr;
-	sz = ((ast_node_arr_t *)tree)->sz;
+	len = ((ast_node_arr_t *)tree)->len;
+	dims = ((ast_node_arr_t *)tree)->dims;
 
 	//size of int
-	arr = arr_new(sz, sizeof(int));
+	arr = arr_new(dims, len, sizeof(int));
+
+	index = malloc_or_die();
 
 	for (i = 0; i < sz; i++) {
 		traverse(synarr[i]);
@@ -119,6 +124,7 @@ traverse_arr(ast_node_t *tree)
 	
 	ev = eval_arr_new(arr);
 	stack_push(ev);
+	free(index);
 }
 
 static void
