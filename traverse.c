@@ -87,12 +87,31 @@ traverse_id(ast_node_t *tree)
 }
 
 static void
+get_next_index(int *index, int dims, int *len)
+{
+	int i;
+	
+	i = dims;
+
+	while (i >= 0) {
+		if (index[i] >= len[i]) {
+			index[i] = index[i] % len[i];
+			i--;
+			continue;
+		} else {
+			index[i]++;
+			break;
+		}
+	}
+}
+
+static void
 traverse_arr(ast_node_t *tree)
 {
 	arr_t *arr;
 	eval_t *ev;
 	ast_node_t **synarr;
-	int i, dims, res;
+	int i, dims, res, sz;
 	int *len;
 	int *index;
 	
@@ -103,8 +122,13 @@ traverse_arr(ast_node_t *tree)
 	//size of int
 	arr = arr_new(dims, len, sizeof(int));
 
-	index = malloc_or_die();
-
+	index = malloc_or_die((dims + 1) * sizeof(*len));
+	memset(index, 0, (dims + 1) * sizeof(*len));
+	
+	sz = 1;
+	for (i = 0; i < dims + 1; i++)
+		sz *= len[i];
+	
 	for (i = 0; i < sz; i++) {
 		traverse(synarr[i]);
 		//error handle?
@@ -116,7 +140,9 @@ traverse_arr(ast_node_t *tree)
 		
 		res = ev->value;
 
-		if (arr_set_item(arr, i, res) != ret_ok)
+		get_next_index(index, dims, len);
+
+		if (arr_set_item(arr, index, res) != ret_ok)
 			print_warn_and_die("cant set item\n");
 
 		eval_free(ev);

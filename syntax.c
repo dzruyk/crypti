@@ -1323,6 +1323,7 @@ error:
  * print warn and return NULL if some error occured
  * return ast_node_arr_t otherwise
  */
+ //FIXME: splitme(mb need to add aditional func get_next_arr_item)
 static ast_node_t *
 array_init()
 {
@@ -1339,16 +1340,14 @@ array_init()
 	while (match(TOK_RBRACE))
 		dims++;
 	
-	dimlen = malloc_or_die(sizeof(*dimlen) * depth);
-	memset(dimlen, 0, sizeof(*dimlen) * depth);
+	dimlen = malloc_or_die(sizeof(dimlen) * (dims + 1));
+	memset(dimlen, 0, sizeof(dimlen) * (dims + 1));
 
 	depth = dims;
 	i = 0;
 
 	do {
 		if (match(TOK_RBRACE)) {
-			if (depth == 0)
-				break;
 			if (i == 0) {
 				print_warn("empty scalar initilaizer\n");
 				goto error;
@@ -1359,6 +1358,10 @@ array_init()
 				print_warn("not expected len\n");
 				goto error;
 			}
+
+			if (depth == 0)
+				break;
+
 			depth--;
 			continue;
 		}

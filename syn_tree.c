@@ -180,8 +180,8 @@ ast_node_arr_new(ast_node_t **arr, int dims, int *len)
 	res->arr = arr;
 	res->dims = dims;
 
-	res->len = malloc_or_die(sizeof(*len) * dims);
-	memcpy(res->len, len, dims * sizeof(len));
+	res->len = malloc_or_die(sizeof(len) * (dims + 1));
+	memcpy(res->len, len, (dims + 1) * sizeof(len));
 
 	return AST_NODE(res);
 }
