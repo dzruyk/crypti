@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "common.h"
+#include "crypti.h"
 #include "eval.h"
 #include "macros.h"
 
@@ -162,11 +163,24 @@ eval_print_arr(arr_t *arr)
 {
 	int i;
 	int *parr;
+	int n;
 
 	parr = arr->ptr;
 
-	for (i = 0; i < arr->n; i++)
-		printf("%d ", parr[i]);
+	//debug{
+	D(printf("%d dims\n", arr->dims));
+ 	for (i = 0; i < arr->dims; i++)
+		D(printf("%d) len = %d\n", i, arr->len[i]));
+	//}debug
+	n = 1;
+
+	for (i = 0; i < arr->dims; i++)
+		n *= arr->len[i];
+	
+	D(printf("n = %d\n", n));
+
+	for (i = 0; i < n; i++)
+		printf("elem %d ", parr[i]);
 	printf("\n");
 }
 

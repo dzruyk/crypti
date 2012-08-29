@@ -91,15 +91,15 @@ get_next_index(int *index, int dims, int *len)
 {
 	int i;
 	
-	i = dims;
+	i = dims - 1;
 
 	while (i >= 0) {
+		index[i]++;
 		if (index[i] >= len[i]) {
 			index[i] = index[i] % len[i];
 			i--;
 			continue;
 		} else {
-			index[i]++;
 			break;
 		}
 	}
@@ -122,11 +122,11 @@ traverse_arr(ast_node_t *tree)
 	//size of int
 	arr = arr_new(dims, len, sizeof(int));
 
-	index = malloc_or_die((dims + 1) * sizeof(*len));
-	memset(index, 0, (dims + 1) * sizeof(*len));
+	index = malloc_or_die(dims * sizeof(*len));
+	memset(index, 0, dims * sizeof(*len));
 	
 	sz = 1;
-	for (i = 0; i < dims + 1; i++)
+	for (i = 0; i < dims; i++)
 		sz *= len[i];
 	
 	for (i = 0; i < sz; i++) {
@@ -140,10 +140,10 @@ traverse_arr(ast_node_t *tree)
 		
 		res = ev->value;
 
-		get_next_index(index, dims, len);
-
 		if (arr_set_item(arr, index, res) != ret_ok)
 			print_warn_and_die("cant set item\n");
+
+		get_next_index(index, dims, len);
 
 		eval_free(ev);
 	}

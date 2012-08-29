@@ -190,8 +190,7 @@ static inline void
 sync_stream()
 {
 	while (current_tok != TOK_EOL &&
-	    current_tok != TOK_EOF &&
-	    current_tok != TOK_SEMICOLON) {
+	    current_tok != TOK_EOF) {
 
 		switch(current_tok) {
 		case TOK_ID:
@@ -396,7 +395,7 @@ assign(ast_node_t *lvalue)
 	}
 
 	//to array
-	if (match(TOK_LBRACE)) {
+	if (current_tok == TOK_LBRACE) {
 		right = array_init();
 		if (right == NULL)
 			goto err;
@@ -1337,11 +1336,11 @@ array_init()
 	len = sz = 0;
 
 	//try to get most depth construction
-	while (match(TOK_RBRACE))
+	while (match(TOK_LBRACE))
 		dims++;
 	
-	dimlen = malloc_or_die(sizeof(dimlen) * (dims + 1));
-	memset(dimlen, 0, sizeof(dimlen) * (dims + 1));
+	dimlen = malloc_or_die(sizeof(dimlen) * dims);
+	memset(dimlen, 0, sizeof(dimlen) * dims);
 
 	depth = dims;
 	i = 0;
@@ -1351,18 +1350,19 @@ array_init()
 			if (i == 0) {
 				print_warn("empty scalar initilaizer\n");
 				goto error;
-			} else if (dimlen[depth] == 0) {
-				dimlen[depth] = i;
+			} else if (dimlen[depth - 1] == 0) {
+				dimlen[depth - 1] = i;
 				i = 0;
-			} else if (dimlen[depth] != i) {
+			} else if (dimlen[depth - 1] != i) {
 				print_warn("not expected len\n");
 				goto error;
 			}
 
+			depth--;
 			if (depth == 0)
 				break;
 
-			depth--;
+			match(TOK_COMMA);
 			continue;
 		}
 
@@ -1404,6 +1404,8 @@ array_init()
 	return ast_node_arr_new(arr, dims, dimlen);
 
 error:
+	sync_stream();
+
 	for (i = 0; i < len; i++)
 		ast_node_unref(arr[i]);
 	
