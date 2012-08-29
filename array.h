@@ -13,7 +13,7 @@ typedef struct {
 /* 
  * Create new array with given size and item_sz, and return pointer to it 
  */
-arr_t *arr_new(int dims, int *len, int item_sz);
+arr_t *arr_new(int dims, int *len, int sz, int item_sz);
 
 /* 
  * Sets value of arr[ind]

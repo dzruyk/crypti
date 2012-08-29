@@ -4,10 +4,9 @@
 #include "array.h"
 
 arr_t *
-arr_new(int dims, int *len, int item_sz)
+arr_new(int dims, int *len, int sz, int item_sz)
 {
 	arr_t *arr;
-	int i, n;
 
 	arr = malloc_or_die(sizeof(*arr));
 
@@ -18,13 +17,9 @@ arr_new(int dims, int *len, int item_sz)
 	
 	arr->item_sz = item_sz;
 	
-	n = 1;
-	for (i = 0; i < dims; i++)
-		n *= len[i];
-
-	arr->ptr = malloc_or_die(item_sz * n);
+	arr->ptr = malloc_or_die(item_sz * sz);
 	
-	memset(arr->ptr, 0, item_sz * n);
+	memset(arr->ptr, 0, item_sz * sz);
 
 	return arr;
 }
@@ -77,8 +72,6 @@ arr_get_item(arr_t *arr, int *ind, int *value)
 void
 arr_free(arr_t *arr)
 {
-	int i;
-
 	/*
 	for (i = 0; i < arr->n; i++)
 		ufree(arr->ptr[i]);

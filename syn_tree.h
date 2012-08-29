@@ -95,6 +95,7 @@ typedef struct {
 	ast_node_t **arr;
 	int dims;		//number of dimentions
 	int *len;		//i'th dimention len
+	int sz;			//total len of all items
 } ast_node_arr_t;
 
 typedef struct {
@@ -175,7 +176,7 @@ ast_node_t *ast_node_num_new(int num);
 ast_node_t *ast_node_id_new(char *name);
 
 
-ast_node_t *ast_node_arr_new(ast_node_t **arr, int dims, int *len);
+ast_node_t *ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz);
 
 
 ast_node_t *ast_node_access_new(char *name, int dims, ast_node_t **ind);

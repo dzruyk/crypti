@@ -118,16 +118,14 @@ traverse_arr(ast_node_t *tree)
 	synarr = ((ast_node_arr_t *)tree)->arr;
 	len = ((ast_node_arr_t *)tree)->len;
 	dims = ((ast_node_arr_t *)tree)->dims;
+	sz = ((ast_node_arr_t *)tree)->sz;
 
 	//size of int
-	arr = arr_new(dims, len, sizeof(int));
+	arr = arr_new(dims, len, sz, sizeof(int));
 
 	index = malloc_or_die(dims * sizeof(*len));
 	memset(index, 0, dims * sizeof(*len));
 	
-	sz = 1;
-	for (i = 0; i < dims; i++)
-		sz *= len[i];
 	
 	for (i = 0; i < sz; i++) {
 		traverse(synarr[i]);

@@ -1401,7 +1401,7 @@ array_init()
 		goto error;
 	}
 
-	return ast_node_arr_new(arr, dims, dimlen);
+	return ast_node_arr_new(arr, dims, dimlen, sz);
 
 error:
 	sync_stream();

@@ -170,7 +170,7 @@ ast_node_id_new(char *name)
 }
 
 ast_node_t *
-ast_node_arr_new(ast_node_t **arr, int dims, int *len)
+ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz)
 {
 	ast_node_arr_t *res;
 
@@ -179,6 +179,7 @@ ast_node_arr_new(ast_node_t **arr, int dims, int *len)
 
 	res->arr = arr;
 	res->dims = dims;
+	res->sz = sz;
 
 	res->len = malloc_or_die(sizeof(len) * dims);
 	memcpy(res->len, len, dims * sizeof(len));
