@@ -1328,35 +1328,44 @@ array_init()
 {
 	ast_node_t *item, **arr;
 
-	int i, len, sz, dims, depth;
-	int *dimlen;
+	int i, total, sz, ndim, depth;
+	int *dimlen, *cnt;
 	
 	arr = NULL;
-	dims = depth = 0;
-	len = sz = 0;
+	ndim = 0;
+	total = sz = 0;
 
 	//try to get most depth construction
 	while (match(TOK_LBRACE))
-		dims++;
+		ndim++;
 	
-	dimlen = malloc_or_die(sizeof(dimlen) * dims);
-	memset(dimlen, 0, sizeof(dimlen) * dims);
+	if (ndim == 0)
+		print_warn_and_die("this is should not happened\n");
 
-	depth = dims;
-	i = 0;
+	dimlen = malloc_or_die(sizeof(dimlen) * ndim);
+	memset(dimlen, 0, sizeof(dimlen) * ndim);
+
+	cnt = malloc_or_die(sizeof(dimlen) * ndim);
+	memset(cnt, 0, sizeof(dimlen) * ndim);
+	//all except cnt[ndim - 1] must be 1
+	for (i = 0; i < ndim - 1; i++)
+		cnt[i] = 1;
+
+	depth = ndim;
 
 	do {
 		if (match(TOK_RBRACE)) {
-			if (i == 0) {
+			if (cnt[depth - 1] == 0) {
 				print_warn("empty scalar initilaizer\n");
 				goto error;
 			} else if (dimlen[depth - 1] == 0) {
-				dimlen[depth - 1] = i;
-				i = 0;
-			} else if (dimlen[depth - 1] != i) {
+				dimlen[depth - 1] = cnt[depth - 1];
+			} else if (dimlen[depth - 1] != cnt[depth - 1]) {
 				print_warn("not expected len\n");
 				goto error;
 			}
+
+			cnt[depth - 1] = 0;
 
 			depth--;
 			if (depth == 0)
@@ -1367,12 +1376,18 @@ array_init()
 		}
 
 		if (match(TOK_LBRACE)) {
+			cnt[depth - 1]++;
 			depth++;
-			if (depth > dims) {
+			if (depth > ndim) {
 				print_warn("unexpected depth\n");
 				goto error;
 			}
 			continue;
+		}
+		//NOTE: values must be on most depth lvl
+		if (depth != ndim) {
+			print_warn("not expected len\n");
+			goto error;
 		}
 		
 		item = logic_or();
@@ -1381,13 +1396,13 @@ array_init()
 			goto error;
 		}
 
-		if (len >= sz) {
+		if (total >= sz) {
 			sz += 4;
 			arr = realloc_or_die(arr, sz * sizeof (*arr));
 		}
 
-		i++;
-		arr[len++] = item;
+		cnt[depth - 1]++;
+		arr[total++] = item;
 
 		if (match(TOK_COMMA) == FALSE && 
 		    current_tok != TOK_RBRACE) {
@@ -1396,17 +1411,17 @@ array_init()
 		}
 	} while (1);
 
-	if (len == 0) {
+	if (total == 0) {
 		print_warn("empty scalar initializer\n");
 		goto error;
 	}
 
-	return ast_node_arr_new(arr, dims, dimlen, len);
+	return ast_node_arr_new(arr, ndim, dimlen, total);
 
 error:
 	sync_stream();
 
-	for (i = 0; i < len; i++)
+	for (i = 0; i < total; i++)
 		ast_node_unref(arr[i]);
 	
 	free(arr);
