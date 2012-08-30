@@ -32,11 +32,7 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_ARR:
 		//FIXME: CHECK_ME
 		arr = (ast_node_arr_t *)tree;
-		n = 1;
-		//get total len
-		for (i = 0; i < arr->dims; i++)
-			n *= arr->len[i];
-
+		n = arr->sz;
 		for (i = 0; i < n; i++)
 			ast_node_unref(arr->arr[i]);
 		ufree(arr->arr);

@@ -86,6 +86,9 @@ traverse_id(ast_node_t *tree)
 	stack_push(ev);
 }
 
+/*
+ * increment index array
+ */
 static void
 get_next_index(int *index, int dims, int *len)
 {
@@ -157,9 +160,11 @@ traverse_access(ast_node_t *tree)
 	eval_t *evnum, *resev;
 	id_item_t *item;
 	ast_node_access_t *acc;
-	int ind, num;
+	int i, num;
+	int *ind;
 	char *name;
 
+	ind = NULL;
 	if (nerrors != 0)
 		return;
 
@@ -171,43 +176,62 @@ traverse_access(ast_node_t *tree)
 	//FIXME
 	if (item == NULL) {
 		print_warn("symb %s undefined\n", name);
-		nerrors++;
-		return;
+		goto error;
 	}
 
 	if (item->type != ID_ARR) {
 		print_warn("%s not array\n", item->name);
-		nerrors++;
-		return;
+		goto error;
 	}
 
-	traverse(acc->ind);
-	
-	evnum = stack_pop();
-	if (evnum == NULL) {
-		print_warn("cant get operand\n");
-		nerrors++;
-		return;
+	if (item->arr->dims != acc->dims) {
+		print_warn("array have %d dimentions\n", item->arr->dims);
+		goto error;
 	}
-	
-	switch (evnum->type) {
-	case EVAL_NUM:
-		ind = evnum->value;
-		break;
-	default:
-		print_warn_and_die("INTERNAL_ERROR: cant traverse access\n");
+
+	ind = malloc_or_die(acc->dims * sizeof(*ind));
+
+	for (i = 0; i < acc->dims; i++) {
+		traverse(acc->ind[i]);
+
+		if (nerrors != 0)
+			goto error;
+		
+		evnum = stack_pop();
+		if (evnum == NULL) {
+			print_warn("cant get operand\n");
+			nerrors++;
+			goto error;
+		}
+		
+		switch (evnum->type) {
+		case EVAL_NUM:
+			ind[i] = evnum->value;
+			break;
+		default:
+			print_warn_and_die("INTERNAL_ERROR: cant traverse access\n");
+		}
 	}
+
 
 	if (arr_get_item(item->arr, ind, &num) != ret_ok) {
 		print_warn("out of range\n");
 		nerrors++;
-		return;
+		goto error;
 	}
 
 	eval_free(evnum);
 
 	resev = eval_num_new(num);
 	stack_push(resev);
+	
+	ufree(ind);
+	return;
+error:
+	if (ind != NULL)
+		ufree(ind);
+	
+	nerrors++;
 }
 
 static void

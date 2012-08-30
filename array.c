@@ -14,6 +14,8 @@ arr_new(int dims, int *len, int sz, int item_sz)
 
 	arr->len = malloc_or_die(sizeof(*len) * dims);
 	memcpy(arr->len, len, sizeof(*len) * dims);
+
+	arr->sz = sz;
 	
 	arr->item_sz = item_sz;
 	
@@ -29,7 +31,7 @@ ret_t
 arr_set_item(arr_t *arr, int *ind, int value)
 {
 	int *p;
-	int i, n, mult;
+	int i, mult, n;
 
 	mult = 1;
 	n = 0;
@@ -53,15 +55,17 @@ ret_t
 arr_get_item(arr_t *arr, int *ind, int *value)
 {
 	int *p;
-	int i, n;
+	int i, mult, n;
 
-	n = 1;
+	mult = 1;
+	n = 0;
 
-	for (i = 0; i < arr->dims; i++) {
+	for (i = arr->dims - 1; i >= 0; i--) {
 		if (ind[i] >= arr->len[i] || ind[i] < 0)
 			return ret_invalid;
 		
-		n *= ind[i];
+		n += ind[i] * mult;
+		mult *= arr->len[i];
 	}
 	
 	p = (int *)(arr->ptr + arr->item_sz * n);

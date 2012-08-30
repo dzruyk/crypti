@@ -6,6 +6,7 @@
 typedef struct {
 	int dims;
 	int *len;	//i'th dimention lenght
+	int sz;		//total value of items in all dimentions
 	int item_sz;
 	void *ptr;
 } arr_t;

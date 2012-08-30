@@ -1328,12 +1328,12 @@ array_init()
 {
 	ast_node_t *item, **arr;
 
-	int i, total, sz, ndim, depth;
+	int i, total, arrsz, ndim, depth;
 	int *dimlen, *cnt;
 	
 	arr = NULL;
 	ndim = 0;
-	total = sz = 0;
+	total = arrsz = 0;
 
 	//try to get most depth construction
 	while (match(TOK_LBRACE))
@@ -1347,6 +1347,7 @@ array_init()
 
 	cnt = malloc_or_die(sizeof(dimlen) * ndim);
 	memset(cnt, 0, sizeof(dimlen) * ndim);
+
 	//all except cnt[ndim - 1] must be 1
 	for (i = 0; i < ndim - 1; i++)
 		cnt[i] = 1;
@@ -1378,6 +1379,7 @@ array_init()
 		if (match(TOK_LBRACE)) {
 			cnt[depth - 1]++;
 			depth++;
+
 			if (depth > ndim) {
 				print_warn("unexpected depth\n");
 				goto error;
@@ -1396,9 +1398,9 @@ array_init()
 			goto error;
 		}
 
-		if (total >= sz) {
-			sz += 4;
-			arr = realloc_or_die(arr, sz * sizeof (*arr));
+		if (total >= arrsz) {
+			arrsz += 4;
+			arr = realloc_or_die(arr, arrsz * sizeof (*arr));
 		}
 
 		cnt[depth - 1]++;
