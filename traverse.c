@@ -211,6 +211,8 @@ traverse_access(ast_node_t *tree)
 		default:
 			print_warn_and_die("INTERNAL_ERROR: cant traverse access\n");
 		}
+		
+		eval_free(evnum);
 	}
 
 
@@ -220,8 +222,6 @@ traverse_access(ast_node_t *tree)
 		goto error;
 	}
 
-	eval_free(evnum);
-
 	resev = eval_num_new(num);
 	stack_push(resev);
 	
@@ -230,7 +230,6 @@ traverse_access(ast_node_t *tree)
 error:
 	if (ind != NULL)
 		ufree(ind);
-	
 	nerrors++;
 }
 
@@ -733,14 +732,19 @@ set_value_id(id_item_t *item, eval_t *ev)
 
 
 static void
-set_value_node_access(ast_node_access_t *node, eval_t *ev)
+set_value_node_access(ast_node_access_t *node, eval_t *newval)
 {
-	eval_t *ind;
-	id_item_t *item;
+	assert(newval != NULL);
 
+	eval_t *ev;
+	id_item_t *item;
+	int *ind;
+	int i;
+
+	ev = NULL;
 	ind = NULL;
 
-	if (ev->type != EVAL_NUM) {
+	if (newval->type != EVAL_NUM) {
 		print_warn("try assign to arr not number\n");
 		goto err;
 	}
@@ -756,27 +760,43 @@ set_value_node_access(ast_node_access_t *node, eval_t *ev)
 		goto err;
 	}
 	
-	traverse(node->ind);
-	ind = stack_pop();
-	
-	if (ind->type != EVAL_NUM) {
-		print_warn("index must be number\n");
-		goto err;
+	ind = malloc_or_die(node->dims * sizeof(*ind));
+
+	for (i = 0; i < node->dims; i++) {
+		traverse(node->ind[i]);
+
+		if (nerrors != 0)
+			goto err;
+
+		ev = stack_pop();
+		if (ev == NULL) {
+			print_warn("can't get index\n");
+			goto err;
+		}
+		if (ev->type != EVAL_NUM) {
+			print_warn("index must be number\n");
+			goto err;
+		}
+		ind[i] = ev->value;
+
+		eval_free(ev);
 	}
 
-	if (arr_set_item(item->arr, ind->value, ev->value) != ret_ok) {
+	if (arr_set_item(item->arr, ind, newval->value) != ret_ok) {
 		print_warn("out of range\n");
 		goto err;
 	}
 
-	eval_free(ind);
+	ufree(ind);
 
 	return;
 err:
 	nerrors++;
 
+	if (ev != NULL)
+		eval_free(ev);
 	if (ind != NULL)
-		eval_free(ind);
+		ufree(ind);
 
 }
 

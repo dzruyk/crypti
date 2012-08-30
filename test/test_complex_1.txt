@@ -39,3 +39,11 @@ def factorial(i) {
 		return i * factorial(i - 1);
 	}
 }
+
+# print multidimentional array in cycle
+
+a = {{1,2,3,4}, {5,6,7,8}}
+for (i = 0; i < 4; i = i + 1)
+	for (j = 0; j < 2; j = j + 1)
+		print(a[j][i])
+
