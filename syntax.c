@@ -122,7 +122,8 @@ update_token(struct lex_item *dst, const struct lex_item *src)
 		dst->num = src->num;
 		break;
 	default:
-		dst->op = src->op;
+		print_warn_and_die("WIP\n");
+		break;
 	}
 }
 

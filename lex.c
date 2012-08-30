@@ -64,7 +64,7 @@ begin:
 
 		if ((kword = keyword_table_lookup(s)) != TOK_UNKNOWN) {
 			free(s);
-			lex_item.id = lex_item.op = kword;
+			lex_item.id = kword;
 			return kword;
 		}
 		
@@ -78,141 +78,161 @@ begin:
 	case '=':
 		peek = fgetc(input);
 		if (peek == '=') {
-			lex_item.id = lex_item.op = TOK_EQ;
+			lex_item.id = TOK_EQ;
 			peek = ' ';
 			return TOK_EQ;
 		}
-		lex_item.id = lex_item.op = TOK_AS;
+		lex_item.id = TOK_AS;
 		
 		return TOK_AS;
 	case '!':
 		peek = fgetc(input);
 		if (peek == '=') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_NEQ;
+			lex_item.id = TOK_NEQ;
 			
 			return TOK_NEQ;
 		}
-		lex_item.id = lex_item.op = TOK_NOT;
+		lex_item.id = TOK_NOT;
 
 		return TOK_NOT;
 	case '<':
 		peek = fgetc(input);
 		if (peek == '=') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_LE;
+			lex_item.id = TOK_LE;
 			
 			return TOK_LE;
 		} else if (peek == '<') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_SHL;
+			lex_item.id = TOK_SHL;
 			
 			return TOK_SHL;
 		}
-		lex_item.op = TOK_LO;
+		lex_item.id = TOK_LO;
 		
 		return TOK_LO;
 	case '>':
 		peek = fgetc(input);
 		if (peek == '=') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_GE;
+			lex_item.id = TOK_GE;
 			
 			return TOK_GE;
 		} else if (peek == '>') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_SHR;
+			lex_item.id = TOK_SHR;
 			
 			return TOK_SHR;
 		}
-		lex_item.id = lex_item.op = TOK_GR;
+		lex_item.id = TOK_GR;
 		
 		return TOK_GR;
 	case '&':
 		peek = fgetc(input);
 		if (peek == '&') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_L_AND;
+			lex_item.id = TOK_L_AND;
 			
 			return TOK_L_AND;
 		}
-		lex_item.id = lex_item.op = TOK_B_AND;
+		lex_item.id = TOK_B_AND;
 		
 		return TOK_B_AND;
 	case '|':
 		peek = fgetc(input);
 		if (peek == '|') {
 			peek = ' ';
-			lex_item.id = lex_item.op = TOK_L_OR;
+			lex_item.id = TOK_L_OR;
 			
 			return TOK_L_OR;
 		}
-		lex_item.id = lex_item.op = TOK_B_OR;
+		lex_item.id = TOK_B_OR;
 		
 		return TOK_B_OR;
 	case '^':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_B_XOR;
+		lex_item.id = TOK_B_XOR;
 
 		return TOK_B_XOR;
 	case '(':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_LPAR;
+		lex_item.id = TOK_LPAR;
 		
 		return TOK_LPAR;
 	case ')':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_RPAR;
+		lex_item.id = TOK_RPAR;
 		
 		return TOK_RPAR;
 	case '[':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_LBRACKET;
+		lex_item.id = TOK_LBRACKET;
 		
 		return TOK_LBRACKET;
 	case ']':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_RBRACKET;
+		lex_item.id = TOK_RBRACKET;
 		
 		return TOK_RBRACKET;
 	case '{':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_LBRACE;
+		lex_item.id = TOK_LBRACE;
 		
 		return TOK_LBRACE;
 	case '}':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_RBRACE;
+		lex_item.id = TOK_RBRACE;
 		
 		return TOK_RBRACE;
 	case ',':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_COMMA;
+		lex_item.id = TOK_COMMA;
 
 		return TOK_COMMA;
 	case ';':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_SEMICOLON;
+		lex_item.id = TOK_SEMICOLON;
 
 		return TOK_SEMICOLON;
 	case '+':
-		peek = ' ';
-		lex_item.id = lex_item.op = TOK_PLUS;
+		peek = fgetc(input);
+		if (peek == '=') {
+			peek = ' ';
+			lex_item.id = TOK_PLUS_AS;
+			return TOK_PLUS_AS;
+		}
+		lex_item.id = TOK_PLUS;
 		
 		return TOK_PLUS;
 	case '-':
-		peek = ' ';
-		lex_item.id = lex_item.op = TOK_MINUS;
+		peek = fgetc(input);
+		if (peek == '=') {
+			peek = ' ';
+			lex_item.id = TOK_MINUS_AS;
+			return TOK_MINUS_AS;
+		}
+		lex_item.id = TOK_MINUS;
 		
 		return TOK_MINUS;
 	case '*':
-		peek = ' ';
-		lex_item.id = lex_item.op = TOK_MUL;
+		peek = fgetc(input);
+		if (peek == '=') {
+			peek = ' ';
+			lex_item.id = TOK_MUL_AS;
+			return TOK_MUL_AS;
+		}
+		lex_item.id = TOK_MUL;
 		
 		return TOK_MUL;
 	case '/':
-		peek = ' ';
-		lex_item.id = lex_item.op = TOK_DIV;
+		peek = fgetc(input);
+		if (peek == '=') {
+			peek = ' ';
+			lex_item.id = TOK_DIV_AS;
+			return TOK_DIV_AS;
+		}
+		lex_item.id = TOK_DIV;
 		
 		return TOK_DIV;
 	case '#':
@@ -222,18 +242,18 @@ begin:
 		goto begin;
 	case '\n':
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_EOL;
+		lex_item.id = TOK_EOL;
 		
 		return TOK_EOL;
 	case EOF:
 		peek = ' ';
-		lex_item.id = lex_item.op = TOK_EOF;
+		lex_item.id = TOK_EOF;
 		
 		return TOK_EOF;
 	}
 	
 	peek = ' ';
-	lex_item.id = lex_item.op = TOK_UNKNOWN;
+	lex_item.id = TOK_UNKNOWN;
 
 	return TOK_UNKNOWN;
 }

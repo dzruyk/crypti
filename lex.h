@@ -11,7 +11,12 @@ typedef enum {
 	TOK_NUM,
 	
 	TOK_AS,
-	TOK_NOT,
+	TOK_PLUS_AS,
+	TOK_MINUS_AS,
+	TOK_MUL_AS,
+	TOK_DIV_AS,
+
+	TOK_NOT,	// !
 	
 	TOK_EQ,
 	TOK_NEQ,
@@ -67,7 +72,6 @@ struct lex_item {
 	union {
 		int num;
 		char *name;
-		int op;
 	};
 };
 
