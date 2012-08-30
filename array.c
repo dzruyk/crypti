@@ -34,11 +34,12 @@ arr_set_item(arr_t *arr, int *ind, int value)
 	mult = 1;
 	n = 0;
 
-	for (i = 0; i < arr->dims; i++) {
+	//ERROR: INVALID
+	for (i = arr->dims - 1; i >= 0; i--) {
 		if (ind[i] >= arr->len[i] || ind[i] < 0)
 			return ret_invalid;
-		mult *= arr->len[i];
 		n += ind[i] * mult;
+		mult *= arr->len[i];
 	}
 	
 	p = arr->ptr + arr->item_sz * n;
