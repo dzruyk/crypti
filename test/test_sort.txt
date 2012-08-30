@@ -4,6 +4,8 @@
 arr = {5, 6, 1, 12, 4, 0, -2}
 arr_len = 7
 
+
+#insertion sort
 for (i = 0; i < arr_len; i = i + 1) {
 	min = i;
 	for (j = i + 1; j < arr_len; j = j + 1) {
@@ -24,3 +26,31 @@ for (i = 0; i < arr_len; i = i + 1) {
 }
 
 del(arr)
+
+
+#
+#buble sort
+arr = {5, 6, 1, 12, 4, 0, -2}
+arr_len = 7
+
+while (1) {
+	swapped = 0
+	for (i = 1; i < arr_len; i = i + 1) {
+			if (arr[i] < arr[i - 1]) {
+				tmp = arr[i]
+				arr[i] = arr[i - 1]
+				arr[i - 1] = tmp
+				swapped = 1;
+			}
+	}
+	if (swapped == 0)
+		break
+}
+
+for (i = 0; i < arr_len; i = i + 1) {
+	print(arr[i])
+}
+
+del(arr)
+
+
