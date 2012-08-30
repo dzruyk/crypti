@@ -122,7 +122,6 @@ update_token(struct lex_item *dst, const struct lex_item *src)
 		dst->num = src->num;
 		break;
 	default:
-		print_warn_and_die("WIP\n");
 		break;
 	}
 }
@@ -1419,6 +1418,7 @@ array_init()
 		goto error;
 	}
 
+	ufree(cnt);
 	return ast_node_arr_new(arr, ndim, dimlen, total);
 
 error:
@@ -1427,7 +1427,9 @@ error:
 	for (i = 0; i < total; i++)
 		ast_node_unref(arr[i]);
 	
-	free(arr);
+	ufree(dimlen);
+	ufree(cnt);
+	ufree(arr);
 	return NULL;
 }
 

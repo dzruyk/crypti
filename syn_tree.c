@@ -35,6 +35,7 @@ ast_node_free(ast_node_t *tree)
 		n = arr->sz;
 		for (i = 0; i < n; i++)
 			ast_node_unref(arr->arr[i]);
+		ufree(arr->len);
 		ufree(arr->arr);
 		break;
 	case AST_NODE_ACCESS:
@@ -177,8 +178,7 @@ ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz)
 	res->dims = dims;
 	res->sz = sz;
 
-	res->len = malloc_or_die(sizeof(len) * dims);
-	memcpy(res->len, len, dims * sizeof(len));
+	res->len = len;
 
 	return AST_NODE(res);
 }
