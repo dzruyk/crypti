@@ -81,17 +81,20 @@ arr_print(arr_t *arr)
 	int i, n, val;
 	int *index;
 
-	D(printf("%d dims\n", arr->dims);
- 	  for (i = 0; i < arr->dims; i++)
+	D(
+	printf("%d dims\n", arr->dims);
+ 	for (i = 0; i < arr->dims; i++)
 		printf("%d) len = %d\n", i, arr->len[i]);
 	)
 		
 	n = 1;
-
+	
+	D(
 	for (i = 0; i < arr->dims; i++)
 		n *= arr->len[i];
 	
-	//D(printf("n = %d\n", n));
+	printf("n = %d\n", n);
+	)
 	
 	index = malloc_or_die(sizeof(*index) * arr->dims);
 	memset(index, 0, sizeof(*index) * arr->dims);
@@ -101,18 +104,23 @@ arr_print(arr_t *arr)
 		printf("{");
 
 	while (1) {
-
+		int is_end = 0;
+		//print values at most depth
 		while (index[arr->dims - 1] < arr->len[arr->dims - 1]) {
 			arr_get_item(arr, index, &val);
-			printf(" %d,", val);
+			printf("%d", val);
 			index[arr->dims - 1]++;
+			if (index[arr->dims - 1] != arr->len[arr->dims - 1])
+				printf(",");
+
 		}
 
 		index[arr->dims - 1] = 0;
 	
 		i = arr->dims - 2;
+		n = 0;
 		while (i >= 0) {
-			printf("}");
+			n++;
 			index[i]++;
 			if (index[i] >= arr->len[i]) {
 				index[i] = index[i] % arr->len[i];
@@ -122,8 +130,14 @@ arr_print(arr_t *arr)
 			}
 		}
 		if (i < 0)
+			is_end = 1;
+		for (i = 0; i < n; i++)
+			printf("}");
+		if (is_end)
 			break;
-		printf("{");
+		printf(",");
+		for (i = 0; i < n; i++)
+			printf("{");
 	}
 	printf("}\n");
 

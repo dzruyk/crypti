@@ -24,3 +24,5 @@ for ((i=1; $i<$N +1; i=$i+1))
 do
 	cat $path/test_cycle_$i.txt | valgrind $path/../$PNAME 2>&1 | grep "in use at exit"
 done
+
+echo 'Done'

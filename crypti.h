@@ -5,9 +5,9 @@
 
 //WIP debug macro
 #if DEBUG == 1
-#define D(s) s
+	#define D(s) s
 #else
-#define D(s) 
+	#define D(s) 
 #endif
 
 #endif
