@@ -1,12 +1,11 @@
 #ifndef __CRYPTI_H_
 #define __CRYPTI_H_
 
-#define DEBUG
+#define DEBUG 0
 
 //WIP debug macro
-#ifdef DEBUG
-#define D(s) do { \
-s;} while(0)
+#if DEBUG == 1
+#define D(s) s
 #else
 #define D(s) 
 #endif

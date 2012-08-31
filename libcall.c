@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "array.h"
 #include "eval.h"
 #include "libcall.h"
 
@@ -19,7 +20,7 @@ libcall_print(id_item_t **argues, int *rettype, void **retval)
 		printf("%d\n", arg->value);
 		break;
 	case ID_ARR:
-		printf("array print: WIP\n");
+		arr_print(arg->arr);
 		break;
 	default:
 		print_warn_and_die("something wrong\n");
@@ -36,7 +37,7 @@ libcall_sum(id_item_t **argues, int *rettype, void **retval)
 {
 	assert(argues != NULL && argues[0] != NULL);
 
-	id_item_t *arg;
+	//id_item_t *arg;
 
 	//FIXME: stub, wanna implement variable argue funtion
 	

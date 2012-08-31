@@ -154,67 +154,6 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	return ev;
 }
 
-/* 
- * Print array 
- * debug function
- * later need to rewrite or replace
- */
-void
-eval_print_arr(arr_t *arr)
-{
-	int i, n, val;
-	int *index;
-
-	/*/debug{
-	D(printf("%d dims\n", arr->dims));
- 	for (i = 0; i < arr->dims; i++)
-		D(printf("%d) len = %d\n", i, arr->len[i]));
-	//}debug
-	*/
-	n = 1;
-
-	for (i = 0; i < arr->dims; i++)
-		n *= arr->len[i];
-	
-	//D(printf("n = %d\n", n));
-	
-	index = malloc_or_die(sizeof(*index) * arr->dims);
-	memset(index, 0, sizeof(*index) * arr->dims);
-	
-	
-	for (i = 0; i < arr->dims; i++)
-		printf("{");
-
-	while (1) {
-
-		while (index[arr->dims - 1] < arr->len[arr->dims - 1]) {
-			arr_get_item(arr, index, &val);
-			printf(" %d,", val);
-			index[arr->dims - 1]++;
-		}
-
-		index[arr->dims - 1] = 0;
-	
-		i = arr->dims - 2;
-		while (i >= 0) {
-			printf("}");
-			index[i]++;
-			if (index[i] >= arr->len[i]) {
-				index[i] = index[i] % arr->len[i];
-				i--;
-			} else {
-				break;
-			}
-		}
-		if (i < 0)
-			break;
-		printf("{");
-	}
-	printf("}\n");
-
-	ufree(index);
-}
-
 
 ret_t
 eval_print_val(eval_t *eval)
@@ -230,7 +169,7 @@ eval_print_val(eval_t *eval)
 		printf("%d\n", value);
 		break;
 	case EVAL_ARR:
-		eval_print_arr(eval->arr);	
+		arr_print(eval->arr);	
 		break;
 	default:
 		print_warn_and_die("INTERNAL ERROR: cant get value\n");

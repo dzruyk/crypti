@@ -32,6 +32,11 @@ ret_t arr_set_item(arr_t *arr, int *ind, int value);
  */
 ret_t arr_get_item(arr_t *arr, int *ind, int *value);
 
+/*
+ * print passed array
+ */
+void arr_print(arr_t *arr);
+
 /* 
  * Free memory allocated by arr and arr->ptr
  * WARN: dont set arr to NULL
