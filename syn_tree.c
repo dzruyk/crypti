@@ -140,6 +140,16 @@ ast_node_new(ast_type_t type, int sz,
 	return res;
 }
 
+
+ast_node_t *
+ast_node_copy(ast_node_t *node)
+{
+	ast_node_t *res;
+
+	print_warn_and_die("WIP!\n");
+	return res;
+}
+
 ast_node_t *
 ast_node_num_new(int num)
 {

@@ -54,6 +54,7 @@ static ast_node_t *statesment(struct syn_ctx *ctx);
 static ast_node_t *expr();
 
 static ast_node_t *assign(ast_node_t *lvalue);
+static ast_node_t *op_with_assign(ast_node_t *lvalue);
 
 static ast_node_t *logic_or();
 static ast_node_t *logic_and();
@@ -371,6 +372,7 @@ static ast_node_t *
 expr()
 {
 	ast_node_t *result;
+	ast_node_t *right;
 	
 	result = logic_or();
 	if (result == NULL)
@@ -378,8 +380,75 @@ expr()
 
 	if (match(TOK_AS) == TRUE)
 		return assign(result);
+
+	switch (current_tok) {
+	case TOK_PLUS_AS:
+	case TOK_MINUS_AS:
+	case TOK_MUL_AS:
+	case TOK_DIV_AS:
+		op_with_assign(result);
+		break;
+	default:
+		return result;
+	}
+}
+
+static ast_node_t *
+op_with_assign(ast_node_t *lvalue)
+{
+	ast_node_t *right, *copy;
+	int op;
 	
-	return result;
+	right = copy = NULL;
+
+	if (lvalue->type != AST_NODE_ID &&
+	    lvalue->type != AST_NODE_ACCESS) {
+		print_warn("assign to not variable\n");
+		goto err;
+	}
+
+	//copy lvalue
+	//get right node
+	//result = right op result 
+
+	switch (current_tok) {
+	case TOK_PLUS_AS:
+		op = OP_PLUS;
+		break;
+	case TOK_MINUS_AS:
+		op = OP_MINUS;
+		break;
+	case TOK_MUL_AS:
+		op = OP_MUL;
+		break;
+	case TOK_DIV_AS:
+		op = OP_DIV;
+		break;
+	default:
+		print_warn_and_die("ERROR!\n");
+	}
+	
+	right = expr();
+	if (right == NULL) {
+		print_warn("uncomplited as expression\n");
+		goto err;
+	}
+
+	copy = ast_node_copy(lvalue);
+	
+	right = ast_node_op_new(copy, right, op);
+
+	return ast_node_as_new(lvalue, right);
+
+err:
+	nerrors++;
+
+	if (right != NULL)
+		ast_node_unref(right);
+	if (copy != NULL)
+		ast_node_unref(copy);
+	
+	return ast_node_stub_new();
 }
 
 static ast_node_t *

@@ -162,6 +162,8 @@ typedef struct {
 ast_node_t *ast_node_new(ast_type_t type, int sz, 
     destructor_t destructor);
 
+ast_node_t *ast_node_copy(ast_node_t *node);
+
 ast_node_t *ast_node_num_new(int num);
 
 
