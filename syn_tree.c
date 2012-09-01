@@ -140,14 +140,31 @@ ast_node_new(ast_type_t type, int sz,
 	return res;
 }
 
-
 ast_node_t *
 ast_node_copy(ast_node_t *node)
 {
+	ast_node_t **ind;
 	ast_node_t *res;
+	ast_node_id_t *id;
+	ast_node_access_t *acc;
+	char *name;
+	int i;
 
-	print_warn_and_die("WIP!\n");
-	return res;
+	switch (node->type) {
+	case AST_NODE_ID:
+		id = (ast_node_id_t *) node;
+		name = strdup_or_die(id->name);
+		return ast_node_id_new(name);
+
+	case AST_NODE_ACCESS:
+		acc = (ast_node_access_t *) node;
+		name = strdup_or_die(acc->name);
+		
+		print_warn_and_die("WIP!\n");
+	default:
+		break;
+	}
+	return ast_node_stub_new();
 }
 
 ast_node_t *

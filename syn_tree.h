@@ -156,19 +156,17 @@ typedef struct {
 } ast_node_stub_t;
 
 /*
- * allocate sz bytes for new ast_node with specified type
- * zeroes all structure, set  destructor
+ * Allocate sz bytes for new ast_node with specified type
+ * zeroes all structure and sets  destructor.
  */
 ast_node_t *ast_node_new(ast_type_t type, int sz, 
     destructor_t destructor);
 
-ast_node_t *ast_node_copy(ast_node_t *node);
-
 ast_node_t *ast_node_num_new(int num);
-
 
 ast_node_t *ast_node_id_new(char *name);
 
+ast_node_t *ast_node_copy(ast_node_t *node);
 
 ast_node_t *ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz);
 

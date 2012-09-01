@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 
 #include <string.h>
@@ -395,6 +396,8 @@ expr()
 static ast_node_t *
 op_with_assign(ast_node_t *lvalue)
 {
+	assert(lvalue != NULL);
+
 	ast_node_t *right, *copy;
 	int op;
 	
@@ -405,10 +408,6 @@ op_with_assign(ast_node_t *lvalue)
 		print_warn("assign to not variable\n");
 		goto err;
 	}
-
-	//copy lvalue
-	//get right node
-	//result = right op result 
 
 	switch (current_tok) {
 	case TOK_PLUS_AS:
