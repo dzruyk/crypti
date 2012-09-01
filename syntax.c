@@ -372,7 +372,6 @@ static ast_node_t *
 expr()
 {
 	ast_node_t *result;
-	ast_node_t *right;
 	
 	result = logic_or();
 	if (result == NULL)
@@ -386,7 +385,7 @@ expr()
 	case TOK_MINUS_AS:
 	case TOK_MUL_AS:
 	case TOK_DIV_AS:
-		op_with_assign(result);
+		return op_with_assign(result);
 		break;
 	default:
 		return result;
@@ -427,6 +426,7 @@ op_with_assign(ast_node_t *lvalue)
 	default:
 		print_warn_and_die("ERROR!\n");
 	}
+	tok_next();
 	
 	right = expr();
 	if (right == NULL) {

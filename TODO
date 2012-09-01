@@ -1,24 +1,16 @@
-1) sync stream after errors
-5) library funtions(can user redefine reserved names for lib funcs?)
-8) pay attention for blocks of insturctions
-9) libbignum integration
-10) нужно придумать как при traverse копировать function body
-    без дополнительных расходов и костылей(сейчас func-> body не убивает деструктор)
-11) функции и переменные не должны иметь одного имени
-12) function errors context when traverse body
-15) need to travese statesment list in functions
-16) check when assign res of function call to value(can be void)
-19) unused lex item field(op)??
-20) ast_node_return_t
-21) pass argues to funtion call by value, not by copy
-22) traverse_ctx( sad but need to dynamically allocate)
-23) may be need to get rel_op() between LPAR and RPAR
-24) stack of lex items(need to implement tok_prev()
-26) implement copy-on-write val inside new scope + global modificator
-27) variable lenght argues functions(builtin and user defined)
-
-28) 2 data types - bignum and string(bytes)
-29) multidimentional arrays
-30) Rewrite Makefile
-31) len() builtin function(or array attribute
-
+List of current tasks.
+	
+* Need to sync token stream after errors.
+* Library funtions(can user redefine reserved names for lib funcs?).
+* Pay attention for blocks of insturctions.
+* Libbignum integration.
+* Functions and variables can't have same names.
+* Function errors context when traverse body.
+* Need to check when assign res of function call to value(because it can be void).
+* Need to pass argues to funtion call by value, not by copy.
+* Need to implement copy-on-write val inside new scope + global modificator.
+* Need to implement variable length argues functions(builtin and user defined).
+* Crypti must have 2 data types - bignum and string(bytes).
+* Need to implement multidimentional arrays.
+* Need to rewrite Makefile.
+* Need to write "len()" (or "size()") function.

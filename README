@@ -1,6 +1,5 @@
-Description.
+Syntax description.
 
-SYNTAX:
 	prog 		->	global_expr
 	
 	global_expr	->	def func_name(argues) stmts
@@ -58,8 +57,8 @@ SYNTAX:
 
 
 
-REMARK:
-1)	in	id[statesment] statesment cant be EMPTY
-2)	in functions we cant define functions
-3)	we can assign only to variables
+Remarks:
+1)	In id[statesment] statesment can't be EMPTY;
+2)	Inside functions we can't define new functions;
+3)	We can assign only to variables or array elements.
 

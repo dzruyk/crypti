@@ -470,14 +470,14 @@ finalize:
 }
 
 /*
- * traverse tree and check trav_ctx structure
- * returns:
- * RES_CONTINUE, RES_BREAK - if traversal break/continue
- * inside cycle(work with nesting)
- * RES_RETURN - if traversal return inside function
- * RES_OK if no errors recognised and without 
- * break/continue/return meeting
- * RES_ERROR otherwise
+ * Traverse tree and check trav_ctx structure.
+ * Returns:
+ * - RES_CONTINUE, RES_BREAK - if traversal break/continue
+ * inside cycle(work with nesting);
+ * - RES_RETURN - if traversal return inside function;
+ * - RES_OK if no errors recognised and without 
+ * break/continue/return meeting;
+ * - RES_ERROR otherwise;
  */
 res_type_t
 traverse_body(ast_node_t *tree)
