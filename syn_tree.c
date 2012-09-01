@@ -144,25 +144,89 @@ ast_node_t *
 ast_node_copy(ast_node_t *node)
 {
 	ast_node_t **ind;
-	ast_node_t *res;
-	ast_node_id_t *id;
+	ast_node_t *left, *right;
 	ast_node_access_t *acc;
 	char *name;
 	int i;
 
 	switch (node->type) {
-	case AST_NODE_ID:
+	case AST_NODE_OP: {
+		ast_node_op_t *op;
+
+		op = (ast_node_op_t *) node;
+
+		left = ast_node_copy(node->left);
+		right = ast_node_copy(node->right);
+
+		return ast_node_op_new(left, right, op->opcode);
+	}
+	case AST_NODE_AS: {
+		left = ast_node_copy(node->left);
+		right = ast_node_copy(node->right);
+
+		return ast_node_as_new(left, right);
+	}
+	case AST_NODE_ID: {
+		ast_node_id_t *id;
+
 		id = (ast_node_id_t *) node;
 		name = strdup_or_die(id->name);
 		return ast_node_id_new(name);
+	}
+	case AST_NODE_NUM: {
+		ast_node_num_t *num;
 
-	case AST_NODE_ACCESS:
+		num = (ast_node_num_t *) node;
+
+		return ast_node_num_new(num->num);
+	}
+	case AST_NODE_ACCESS: {
 		acc = (ast_node_access_t *) node;
 		name = strdup_or_die(acc->name);
 		
-		print_warn_and_die("WIP!\n");
+		ind = malloc_or_die(sizeof(*ind) * acc->dims);
+		for (i = 0; i < acc->dims; i++)
+			ind[i] = ast_node_copy(acc->ind[i]);
+		
+		//print_warn_and_die("WIP!\n");
+		return ast_node_access_new(name, acc->dims, ind);
+	}
+	case AST_NODE_ARR: {
+	
+			   
+	}
+	case AST_NODE_SCOPE: {
+	
+	}
+	case AST_NODE_IF: {
+	
+	}
+	case AST_NODE_FOR: {
+	
+	}
+	case AST_NODE_WHILE: {
+	
+	}
+	
+	case AST_NODE_FUNC: {
+	
+	}
+	
+	case AST_NODE_CALL: {
+		
+		print_warn_and_die("WIP! write me\n");
+	}
+	case AST_NODE_BREAK:
+	case AST_NODE_CONTINUE:
+	case AST_NODE_RETURN:
+	case AST_NODE_STUB: {
+		ast_node_t *res;
+
+		memcpy(res, node, sizeof(res));
+		return res;
+	}
 	default:
-		break;
+		print_warn_and_die("Internal error!\n");
 	}
 	return ast_node_stub_new();
 }
