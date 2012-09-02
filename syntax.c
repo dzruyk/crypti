@@ -386,6 +386,11 @@ expr()
 	case TOK_MINUS_AS:
 	case TOK_MUL_AS:
 	case TOK_DIV_AS:
+	case TOK_B_AND_AS:
+	case TOK_B_XOR_AS:
+	case TOK_B_OR_AS:
+	case TOK_SHL_AS:
+	case TOK_SHR_AS:
 		return op_with_assign(result);
 		break;
 	default:
@@ -398,10 +403,10 @@ op_with_assign(ast_node_t *lvalue)
 {
 	assert(lvalue != NULL);
 
-	ast_node_t *right, *copy;
+	ast_node_t *right;
 	int op;
 	
-	right = copy = NULL;
+	right = NULL;
 
 	if (lvalue->type != AST_NODE_ID &&
 	    lvalue->type != AST_NODE_ACCESS) {
@@ -422,6 +427,21 @@ op_with_assign(ast_node_t *lvalue)
 	case TOK_DIV_AS:
 		op = OP_DIV;
 		break;
+	case TOK_B_AND_AS:
+		op = OP_B_AND;
+		break;
+	case TOK_B_XOR_AS:
+		op = OP_B_XOR;
+		break;
+	case TOK_B_OR_AS:
+		op = OP_B_OR;
+		break;
+	case TOK_SHL_AS:
+		op = OP_SHL;
+		break;
+	case TOK_SHR_AS:
+		op = OP_SHR;
+		break;
 	default:
 		print_warn_and_die("ERROR!\n");
 	}
@@ -433,19 +453,13 @@ op_with_assign(ast_node_t *lvalue)
 		goto err;
 	}
 
-	copy = ast_node_copy(lvalue);
-	
-	right = ast_node_op_new(copy, right, op);
-
-	return ast_node_as_new(lvalue, right);
+	return ast_node_op_as_new(lvalue, right, op);
 
 err:
 	nerrors++;
 
 	if (right != NULL)
 		ast_node_unref(right);
-	if (copy != NULL)
-		ast_node_unref(copy);
 	
 	return ast_node_stub_new();
 }

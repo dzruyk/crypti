@@ -50,10 +50,8 @@ id_item_default_release(id_item_t *item)
 	switch (item->type) {
 	case ID_UNKNOWN:
 	case ID_NUM:
-		break;
 	case ID_ARR:
-		arr_free(item->arr);
-
+		break;
 	}
 }
 

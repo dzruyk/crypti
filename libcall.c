@@ -5,6 +5,7 @@
 #include "array.h"
 #include "eval.h"
 #include "libcall.h"
+#include "macros.h"
 
 int
 libcall_print(id_item_t **argues, int *rettype, void **retval)
@@ -80,6 +81,7 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 	assert(argues != NULL && argues[0] != NULL);
 
 	id_item_t *arg;
+	id_item_t *tmp;
 	ret_t ret;
 
 	arg = argues[0];
@@ -90,7 +92,17 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 		return 1;
 	}
 	
-	//then delete
+	tmp = id_table_lookup_all(arg->name);
+	
+	if (tmp == NULL)
+		SHOULDNT_REACH();
+
+	switch (tmp->type) {
+	case ID_ARR:
+		arr_free(tmp->arr);
+	default:
+		break;
+	}
 
 	ret = id_table_remove(arg->name);
 	if (ret != ret_ok) {

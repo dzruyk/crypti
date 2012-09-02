@@ -32,6 +32,7 @@ typedef enum {
 typedef enum {
 	AST_NODE_AS,
 	AST_NODE_OP,
+	AST_NODE_OP_AS,
 	AST_NODE_SEQ,
 	AST_NODE_ARR,
 	AST_NODE_ACCESS,
@@ -67,6 +68,11 @@ typedef struct {
 	ast_node_t tree;
 	int opcode;
 } ast_node_op_t;
+
+typedef struct {
+	ast_node_t tree;
+	int opcode;
+} ast_node_op_as_t;
 
 typedef struct {
 	ast_node_t tree;
@@ -166,7 +172,11 @@ ast_node_t *ast_node_num_new(int num);
 
 ast_node_t *ast_node_id_new(char *name);
 
-ast_node_t *ast_node_copy(ast_node_t *node);
+/*
+ * This is function not used now.
+ * May be it will be implemented sometime in future
+ */
+//ast_node_t *ast_node_copy(ast_node_t *node);
 
 ast_node_t *ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz);
 
@@ -192,9 +202,9 @@ void ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *nod
 
 ast_node_t *ast_node_op_new(ast_node_t* left, ast_node_t *right, opcode_t opcode);
 
+ast_node_t *ast_node_op_as_new(ast_node_t* left, ast_node_t *right, opcode_t opcode);
 
 ast_node_t *ast_node_as_new(ast_node_t *left, ast_node_t *right);
-
 
 ast_node_t *ast_node_return_new(ast_node_t *retval);
 

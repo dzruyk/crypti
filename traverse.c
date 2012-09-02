@@ -931,6 +931,45 @@ finalize:
 }
 
 static void
+traverse_op_as(ast_node_t *tree)
+{	
+	ast_node_op_as_t *optree;
+	eval_t *left, *right, *res;
+
+	traverse(tree->left);	
+	traverse(tree->right);
+
+	optree = (ast_node_op_as_t *)tree;
+
+	if (nerrors != 0)
+		return;
+	
+	right = stack_pop();
+	left = stack_pop();
+
+	if (right == NULL || left == NULL) {
+		nerrors++;
+		print_warn("cant get operand\n");
+		goto finalize;
+	}
+	
+	res = eval_process_op(left, right, optree->opcode);
+	
+	if (res == NULL) {
+		nerrors++;
+		print_warn("operation error\n");
+		goto finalize;
+	}
+	
+	set_value_node(tree->left, res);
+
+finalize:
+
+	eval_free(left);
+	eval_free(right);
+}
+
+static void
 traverse_return(ast_node_t *tree)
 {
 	ast_node_return_t *rettree;
@@ -975,6 +1014,7 @@ struct {
 } node_type [] = {
 	{AST_NODE_AS, traverse_as},
 	{AST_NODE_OP, traverse_op},
+	{AST_NODE_OP_AS, traverse_op_as},
 	{AST_NODE_ARR, traverse_arr},
 	{AST_NODE_ACCESS, traverse_access},
 	{AST_NODE_DEF, traverse_func_def},

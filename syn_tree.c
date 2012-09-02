@@ -68,6 +68,7 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(fornode->body);
 		break;
 	case AST_NODE_OP:
+	case AST_NODE_OP_AS:
 	case AST_NODE_AS:
 	case AST_NODE_SCOPE:
 	case AST_NODE_STUB:	
@@ -140,6 +141,8 @@ ast_node_new(ast_type_t type, int sz,
 	return res;
 }
 
+
+/*
 ast_node_t *
 ast_node_copy(ast_node_t *node)
 {
@@ -263,6 +266,7 @@ ast_node_copy(ast_node_t *node)
 	}
 	return ast_node_stub_new();
 }
+*/
 
 ast_node_t *
 ast_node_num_new(int num)
@@ -432,6 +436,22 @@ ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)
 	
 	res = (ast_node_op_t *) 
 	    ast_node_new(AST_NODE_OP, sizeof(*res), ast_node_free);
+	
+	AST_NODE(res)->left = left;
+	AST_NODE(res)->right = right;
+
+	res->opcode = opcode;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_op_as_new(ast_node_t* left, ast_node_t *right, opcode_t opcode)
+{
+	ast_node_op_t *res;
+	
+	res = (ast_node_op_t *) 
+	    ast_node_new(AST_NODE_OP_AS, sizeof(*res), ast_node_free);
 	
 	AST_NODE(res)->left = left;
 	AST_NODE(res)->right = right;
