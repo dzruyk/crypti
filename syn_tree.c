@@ -145,7 +145,6 @@ ast_node_copy(ast_node_t *node)
 {
 	ast_node_t **ind;
 	ast_node_t *left, *right;
-	ast_node_access_t *acc;
 	char *name;
 	int i;
 
@@ -181,6 +180,8 @@ ast_node_copy(ast_node_t *node)
 		return ast_node_num_new(num->num);
 	}
 	case AST_NODE_ACCESS: {
+		ast_node_access_t *acc;
+		
 		acc = (ast_node_access_t *) node;
 		name = strdup_or_die(acc->name);
 		
@@ -192,8 +193,21 @@ ast_node_copy(ast_node_t *node)
 		return ast_node_access_new(name, acc->dims, ind);
 	}
 	case AST_NODE_ARR: {
+		ast_node_arr_t *arr;
+		ast_node_t **elems;
+		int *len;
+
+		arr = (ast_node_arr_t *) node;
+
+		elems = malloc_or_die(arr->sz * sizeof(*elems));
+
+		for (i = 0; i< arr->sz; i++)
+			elems[i] = ast_node_copy(arr->arr[i]);
+		
+		len = malloc_or_die(arr->dims * sizeof(*len));
+		memcpy(len, arr->len, arr->dims * sizeof(*len));
 	
-			   
+		return ast_node_arr_new(elems, arr->dims, len, arr->sz);	   
 	}
 	case AST_NODE_SCOPE: {
 	
@@ -210,11 +224,28 @@ ast_node_copy(ast_node_t *node)
 	
 	case AST_NODE_DEF: {
 	
+		print_warn_and_die("WIP! write me\n");
 	}
 	
 	case AST_NODE_CALL: {
+		ast_node_func_call_t *call;
+		ast_node_func_call_t *ncall;
 		
-		print_warn_and_die("WIP! write me\n");
+		call = (ast_node_func_call_t *) node;
+
+		name = strdup_or_die(call->name);
+
+		ncall = (ast_node_func_call_t *) ast_node_func_call_new(name);
+
+		for (i = 0; i < call->nargs; i++) {
+			ast_node_t *arg;
+
+			arg = ast_node_copy(call->args[i]);
+
+			ast_node_func_call_add_next_arg(ncall, arg);
+		}
+
+		return AST_NODE(ncall);
 	}
 	case AST_NODE_BREAK:
 	case AST_NODE_CONTINUE:
@@ -277,7 +308,7 @@ ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz)
 }
 
 ast_node_t *
-ast_node_func_def(char *name)
+ast_node_func_def_new(char *name)
 {
 	ast_node_func_t *res;
 
@@ -292,7 +323,7 @@ ast_node_func_def(char *name)
 }
 
 ast_node_t *
-ast_node_func_call(char *name)
+ast_node_func_call_new(char *name)
 {
 	ast_node_func_call_t *res;
 
@@ -302,6 +333,19 @@ ast_node_func_call(char *name)
 	res->name = name;
 
 	return AST_NODE(res);
+}
+	
+void
+ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node)
+{
+	int n;
+
+	n = call->nargs++;
+
+	call->args = realloc_or_die(call->args,
+	    call->nargs * sizeof(*(call->args)));
+
+	call->args[n] = node;
 }
 
 ast_node_t *

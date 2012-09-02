@@ -1159,7 +1159,7 @@ process_function()
 		return ast_node_stub_new();
 	}
 
-	func = (ast_node_func_t *)ast_node_func_def(lex_item_prev.name);
+	func = (ast_node_func_t *)ast_node_func_def_new(lex_item_prev.name);
 	
 	ret = process_function_argu(func);
 	if (ret != ret_ok)
@@ -1280,20 +1280,6 @@ err:
 	return ret_err;
 }
 		
-void
-func_call_add_next_argu(ast_node_func_call_t *call, ast_node_t *node)
-{
-	int n;
-
-	n = call->nargs++;
-
-	call->args = realloc_or_die(call->args,
-	    call->nargs * sizeof(*(call->args)));
-
-	call->args[n] = node;
-
-}
-
 static ast_node_t *
 function_call()
 {
@@ -1302,7 +1288,7 @@ function_call()
 	char *name;
 
 	name = lex_item_prev.name;
-	call = (ast_node_func_call_t *)ast_node_func_call(name);
+	call = (ast_node_func_call_t *) ast_node_func_call_new(name);
 
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"
@@ -1319,7 +1305,7 @@ function_call()
 			goto err;
 		}
 
-		func_call_add_next_argu(call, node);
+		ast_node_func_call_add_next_arg(call, node);
 
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != TOK_RPAR) {

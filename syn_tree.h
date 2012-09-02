@@ -173,7 +173,6 @@ ast_node_t *ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz);
 
 ast_node_t *ast_node_access_new(char *name, int dims, ast_node_t **ind);
 
-//WIP
 ast_node_t *ast_node_if_new(ast_node_t *_if, ast_node_t *body, ast_node_t *_else);
 
 
@@ -183,13 +182,13 @@ ast_node_t *ast_node_for_new(ast_node_t *expr1, ast_node_t *expr2,
 
 ast_node_t *ast_node_while_new(ast_node_t *cond, ast_node_t *body);
 
-
 ast_node_t *ast_node_scope_new(ast_node_t *child);
 
-ast_node_t *ast_node_func_def(char *name);
+ast_node_t *ast_node_func_def_new(char *name);
 
-ast_node_t *ast_node_func_call(char *name);
-//WIP
+ast_node_t *ast_node_func_call_new(char *name);
+
+void ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node);
 
 ast_node_t *ast_node_op_new(ast_node_t* left, ast_node_t *right, opcode_t opcode);
 
