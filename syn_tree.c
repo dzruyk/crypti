@@ -208,7 +208,7 @@ ast_node_copy(ast_node_t *node)
 	
 	}
 	
-	case AST_NODE_FUNC: {
+	case AST_NODE_DEF: {
 	
 	}
 	
@@ -222,7 +222,9 @@ ast_node_copy(ast_node_t *node)
 	case AST_NODE_STUB: {
 		ast_node_t *res;
 
-		memcpy(res, node, sizeof(res));
+		res = malloc_or_die(sizeof(*node));
+		memcpy(res, node, sizeof(*res));
+
 		return res;
 	}
 	default:

@@ -27,6 +27,27 @@ arr_new(int dims, int *len, int sz, int item_sz)
 	return arr;
 }
 
+arr_t *
+arr_copy(arr_t *arr)
+{
+	arr_t *copy;
+	int *parr, *pcopy;
+	int i;
+
+	copy = arr_new(arr->dims, arr->len, arr->sz, arr->item_sz);
+
+	for (i = 0; i < copy->sz; i++) {
+		//FIXME: Be care when you will work with
+		//large numbers
+		parr = (int *)(arr->ptr + arr->item_sz * i);
+		pcopy = (int *)(copy->ptr + copy->item_sz * i);
+		*pcopy = *parr;
+
+	}
+
+	return copy;
+}
+
 //FIXME: be care when will introduce large numbers
 ret_t
 arr_set_item(arr_t *arr, int *ind, int value)
@@ -81,20 +102,21 @@ arr_print(arr_t *arr)
 	int i, n, val;
 	int *index;
 
-	D(
-	printf("%d dims\n", arr->dims);
- 	for (i = 0; i < arr->dims; i++)
-		printf("%d) len = %d\n", i, arr->len[i]);
-	)
-		
-	n = 1;
+#if IS_DEBUG == 1
 	
-	D(
+	DEBUG(LOG_DEFAULT, "%d dims\n", arr->dims);
+ 	for (i = 0; i < arr->dims; i++)
+		DEBUG(LOG_DEFAULT, "%d) len = %d\n", i, arr->len[i]);
+#endif
+		
+	
+#if IS_DEBUG == 1
+	n = 1;
 	for (i = 0; i < arr->dims; i++)
 		n *= arr->len[i];
 	
-	printf("n = %d\n", n);
-	)
+	DEBUG(LOG_DEFAULT, "n = %d\n", n);
+#endif
 	
 	index = malloc_or_die(sizeof(*index) * arr->dims);
 	memset(index, 0, sizeof(*index) * arr->dims);

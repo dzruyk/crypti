@@ -644,11 +644,11 @@ traverse_for(ast_node_t *tree)
 			goto finalize;
 		case RES_CONTINUE:
 			helper.is_continue--;
-			D(print_warn("continue catch!\n"));
+			DEBUG(LOG_DEFAULT, "continue catch!\n");
 			break;
 		case RES_BREAK:
 			helper.is_break--;
-			D(print_warn("break catch!\n"));
+			DEBUG(LOG_DEFAULT, "break catch!\n");
 			goto finalize;
 		case RES_RETURN:
 			goto finalize;
@@ -695,11 +695,11 @@ traverse_while(ast_node_t *tree)
 			goto finalize;
 		case RES_CONTINUE:
 			helper.is_continue--;
-			D(print_warn("continue catch!\n"));
+			DEBUG(LOG_DEFAULT, "continue catch!\n");
 			continue;
 		case RES_BREAK:
 			helper.is_break--;
-			D(print_warn("break catch!\n"));
+			DEBUG(LOG_DEFAULT, "break catch!\n");
 			goto finalize;
 		case RES_RETURN:
 			goto finalize;

@@ -1,13 +1,26 @@
 #ifndef __CRYPTI_H_
 #define __CRYPTI_H_
 
-#define DEBUG 0
+#define IS_DEBUG 0
+
+#define LOG_DEFAULT 0
+#define LOG_VERBOSE 1
 
 //WIP debug macro
-#if DEBUG == 1
-	#define D(s) s
+#if IS_DEBUG == 1
+
+#define DEBUG(LOG_LVL, fmt, arg...) \
+do {\
+    fprintf(stderr, "file %s, line %d:"fmt,\
+    __FILE__, \
+    __LINE__, \
+    ##arg); \
+} while (0)
+
 #else
-	#define D(s) 
+
+#define DEBUG(LOG_LVL, fmt, arg...)
+
 #endif
 
 #endif
