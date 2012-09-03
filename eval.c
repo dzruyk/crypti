@@ -74,6 +74,37 @@ eval_is_zero(eval_t *eval)
 }
 
 eval_t *
+eval_process_unary(eval_t *ev, opcode_t opcode)
+{
+	assert(ev != NULL);
+
+	eval_t *res;
+	int val;
+
+	if (ev->type != EVAL_NUM)
+		return NULL;
+
+	val = ev->value;
+
+	switch (opcode) {
+	case OP_PLUS:
+		break;
+	case OP_MINUS:
+		val = -val;
+		break;
+	case OP_NOT:
+		val = !val;
+		break;
+	default:
+		SHOULDNT_REACH();
+	}
+
+	res = eval_num_new(val);
+
+	return res;
+}
+
+eval_t *
 eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 {
 	assert(left != NULL && right != NULL);

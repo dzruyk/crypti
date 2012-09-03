@@ -878,7 +878,8 @@ term()
 
 		return NULL;
 	} else if (current_tok == TOK_PLUS
-	    || current_tok == TOK_MINUS) {
+	    || current_tok == TOK_MINUS
+	    || current_tok == TOK_NOT) {
 		
 		return unary();
 	} else {
@@ -915,6 +916,10 @@ unary()
 	int minus;
 
 	minus = 0;
+
+
+
+	//plus/minus
 
 	do {
 		if (current_tok == TOK_MINUS)

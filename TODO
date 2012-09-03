@@ -14,3 +14,4 @@ List of current tasks.
 * Need to implement multidimentional arrays.
 * Need to rewrite Makefile.
 * Need to write "len()" (or "size()") function.
+* Unary ! (TOK_NOT) implementation.

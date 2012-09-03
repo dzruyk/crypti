@@ -20,30 +20,36 @@ typedef struct {
 } eval_t;
 
 /*
- * create new num eval
+ * Create new num eval.
  */
 eval_t *eval_num_new();
 
 /*
- * create new array eval
+ * Create new array eval.
  */
 eval_t *eval_arr_new(arr_t *arr);
 
 /*
- * free passed eval_t
- * WARNING: you must manualy free eval payload
+ * Free passed eval_t.
+ * WARNING: You must manualy free eval payload.
  */
 void eval_free(eval_t *eval);
 
 
 /*
- * return TRUE if eval is zero
- * return FALSE otherwise
+ * Check passed eval:
+ * return TRUE if eval is zero;
+ * return FALSE otherwise.
  */
 boolean_t eval_is_zero(eval_t *eval);
 
 /*
- * process expression, returns result
+ * Process unary operation, returns new eval_t.
+ */
+eval_t *eval_process_unary(eval_t *ev, opcode_t opcode);
+
+/*
+ * Process expression, returns result in new eval_t.
  */
 eval_t *eval_process_op(eval_t *left, eval_t *right, opcode_t opcode);
 

@@ -939,7 +939,9 @@ static void
 traverse_unary(ast_node_t *tree)
 {
 	ast_node_unary_t *unary;
-	eval_t *ev;
+	eval_t *ev, *res;
+
+	ev = res = NULL;
 
 	unary = (ast_node_unary_t *) tree;
 
@@ -952,10 +954,21 @@ traverse_unary(ast_node_t *tree)
 	if (ev == NULL) {
 		nerrors++;
 		print_warn("can't get operand\n");
+		goto finalize;
 	}
 	
+	res = eval_process_unary(ev, unary->opcode);
 	
-	print_warn_and_die("WIP\n");
+	if (res == NULL) {
+		nerrors++;
+		print_warn("operation error\n");
+		goto finalize;
+	}
+
+	stack_push(res);
+
+finalize:
+	eval_free(ev);
 }
 
 static void
