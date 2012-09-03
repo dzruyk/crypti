@@ -279,10 +279,10 @@ static ast_node_t *
 stmts(struct syn_ctx *ctx)
 {
 	
-	if (ctx->type != CTX_GLOBAL)
-		return block(ctx);
+	//if (ctx->type != CTX_GLOBAL)
+	return block(ctx);
 	
-	return statesment(ctx);
+	//return statesment(ctx);
 }
 
 static ast_node_t *
@@ -315,9 +315,7 @@ block(struct syn_ctx *ctx)
 		if (nerrors != 0)
 			break;
 
-		if (is_stmt_end() == TRUE) {
-			tok_next();
-		} else {
+		if (is_stmt_end() != TRUE) {
 			nerrors++;
 			sync_stream();
 			print_warn("expected end of statesment\n");
@@ -326,11 +324,10 @@ block(struct syn_ctx *ctx)
 
 		//FIXME: rewrite me
 		//mb implement CTX_SCOPE?
-		//if (ctx->type == CTX_GLOBAL)
-		//	break;
+		if (ctx->type == CTX_GLOBAL)
+			break;
 
-		if (tmp == NULL)
-			continue;
+		tok_next();
 	}
 
 	return result;
@@ -447,7 +444,7 @@ op_with_assign(ast_node_t *lvalue)
 	}
 	tok_next();
 	
-	right = expr();
+	right = logic_or();
 	if (right == NULL) {
 		print_warn("uncomplited as expression\n");
 		goto err;
