@@ -23,7 +23,7 @@ do
 
 	if [ -n "$err" ]
 		then
-		echo "$path/test_$i.txt";
+		echo "$path/test_sort_$i.txt";
 		echo "$err";
 	fi
 done

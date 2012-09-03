@@ -936,6 +936,8 @@ traverse_op_as(ast_node_t *tree)
 	ast_node_op_as_t *optree;
 	eval_t *left, *right, *res;
 
+	res = NULL;
+
 	traverse(tree->left);	
 	traverse(tree->right);
 
@@ -964,7 +966,7 @@ traverse_op_as(ast_node_t *tree)
 	set_value_node(tree->left, res);
 
 finalize:
-
+	eval_free(res);
 	eval_free(left);
 	eval_free(right);
 }

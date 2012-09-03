@@ -14,8 +14,9 @@
 /*******SYNTAX_CTX***********/
 
 enum ctx_type {
-	CTX_GLOBAL,
 	CTX_FUNCTION,
+	CTX_GLOBAL,
+	CTX_SCOPE,
 	CTX_UNKNOWN,
 };
 
@@ -1133,6 +1134,11 @@ static ast_node_t *
 process_scope(struct syn_ctx *ctx)
 {
 	ast_node_t *node;
+	int prev_type;
+	
+	//FIXME: I do this without new allocated ctx.
+	prev_type = ctx->type;
+	ctx->type = CTX_SCOPE;
 
 	node = block(ctx);
 	if (nerrors != 0) 
@@ -1143,8 +1149,11 @@ process_scope(struct syn_ctx *ctx)
 		goto err;
 	}
 
+	ctx->type = prev_type;
+
 	return ast_node_scope_new(node);
 err:
+	ctx->type = prev_type;
 	
 	ast_node_unref(node);
 	return ast_node_stub_new();
