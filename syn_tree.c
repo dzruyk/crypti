@@ -16,6 +16,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_if_t *ifnode;
 	ast_node_for_t *fornode;
 	ast_node_while_t *whilenode;
+	ast_node_do_t *donode;
 	ast_node_return_t *ret;
 
 	int i, n;
@@ -60,6 +61,12 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(whilenode->cond);
 		ast_node_unref(whilenode->body);
 		break;
+	case AST_NODE_DO:
+		donode = (ast_node_do_t *)tree;
+		ast_node_unref(donode->cond);
+		ast_node_unref(donode->body);
+		break;
+
 	case AST_NODE_FOR:
 		fornode = (ast_node_for_t *)tree;
 		ast_node_unref(fornode->expr1);
@@ -74,6 +81,7 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_STUB:	
 	case AST_NODE_BREAK:
 	case AST_NODE_CONTINUE:
+	case AST_NODE_UNARY:
 		ast_node_unref(tree->left);
 		ast_node_unref(tree->right);
 		break;
@@ -401,6 +409,21 @@ ast_node_while_new(ast_node_t *cond, ast_node_t *body)
 }
 
 ast_node_t *
+ast_node_do_new(ast_node_t *cond, ast_node_t *body)
+{
+	ast_node_while_t *res;
+
+	res = (ast_node_while_t *)
+	    ast_node_new(AST_NODE_DO, sizeof(*res), ast_node_free);
+	
+	res->cond = cond;
+
+	res->body = body;
+	
+	return AST_NODE(res);
+}
+
+ast_node_t *
 ast_node_scope_new(ast_node_t *child)
 {
 	ast_node_scope_t *res;
@@ -428,6 +451,19 @@ ast_node_access_new(char *name, int dims, ast_node_t **ind)
 	return AST_NODE(res);
 }
 
+ast_node_t *
+ast_node_unary_new(ast_node_t *node, opcode_t opcode)
+{
+	ast_node_unary_t *res;
+
+	res = (ast_node_unary_t *) 
+	    ast_node_new(AST_NODE_UNARY, sizeof(*res), ast_node_free);
+
+	res->opcode = opcode;
+	res->node = node;
+
+	return AST_NODE(res);
+}
 
 ast_node_t *
 ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)

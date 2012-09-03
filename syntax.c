@@ -73,7 +73,7 @@ static ast_node_t *mul_expr();
 static ast_node_t *mul_expr_rest();
 static ast_node_t *term();
 static ast_node_t *factor();
-static ast_node_t *number();
+static ast_node_t *unary();
 static ast_node_t *identifier();
 
 static ast_node_t *process_if(struct syn_ctx *ctx);
@@ -234,6 +234,8 @@ is_eof()
 ret_t
 program_start(ast_node_t **tree)
 {
+	DEBUG(LOG_VERBOSE, "\n");
+
 	nerrors = 0;
 	*tree = NULL;
 	
@@ -243,10 +245,9 @@ program_start(ast_node_t **tree)
 	
 	if (nerrors != 0) {
 		//now we must flush tree
-		if (*tree != NULL) {
-			ast_node_unref(*tree);
-			*tree = NULL;
-		}
+		ast_node_unref(*tree);
+		*tree = NULL;
+
 		return ret_err;
 	}
 
@@ -258,6 +259,8 @@ global_expr()
 {
 	ast_node_t *node;
 	struct syn_ctx *ctx;
+
+	DEBUG(LOG_VERBOSE, "\n");
 
 	//Define new function
 	if (match(TOK_DEF))
@@ -279,7 +282,8 @@ global_expr()
 static ast_node_t *
 stmts(struct syn_ctx *ctx)
 {
-	
+	DEBUG(LOG_VERBOSE, "\n");
+
 	//if (ctx->type != CTX_GLOBAL)
 	return block(ctx);
 	
@@ -291,6 +295,8 @@ block(struct syn_ctx *ctx)
 {
 	ast_node_t *result, *prev, *tmp;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = prev = NULL;
 
 	//FIXME: bad, bad cycle
@@ -337,6 +343,8 @@ block(struct syn_ctx *ctx)
 static ast_node_t *
 statesment(struct syn_ctx *ctx)
 {	
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	if (match(TOK_LBRACE)) 
 		return process_scope(ctx);
 
@@ -358,10 +366,9 @@ statesment(struct syn_ctx *ctx)
 	else if (match(TOK_RETURN))
 		return process_return(ctx);
 
-	/* not implemented yet
 	else if (match(TOK_DO))
 		return process_do(ctx);
-	*/
+
 	else
 		return expr();
 }
@@ -370,6 +377,8 @@ statesment(struct syn_ctx *ctx)
 static ast_node_t *
 expr()
 {
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	ast_node_t *result;
 	
 	result = logic_or();
@@ -401,6 +410,8 @@ op_with_assign(ast_node_t *lvalue)
 {
 	assert(lvalue != NULL);
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	ast_node_t *right;
 	int op;
 	
@@ -456,8 +467,7 @@ op_with_assign(ast_node_t *lvalue)
 err:
 	nerrors++;
 
-	if (right != NULL)
-		ast_node_unref(right);
+	ast_node_unref(right);
 	
 	return ast_node_stub_new();
 }
@@ -466,6 +476,8 @@ static ast_node_t *
 assign(ast_node_t *lvalue)
 {
 	ast_node_t *right = NULL;
+	
+	DEBUG(LOG_VERBOSE, "\n");
 	
 	//FIXME: mb need to write special function at future?
 	if (lvalue->type != AST_NODE_ID &&
@@ -494,8 +506,7 @@ assign(ast_node_t *lvalue)
 
 err:
 	nerrors++;
-	if (right != NULL)
-		ast_node_unref(right);
+	ast_node_unref(right);
 	ast_node_unref(lvalue);
 	return ast_node_stub_new();
 }
@@ -505,6 +516,8 @@ logic_or()
 {
 	ast_node_t *right, *result;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = logic_and();
 
 	if (result == NULL)
@@ -529,6 +542,8 @@ logic_and()
 {
 	ast_node_t *right, *result;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = bool_or();
 
 	if (result == NULL)
@@ -553,6 +568,8 @@ bool_or()
 {
 	ast_node_t *right, *result;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = bool_xor();
 
 	if (result == NULL)
@@ -577,6 +594,8 @@ bool_xor()
 {
 	ast_node_t *right, *result;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = bool_and();
 
 	if (result == NULL)
@@ -601,6 +620,8 @@ bool_and()
 {
 	ast_node_t *right, *result;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = equity();
 
 	if (result == NULL)
@@ -627,6 +648,8 @@ equity()
 	ast_node_t *right, *result;
 	opcode_t op;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = rel_op();
 
 	if (result == NULL)
@@ -662,6 +685,8 @@ rel_op()
 	ast_node_t *right, *result;
 	int op;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = shift_expr();
 
 	if (result == NULL)
@@ -702,6 +727,8 @@ shift_expr()
 	ast_node_t *right, *result;
 	int op;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = add_expr();
 
 	if (result == NULL)
@@ -736,6 +763,8 @@ add_expr()
 {
 	ast_node_t *tree;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	tree = mul_expr();
 
 	if (tree == NULL)
@@ -750,6 +779,8 @@ add_expr_rest(ast_node_t *left)
 	ast_node_t *right, *result;
 	int op;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	result = left;
 
 	while(TRUE) {
@@ -781,6 +812,8 @@ mul_expr()
 {
 	ast_node_t *tree;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	tree = term();
 	if (tree == NULL) 
 		return NULL;
@@ -825,6 +858,8 @@ term()
 {
 	ast_node_t *stat;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	if (match(TOK_LPAR)) {
 		stat = expr();
 		
@@ -835,62 +870,71 @@ term()
 		}
 		
 		return stat;
-	}
+	} else if (current_tok == TOK_EOL
+	    || current_tok == TOK_SEMICOLON) {
+		
+		return NULL;
+	} else if (is_eof() == TRUE) {
 
-	return factor();
+		return NULL;
+	} else if (current_tok == TOK_PLUS
+	    || current_tok == TOK_MINUS) {
+		
+		return unary();
+	} else {
+
+		return factor();
+	}
 }
 
 // may be need to return ast_node_stub_t when RBRACKET or RPAR missed?
 static ast_node_t *
 factor()
 {
-	
 	if (match(TOK_ID)) {
 		
-		return 	identifier();
+		return identifier();
 	
-	} else if (current_tok == TOK_EOL
-	    || current_tok == TOK_SEMICOLON) {
-		
-		return NULL;
+	} else if (match(TOK_NUM)) {
 
-	} else if (is_eof() == TRUE) {
-		return NULL;
-	}
-	
-	//then we have number
-	return number();
-}
+		return ast_node_num_new(lex_item_prev.num);
 
-static ast_node_t *
-number()
-{
-	int sign;
-	sign = 1;
-
-	//unary +- implementation
-	do {
-		if (current_tok == TOK_MINUS)
-			sign = -1;
-		else if (current_tok == TOK_PLUS)
-			sign = 1;
-	} while (match(TOK_PLUS) == TRUE || match(TOK_MINUS) == TRUE);
-
-	if (match(TOK_NUM) == FALSE) {
-		
+	} else {
 		nerrors++;
 		print_warn("unsupported token tryed to factor\n");
 		tok_next();
 		
 		return ast_node_stub_new();
 	}
+}
 
-	return ast_node_num_new(lex_item_prev.num * sign);
+static ast_node_t *
+unary()
+{
+	ast_node_t *node;
+	int minus;
+
+	minus = 0;
+
+	do {
+		if (current_tok == TOK_MINUS)
+			minus = (minus + 1) % 2;
+
+	} while (match(TOK_PLUS) == TRUE || match(TOK_MINUS) == TRUE);
+
+	node = factor();
+
+	if (minus)
+		return ast_node_unary_new(node, OP_MINUS);
+	else
+		return ast_node_unary_new(node, OP_PLUS);
 }
 
 static ast_node_t *
 identifier()
 {
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	switch (current_tok) {
 	case TOK_LBRACKET:
 		return array_access();
@@ -907,6 +951,8 @@ process_if(struct syn_ctx *ctx)
 	ast_node_t *_if, *body, *_else;
 	boolean_t skipped;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	body = _if = _else = NULL;
 
 	if (match(TOK_LPAR) == FALSE) {
@@ -960,10 +1006,8 @@ process_if(struct syn_ctx *ctx)
 	return ast_node_if_new(_if, body, _else);
 
 err:
-	if (_if != NULL)
-		ast_node_unref(_if);
-	if (body != NULL)
-		ast_node_unref(body);
+	ast_node_unref(_if);
+	ast_node_unref(body);
 	
 	nerrors++;
 	return ast_node_stub_new();
@@ -975,6 +1019,8 @@ process_for(struct syn_ctx *ctx)
 	ast_node_t *expr1, *expr2, *expr3;
 	ast_node_t *body;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	body = expr1 = expr2 = expr3 = NULL;
 	
 	if (match(TOK_LPAR) == FALSE) {
@@ -1023,12 +1069,9 @@ process_for(struct syn_ctx *ctx)
 
 	err:
 
-	if (expr1 != NULL)
-		ast_node_unref(expr1);
-	if (expr2 != NULL)
-		ast_node_unref(expr2);
-	if (expr3 != NULL)
-		ast_node_unref(expr3);
+	ast_node_unref(expr1);
+	ast_node_unref(expr2);
+	ast_node_unref(expr3);
 
 	return ast_node_stub_new();
 }
@@ -1037,7 +1080,49 @@ process_for(struct syn_ctx *ctx)
 static ast_node_t *
 process_do(struct syn_ctx *ctx)
 {
-	print_warn_and_die("WIP!\n");
+	ast_node_t *cond, *body;
+
+	DEBUG(LOG_VERBOSE, "\n");
+
+	body = cond = NULL;
+	
+	ctx->is_cycle++;
+
+	if (match(TOK_LBRACE) == FALSE) {
+		skip_eol();
+		body = statesment(ctx);
+	} else
+		body = process_scope(ctx);
+	
+	ctx->is_cycle--;
+
+	if (nerrors != 0) {
+		print_warn("errors happen\n");
+		goto err;
+	}
+	
+	skip_eol();
+	if (match(TOK_WHILE) == FALSE) {
+		print_warn("expected keyword 'while'\n");
+		goto err;
+	}
+
+	if (match(TOK_LPAR) == FALSE) {
+		print_warn("'(' is missed\n");
+		goto err;
+	}
+
+	cond = logic_or();
+
+	if (match(TOK_RPAR) == FALSE) {
+		print_warn("')' is missed\n");
+		goto err;
+	}
+
+	return ast_node_do_new(cond, body);
+err:
+	ast_node_unref(body);
+	ast_node_unref(cond);
 
 	return ast_node_stub_new();
 }
@@ -1047,6 +1132,8 @@ process_while(struct syn_ctx *ctx)
 {
 	ast_node_t *cond, *body;
 
+	DEBUG(LOG_VERBOSE, "\n");
+	
 	body = cond = NULL;
 	
 	if (match(TOK_LPAR) == FALSE) {
@@ -1080,10 +1167,9 @@ process_while(struct syn_ctx *ctx)
 
 	return ast_node_while_new(cond, body);
 
-	err:
+err:
 
-	if (cond != NULL)
-		ast_node_unref(cond);
+	ast_node_unref(cond);
 
 	return ast_node_stub_new();
 }
@@ -1091,7 +1177,7 @@ process_while(struct syn_ctx *ctx)
 static ast_node_t *
 process_break(struct syn_ctx *ctx)
 {
-	//D(printf("process_break is-cycle = %d\n", ctx->is_cycle));
+	DEBUG(LOG_VERBOSE, "\n");
 
 	if (ctx->is_cycle == 0) {
 		print_warn("break outside cycle\n");
@@ -1290,10 +1376,9 @@ process_function_body(ast_node_func_t *func)
 err:
 
 	nerrors++;
-	if (func->body != NULL) {
-		ast_node_unref(func->body);
-		func->body = NULL;
-	}
+	ast_node_unref(func->body);
+	func->body = NULL;
+
 	if (ctx != NULL)
 		syn_ctx_free(ctx);
 

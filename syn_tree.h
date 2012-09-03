@@ -31,6 +31,7 @@ typedef enum {
 
 typedef enum {
 	AST_NODE_AS,
+	AST_NODE_UNARY,
 	AST_NODE_OP,
 	AST_NODE_OP_AS,
 	AST_NODE_SEQ,
@@ -46,6 +47,7 @@ typedef enum {
 	AST_NODE_IF,
 	AST_NODE_FOR,
 	AST_NODE_WHILE,
+	AST_NODE_DO,
 	AST_NODE_SCOPE,
 	AST_NODE_STUB,
 	AST_NODE_UNKNOWN,
@@ -63,6 +65,12 @@ typedef struct ast_node {
 	struct ast_node *child;
 	destructor_t destructor;
 } ast_node_t;	
+
+typedef struct {
+	ast_node_t tree;
+	ast_node_t *node;
+	int opcode;
+} ast_node_unary_t;
 
 typedef struct {
 	ast_node_t tree;
@@ -128,6 +136,12 @@ typedef struct {
 	ast_node_t *body;
 } ast_node_while_t;
 
+typedef struct {
+	ast_node_t tree;
+	ast_node_t *cond;
+	ast_node_t *body;
+} ast_node_do_t;
+
 //now body not free with ast_node_unref
 typedef struct {
 	ast_node_t tree;
@@ -192,6 +206,8 @@ ast_node_t *ast_node_for_new(ast_node_t *expr1, ast_node_t *expr2,
 
 ast_node_t *ast_node_while_new(ast_node_t *cond, ast_node_t *body);
 
+ast_node_t *ast_node_do_new(ast_node_t *cond, ast_node_t *body);
+
 ast_node_t *ast_node_scope_new(ast_node_t *child);
 
 ast_node_t *ast_node_func_def_new(char *name);
@@ -201,6 +217,8 @@ ast_node_t *ast_node_func_call_new(char *name);
 void ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node);
 
 ast_node_t *ast_node_op_new(ast_node_t* left, ast_node_t *right, opcode_t opcode);
+
+ast_node_t *ast_node_unary_new(ast_node_t *node, opcode_t opcode);
 
 ast_node_t *ast_node_op_as_new(ast_node_t* left, ast_node_t *right, opcode_t opcode);
 
@@ -214,7 +232,10 @@ ast_node_t *ast_node_continue_new();
 
 ast_node_t *ast_node_stub_new();
 
-
+/*
+ * If tree is NULL just returns.
+ * if not - try to free it.
+ */
 void ast_node_unref(ast_node_t *tree);
 
 #endif

@@ -228,8 +228,7 @@ traverse_access(ast_node_t *tree)
 	ufree(ind);
 	return;
 error:
-	if (ind != NULL)
-		ufree(ind);
+	ufree(ind);
 	nerrors++;
 }
 
@@ -391,8 +390,7 @@ finalize:
 			id_item_free(items[i]);
 	}
 	
-	if (items != NULL)
-		ufree(items);
+	ufree(items);
 	
 	return;
 }
@@ -715,6 +713,55 @@ finalize:
 }
 
 void
+traverse_do(ast_node_t *tree)
+{
+	ast_node_do_t *donode;
+	res_type_t res;
+
+	donode = (ast_node_do_t *) tree;
+
+	helper.is_cycle++;
+
+	while (1) {
+		boolean_t ret;
+
+			
+		if (donode->body == NULL)
+			goto check_condition;
+
+		res = traverse_body(donode->body);
+
+		switch (res) {
+		case RES_ERROR:
+			goto finalize;
+		case RES_CONTINUE:
+			helper.is_continue--;
+			DEBUG(LOG_DEFAULT, "continue catch!\n");
+			continue;
+		case RES_BREAK:
+			helper.is_break--;
+			DEBUG(LOG_DEFAULT, "break catch!\n");
+			goto finalize;
+		case RES_RETURN:
+			goto finalize;
+		default:
+			break;
+		}
+check_condition:
+		ret = traverse_cond(donode->cond);
+
+		if (ret == FALSE)
+			goto finalize;
+
+		if (nerrors != 0)
+			goto finalize;
+	}
+
+finalize:
+	helper.is_cycle--;
+}
+
+void
 set_value_id(id_item_t *item, eval_t *ev)
 {
 		
@@ -793,10 +840,8 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 err:
 	nerrors++;
 
-	if (ev != NULL)
-		eval_free(ev);
-	if (ind != NULL)
-		ufree(ind);
+	eval_free(ev);
+	ufree(ind);
 
 }
 
@@ -891,6 +936,29 @@ traverse_as(ast_node_t *tree)
 }
 
 static void
+traverse_unary(ast_node_t *tree)
+{
+	ast_node_unary_t *unary;
+	eval_t *ev;
+
+	unary = (ast_node_unary_t *) tree;
+
+	traverse(unary->node);
+
+	if (nerrors != 0)
+		return;
+
+	ev = stack_pop();
+	if (ev == NULL) {
+		nerrors++;
+		print_warn("can't get operand\n");
+	}
+	
+	
+	print_warn_and_die("WIP\n");
+}
+
+static void
 traverse_op(ast_node_t *tree)
 {
 	ast_node_op_t *optree;
@@ -909,7 +977,7 @@ traverse_op(ast_node_t *tree)
 
 	if (right == NULL || left == NULL) {
 		nerrors++;
-		print_warn("cant get operand\n");
+		print_warn("can't get operand\n");
 		goto finalize;
 	}
 	
@@ -1015,6 +1083,7 @@ struct {
 	traverse_cb callback;
 } node_type [] = {
 	{AST_NODE_AS, traverse_as},
+	{AST_NODE_UNARY, traverse_unary},
 	{AST_NODE_OP, traverse_op},
 	{AST_NODE_OP_AS, traverse_op_as},
 	{AST_NODE_ARR, traverse_arr},
@@ -1025,6 +1094,7 @@ struct {
 	{AST_NODE_IF, traverse_if},
 	{AST_NODE_FOR, traverse_for},
 	{AST_NODE_WHILE, traverse_while},
+	{AST_NODE_DO, traverse_do},
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_NUM, traverse_num},
 	{AST_NODE_RETURN, traverse_return},
