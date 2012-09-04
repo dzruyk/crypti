@@ -89,5 +89,9 @@ struct lex_item lex_item;
 
 tok_t get_next_token();
 
+void set_input(FILE *fp);
+
+FILE *get_input();
+
 #endif
 

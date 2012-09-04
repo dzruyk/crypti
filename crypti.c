@@ -2,9 +2,11 @@
 #include <unistd.h>
 
 #include "common.h"
+#include "crypti.h"
 #include "function.h"
 #include "id_table.h"
 #include "keyword.h"
+#include "lex.h"
 #include "syntax.h"
 #include "syn_tree.h"
 #include "traverse.h"
@@ -20,15 +22,56 @@ print_programme_info()
 }
 
 void
-parse_cl_arguments()
+print_help_message()
 {
+	printf(
+	"Usage: crypti [-h] [INPUT_FILE]\n"
+	"-h print this help message"
+	"with no INPUT_FILE or whet INPUT_FILE is - read from "
+	"standard input (REPL loop)\n"
+	);
 
+}
 
+void
+parse_cl_arguments(int argc, char **argv)
+{
+	FILE *input;
+	int opt;
+
+	opt = 0;
+	while ((opt = getopt(argc, argv, "h")) != -1) { 
+		switch (opt) {
+		case 'h':
+		default:
+			print_help_message();
+			exit(0);
+		}
+	}
+
+	argc -= optind;
+	argv = argv + optind;
+	
+	if (argc == 0)
+		set_input(stdin);
+	else {
+		DEBUG(LOG_DEFAULT, "input file is %s\n", argv[0]);
+
+		input = fopen(argv[0], "r");
+		if (input == NULL) {
+			perror("can't open input file:");
+			exit(1);
+		}
+
+		set_input(input);
+	}
 }
 
 void
 initialisation()
 {
+	//print_programme_info();
+	
 	id_table_init();
 	keyword_table_init();
 	function_table_init();
@@ -47,8 +90,8 @@ main(int argc, char *argv[])
 {
 	ast_node_t *tree;
 	ret_t ret;
-
-	//print_programme_info();
+	
+	parse_cl_arguments(argc, argv);
 
 	initialisation();
 

@@ -143,7 +143,12 @@ typedef struct {
 	ast_node_t *body;
 } ast_node_do_t;
 
-//now body not free with ast_node_unref
+//Just stub now.
+typedef struct {
+	ast_node_t tree;
+} ast_node_import_t;
+
+
 typedef struct {
 	ast_node_t tree;
 	char *name;

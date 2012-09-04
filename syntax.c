@@ -1,6 +1,7 @@
 #include <assert.h>
-#include <stdio.h>
+#include <errno.h>
 
+#include <stdio.h>
 #include <string.h>
 
 #include "common.h"
@@ -1271,12 +1272,53 @@ err:
 	return ast_node_stub_new();
 }
 
+char *
+get_module_name()
+{
+	return NULL;
+}
+
 static ast_node_t *
 process_import()
 {
+	FILE *fd, *prev;
+	ast_node_import_t *import;
+	char *modname;
 	
+	modname = get_module_name();
+
+	if (modname == NULL) {
+		print_warn("Can't get module name.\n");
+		goto err;
+	}
+
+	fd = fopen(modname, "r");
+
+	if (fd == NULL) {
+		char *msg;
+		msg = strerror(errno);
+		print_warn("%s", msg);
+		goto err;
+	}
+
+	prev = get_input();
+
+	set_input(fd);
+
+	/*
+	 * tok_next();
+	 * while not EOF
+	 *	get_tree;
+	 *	push_new_node
+	 */
+
+	set_input(prev);
+
+	//return new import node
 
 	print_warn_and_die("import WIP!\n");
+err:
+	nerrors++;
 	return ast_node_stub_new();
 }
 

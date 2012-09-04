@@ -7,9 +7,7 @@
 
 static char peek = ' ';
 
-//FILE *input = stdin;
-//simple_stub
-#define input stdin
+FILE *input;
 
 static void
 skip_comment()
@@ -284,5 +282,17 @@ begin:
 	lex_item.id = TOK_UNKNOWN;
 
 	return TOK_UNKNOWN;
+}
+
+void
+set_input(FILE *fp)
+{
+	input = fp;
+}
+
+FILE *
+get_input()
+{
+	return input;
 }
 
