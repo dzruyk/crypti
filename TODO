@@ -12,4 +12,5 @@ List of current tasks.
 * Crypti must have 2 data types - bignum and string(bytes).
 * Need to rewrite Makefile.
 * Need to write "len()" (or "size()") function.
-* Unary ! (TOK_NOT) implementation.
+* Need to add/rewrite memory tests
+* "global" modifier

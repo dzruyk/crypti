@@ -8,20 +8,20 @@
 #include "macros.h"
 
 int
-libcall_print(id_item_t **argues, int *rettype, void **retval)
+libcall_print(id_item_t **args, int *rettype, void **retval)
 {
-	assert(argues != NULL && argues[0] != NULL);
+	assert(args != NULL && args[0] != NULL);
 
-	id_item_t *arg;
+	id_item_t *current;
 
-	arg = argues[0];
+	current = args[0];
 	
-	switch (arg->type) {
+	switch (current->type) {
 	case ID_NUM:
-		printf("%d\n", arg->value);
+		printf("%d\n", current->value);
 		break;
 	case ID_ARR:
-		arr_print(arg->arr);
+		arr_print(current->arr);
 		break;
 	default:
 		print_warn_and_die("something wrong\n");
@@ -34,11 +34,11 @@ libcall_print(id_item_t **argues, int *rettype, void **retval)
 }
 
 int
-libcall_sum(id_item_t **argues, int *rettype, void **retval)
+libcall_sum(id_item_t **args, int *rettype, void **retval)
 {
-	assert(argues != NULL && argues[0] != NULL);
+	assert(args != NULL && args[0] != NULL);
 
-	//id_item_t *arg;
+	//id_item_t *current;
 
 	//FIXME: stub, wanna implement variable argue funtion
 	
@@ -49,15 +49,15 @@ libcall_sum(id_item_t **argues, int *rettype, void **retval)
 }
 
 int
-libcall_type(id_item_t **argues, int *rettype, void **retval)
+libcall_type(id_item_t **args, int *rettype, void **retval)
 {
-	assert(argues != NULL && argues[0] != NULL);
+	assert(args != NULL && args[0] != NULL);
 
-	id_item_t *arg;
+	id_item_t *current;
 	
-	arg = argues[0];
+	current = args[0];
 
-	switch (arg->type) {
+	switch (current->type) {
 	case ID_NUM:
 		printf("<type num>\n");
 		break;
@@ -76,23 +76,23 @@ libcall_type(id_item_t **argues, int *rettype, void **retval)
 }
 
 int
-libcall_del(id_item_t **argues, int *rettype, void **retval)
+libcall_del(id_item_t **args, int *rettype, void **retval)
 {
-	assert(argues != NULL && argues[0] != NULL);
+	assert(args != NULL && args[0] != NULL);
 
-	id_item_t *arg;
+	id_item_t *current;
 	id_item_t *tmp;
 	ret_t ret;
 
-	arg = argues[0];
+	current = args[0];
 
 	//FIXME: rly need reserve some name?
-	if (strcmp(arg->name, "") == 0) {
+	if (strcmp(current->name, "") == 0) {
 		print_warn("cant delete, its not variable\n");
 		return 1;
 	}
 	
-	tmp = id_table_lookup_all(arg->name);
+	tmp = id_table_lookup_all(current->name);
 	
 	if (tmp == NULL)
 		SHOULDNT_REACH();
@@ -104,13 +104,13 @@ libcall_del(id_item_t **argues, int *rettype, void **retval)
 		break;
 	}
 
-	ret = id_table_remove(arg->name);
+	ret = id_table_remove(current->name);
 	if (ret != ret_ok) {
-		print_warn("symbol %s undefined\n", arg->name);
+		print_warn("symbol %s undefined\n", current->name);
 		return 1;
 	}
 	
-	argues[0] = NULL;
+	args[0] = NULL;
 
 	*rettype = ID_UNKNOWN;
 	*retval = NULL;

@@ -8,7 +8,7 @@
 //FIXME: return value?
 
 //FIXME STUB
-typedef int (*libcall_handler_t)(id_item_t **argues, int *rettype, void **retval);
+typedef int (*libcall_handler_t)(id_item_t **args, int *rettype, void **retval);
 
 typedef struct {
 	char *name;
@@ -36,7 +36,7 @@ ret_t func_table_delete(func_t *func);
 
 /*
  * add arguments to function
- * WARNING: multiple set_argues can be possible memory leak
+ * WARNING: multiple set_args can be possible memory leak
  */
 void func_set_args(func_t *func, char **args, int nargs);
 

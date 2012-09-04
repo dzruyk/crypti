@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "function.h"
@@ -16,6 +17,13 @@ print_programme_info()
 	printf("*Now work without libbignum           *\n");
 	printf("*but Work In Process                  *\n");
 	printf("=======================================\n");
+}
+
+void
+parse_cl_arguments()
+{
+
+
 }
 
 void

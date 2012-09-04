@@ -303,7 +303,7 @@ get_next_argue(ast_node_t *argnode, char *hint)
 	id_item_t *item;
 
 	/* warning! conflict when free */
-	//try to get argues by value(not by copy)
+	//try to get args by value(not by copy)
 	if (argnode->type == AST_NODE_ID) {
 		ast_node_id_t *id;
 		id_item_t *res;
@@ -342,9 +342,9 @@ get_next_argue(ast_node_t *argnode, char *hint)
 }
 
 /*
- * add argues to func array, then
+ * add args to func array, then
  * try to execute library function
- * WARN: we must be care with global argues(passed by name)
+ * WARN: we must be care with global args(passed by name)
  * bcs may be double free situation
  */
 void
@@ -382,8 +382,8 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	
 finalize:
 
-	//destruct argues
-	//NOTE: we can't touch not internal argues
+	//destruct args
+	//NOTE: we can't touch not internal args
 	for (i = 0; i < func->nargs; i++) {
 		if (items[i] != NULL && 
 		    strcmp(items[i]->name, "") == 0)
@@ -396,13 +396,13 @@ finalize:
 }
 
 /* NOTE:
- * dont remove thrid argue
- * when we use recursion we must get argues from
+ * Don't remove thrid argue!
+ * When we use recursion we must get args from
  * previous scope and push in new one, then we need to
- * exec id_table_push(new scope)
+ * call id_table_push(new scope).
  */
 static void
-add_argues_to_scope(func_t *func, ast_node_func_call_t *call,
+add_args_to_scope(func_t *func, ast_node_func_call_t *call,
     struct hash_table *scope)
 {
 	assert(func != NULL && func->args != NULL);
@@ -452,7 +452,7 @@ traverse_func_call(ast_node_t *tree)
 	idtable = id_table_create();
 
 	if (func->nargs != 0)
-		add_argues_to_scope(func, call, idtable);
+		add_args_to_scope(func, call, idtable);
 
 	if (nerrors != 0)
 		goto finalize;
