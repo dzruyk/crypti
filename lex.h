@@ -84,7 +84,7 @@ struct lex_item lex_item;
 
 /* 
  * Get next token from stdin and fills
- * lex_item with token attributes
+ * lex_item with token attributes.
  */
 
 tok_t get_next_token();

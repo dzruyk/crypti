@@ -6,6 +6,7 @@
 typedef enum {
 	OP_AS,
 	OP_NOT,
+	OP_NOTNOT,
 	
 	OP_EQ,
 	OP_NEQ,

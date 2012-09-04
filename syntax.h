@@ -6,14 +6,14 @@
 
 
 /*
- * flag, sets if TOK_EOF occured in input 
- * mb need to replace with syntax_ctx later
+ * Flag, sets if TOK_EOF occured in input 
+ * Maybe need to replace with syntax_ctx later.
  */
 int syntax_is_eof;
 
 
 /*
- * build syntax tree based on input statements
+ * Build syntax tree based on input statements.
  */
 ret_t program_start(ast_node_t **tree);
 

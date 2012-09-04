@@ -17,6 +17,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_for_t *fornode;
 	ast_node_while_t *whilenode;
 	ast_node_do_t *donode;
+	ast_node_unary_t *unary;
 	ast_node_return_t *ret;
 
 	int i, n;
@@ -74,6 +75,10 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(fornode->expr3);
 		ast_node_unref(fornode->body);
 		break;
+	case AST_NODE_UNARY:
+		unary = (ast_node_unary_t *) tree;
+		ast_node_unref(unary->node);
+		break;
 	case AST_NODE_OP:
 	case AST_NODE_OP_AS:
 	case AST_NODE_AS:
@@ -81,7 +86,6 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_STUB:	
 	case AST_NODE_BREAK:
 	case AST_NODE_CONTINUE:
-	case AST_NODE_UNARY:
 		ast_node_unref(tree->left);
 		ast_node_unref(tree->right);
 		break;

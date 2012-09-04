@@ -72,8 +72,9 @@ static ast_node_t *add_expr_rest();
 static ast_node_t *mul_expr();
 static ast_node_t *mul_expr_rest();
 static ast_node_t *term();
+static ast_node_t *unary_not();
+static ast_node_t *unary_plus();
 static ast_node_t *factor();
-static ast_node_t *unary();
 static ast_node_t *identifier();
 
 static ast_node_t *process_if(struct syn_ctx *ctx);
@@ -856,6 +857,74 @@ mul_expr_rest(ast_node_t *left)
 static ast_node_t *
 term()
 {
+	if (current_tok == TOK_EOL
+	    || current_tok == TOK_SEMICOLON) {
+		
+		return NULL;
+	} else if (is_eof() == TRUE) {
+
+		return NULL;
+	} else if (current_tok == TOK_PLUS
+	    || current_tok == TOK_MINUS) {
+		
+		return unary_plus();
+	} else if (current_tok == TOK_NOT) {
+
+		return unary_not();
+	} else {
+
+		return factor();
+	}
+}
+
+static ast_node_t *
+unary_not()
+{
+	ast_node_t *node;
+
+	int not;
+	not = 0;
+
+	do {
+		if (current_tok == TOK_NOT)
+			not = (not + 1) % 2;
+
+	} while (match(TOK_NOT) == TRUE);
+
+	node = factor();
+	
+	if (not)
+		return ast_node_unary_new(node, OP_NOT);
+	else
+		return ast_node_unary_new(node, OP_NOTNOT);
+}
+
+static ast_node_t *
+unary_plus()
+{
+	ast_node_t *node;
+	int minus;
+
+	minus = 0;
+
+	do {
+		if (current_tok == TOK_MINUS)
+			minus = (minus + 1) % 2;
+
+	} while (match(TOK_PLUS) == TRUE || match(TOK_MINUS) == TRUE);
+
+	node = factor();
+
+	if (minus)
+		return ast_node_unary_new(node, OP_MINUS);
+	else
+		return ast_node_unary_new(node, OP_PLUS);
+}
+
+// May be need to return ast_node_stub_t when RBRACKET or RPAR missed?
+static ast_node_t *
+factor()
+{
 	ast_node_t *stat;
 
 	DEBUG(LOG_VERBOSE, "\n");
@@ -870,29 +939,7 @@ term()
 		}
 		
 		return stat;
-	} else if (current_tok == TOK_EOL
-	    || current_tok == TOK_SEMICOLON) {
-		
-		return NULL;
-	} else if (is_eof() == TRUE) {
-
-		return NULL;
-	} else if (current_tok == TOK_PLUS
-	    || current_tok == TOK_MINUS
-	    || current_tok == TOK_NOT) {
-		
-		return unary();
-	} else {
-
-		return factor();
-	}
-}
-
-// may be need to return ast_node_stub_t when RBRACKET or RPAR missed?
-static ast_node_t *
-factor()
-{
-	if (match(TOK_ID)) {
+	} else if (match(TOK_ID)) {
 		
 		return identifier();
 	
@@ -907,32 +954,6 @@ factor()
 		
 		return ast_node_stub_new();
 	}
-}
-
-static ast_node_t *
-unary()
-{
-	ast_node_t *node;
-	int minus;
-
-	minus = 0;
-
-
-
-	//plus/minus
-
-	do {
-		if (current_tok == TOK_MINUS)
-			minus = (minus + 1) % 2;
-
-	} while (match(TOK_PLUS) == TRUE || match(TOK_MINUS) == TRUE);
-
-	node = factor();
-
-	if (minus)
-		return ast_node_unary_new(node, OP_MINUS);
-	else
-		return ast_node_unary_new(node, OP_PLUS);
 }
 
 static ast_node_t *

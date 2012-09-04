@@ -54,7 +54,7 @@ eval_t *eval_process_unary(eval_t *ev, opcode_t opcode);
 eval_t *eval_process_op(eval_t *left, eval_t *right, opcode_t opcode);
 
 /*
- * prints passed eval
+ * Prints passed eval.
  */
 ret_t eval_print_val(eval_t *eval);
 

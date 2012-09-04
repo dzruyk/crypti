@@ -95,6 +95,9 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 	case OP_NOT:
 		val = !val;
 		break;
+	case OP_NOTNOT:
+		val = !!val;
+		break;
 	default:
 		SHOULDNT_REACH();
 	}
