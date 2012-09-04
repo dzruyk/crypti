@@ -42,7 +42,7 @@ typedef enum {
 	TOK_RBRACE,
 	TOK_LBRACKET,	// [
 	TOK_RBRACKET,
-	TOK_COMMA,
+	TOK_COMMA,	// ,
 	TOK_SEMICOLON,	// ;
 	TOK_SHL,	// <<
 	TOK_SHR,	// >>
