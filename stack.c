@@ -21,7 +21,7 @@ stack_push(void *data)
 	if (data == NULL)
 		print_warn_and_die("INTERNAL_ERROR: try to push NULL in stack\n");
 	
-	nitem = malloc_or_die(sizeof(*nitem));
+	nitem = xmalloc(sizeof(*nitem));
 	
 	nitem->data = data;
 	nitem->next = stack;

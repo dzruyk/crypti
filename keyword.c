@@ -89,7 +89,7 @@ keyword_table_fill()
 		print_warn_and_die("key_table uninit\n");
 	
 	for (i = 0; i < ARRSZ(keywords); i++) {
-		tmp = malloc_or_die(sizeof(*tmp));
+		tmp = xmalloc(sizeof(*tmp));
 
 		tmp->id = keywords[i].id;
 		tmp->name = keywords[i].name;

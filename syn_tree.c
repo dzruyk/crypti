@@ -119,7 +119,6 @@ ast_node_func_free(ast_node_t *tree)
 		ufree(func->args);
 
 		//now you must free body manualy!
-		//ast_node_unref(AST_NODE(func->body));
 
 		break;
 	case AST_NODE_CALL:
@@ -144,7 +143,7 @@ ast_node_new(ast_type_t type, int sz,
 {
 	ast_node_t *res;
 
-	res = malloc_or_die(sz);
+	res = xmalloc(sz);
 	memset(res, 0, sz);
 
 	res->type = type;
@@ -152,7 +151,6 @@ ast_node_new(ast_type_t type, int sz,
 
 	return res;
 }
-
 
 /*
 ast_node_t *
@@ -200,7 +198,7 @@ ast_node_copy(ast_node_t *node)
 		acc = (ast_node_access_t *) node;
 		name = strdup_or_die(acc->name);
 		
-		ind = malloc_or_die(sizeof(*ind) * acc->dims);
+		ind = xmalloc(sizeof(*ind) * acc->dims);
 		for (i = 0; i < acc->dims; i++)
 			ind[i] = ast_node_copy(acc->ind[i]);
 		
@@ -214,12 +212,12 @@ ast_node_copy(ast_node_t *node)
 
 		arr = (ast_node_arr_t *) node;
 
-		elems = malloc_or_die(arr->sz * sizeof(*elems));
+		elems = xmalloc(arr->sz * sizeof(*elems));
 
 		for (i = 0; i< arr->sz; i++)
 			elems[i] = ast_node_copy(arr->arr[i]);
 		
-		len = malloc_or_die(arr->dims * sizeof(*len));
+		len = xmalloc(arr->dims * sizeof(*len));
 		memcpy(len, arr->len, arr->dims * sizeof(*len));
 	
 		return ast_node_arr_new(elems, arr->dims, len, arr->sz);	   
@@ -268,7 +266,7 @@ ast_node_copy(ast_node_t *node)
 	case AST_NODE_STUB: {
 		ast_node_t *res;
 
-		res = malloc_or_die(sizeof(*node));
+		res = xmalloc(sizeof(*node));
 		memcpy(res, node, sizeof(*res));
 
 		return res;
@@ -324,6 +322,21 @@ ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz)
 }
 
 ast_node_t *
+ast_node_access_new(char *name, int dims, ast_node_t **ind)
+{
+	ast_node_access_t *res;
+
+	res = (ast_node_access_t *) 
+	    ast_node_new(AST_NODE_ACCESS, sizeof(*res), ast_node_free);
+
+	res->name = name;
+	res->dims = dims;
+	res->ind = ind;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
 ast_node_func_def_new(char *name)
 {
 	ast_node_func_t *res;
@@ -362,6 +375,66 @@ ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node)
 	    call->nargs * sizeof(*(call->args)));
 
 	call->args[n] = node;
+}
+
+ast_node_t *
+ast_node_unary_new(ast_node_t *node, opcode_t opcode)
+{
+	ast_node_unary_t *res;
+
+	res = (ast_node_unary_t *) 
+	    ast_node_new(AST_NODE_UNARY, sizeof(*res), ast_node_free);
+
+	res->opcode = opcode;
+	res->node = node;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)
+{
+	ast_node_op_t *res;
+	
+	res = (ast_node_op_t *) 
+	    ast_node_new(AST_NODE_OP, sizeof(*res), ast_node_free);
+	
+	AST_NODE(res)->left = left;
+	AST_NODE(res)->right = right;
+
+	res->opcode = opcode;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_op_as_new(ast_node_t* left, ast_node_t *right, opcode_t opcode)
+{
+	ast_node_op_t *res;
+	
+	res = (ast_node_op_t *) 
+	    ast_node_new(AST_NODE_OP_AS, sizeof(*res), ast_node_free);
+	
+	AST_NODE(res)->left = left;
+	AST_NODE(res)->right = right;
+
+	res->opcode = opcode;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_as_new(ast_node_t *left, ast_node_t *right)
+{
+	ast_node_as_t *res;
+	
+	res = (ast_node_as_t *) 
+	    ast_node_new(AST_NODE_AS, sizeof(*res), ast_node_free);
+
+	AST_NODE(res)->left = left;
+	AST_NODE(res)->right = right;
+
+	return AST_NODE(res);
 }
 
 ast_node_t *
@@ -428,107 +501,6 @@ ast_node_do_new(ast_node_t *cond, ast_node_t *body)
 }
 
 ast_node_t *
-ast_node_scope_new(ast_node_t *child)
-{
-	ast_node_scope_t *res;
-
-	res = (ast_node_scope_t *)
-	    ast_node_new(AST_NODE_SCOPE, sizeof(*res), ast_node_free);
-
-	    AST_NODE(res)->child = child;
-
-	    return AST_NODE(res);
-}
-
-ast_node_t *
-ast_node_access_new(char *name, int dims, ast_node_t **ind)
-{
-	ast_node_access_t *res;
-
-	res = (ast_node_access_t *) 
-	    ast_node_new(AST_NODE_ACCESS, sizeof(*res), ast_node_free);
-
-	res->name = name;
-	res->dims = dims;
-	res->ind = ind;
-
-	return AST_NODE(res);
-}
-
-ast_node_t *
-ast_node_unary_new(ast_node_t *node, opcode_t opcode)
-{
-	ast_node_unary_t *res;
-
-	res = (ast_node_unary_t *) 
-	    ast_node_new(AST_NODE_UNARY, sizeof(*res), ast_node_free);
-
-	res->opcode = opcode;
-	res->node = node;
-
-	return AST_NODE(res);
-}
-
-ast_node_t *
-ast_node_op_new(ast_node_t *left, ast_node_t *right, opcode_t opcode)
-{
-	ast_node_op_t *res;
-	
-	res = (ast_node_op_t *) 
-	    ast_node_new(AST_NODE_OP, sizeof(*res), ast_node_free);
-	
-	AST_NODE(res)->left = left;
-	AST_NODE(res)->right = right;
-
-	res->opcode = opcode;
-
-	return AST_NODE(res);
-}
-
-ast_node_t *
-ast_node_op_as_new(ast_node_t* left, ast_node_t *right, opcode_t opcode)
-{
-	ast_node_op_t *res;
-	
-	res = (ast_node_op_t *) 
-	    ast_node_new(AST_NODE_OP_AS, sizeof(*res), ast_node_free);
-	
-	AST_NODE(res)->left = left;
-	AST_NODE(res)->right = right;
-
-	res->opcode = opcode;
-
-	return AST_NODE(res);
-}
-
-ast_node_t *
-ast_node_as_new(ast_node_t *left, ast_node_t *right)
-{
-	ast_node_as_t *res;
-	
-	res = (ast_node_as_t *) 
-	    ast_node_new(AST_NODE_AS, sizeof(*res), ast_node_free);
-
-	AST_NODE(res)->left = left;
-	AST_NODE(res)->right = right;
-
-	return AST_NODE(res);
-}
-
-ast_node_t *
-ast_node_return_new(ast_node_t *retval)
-{
-	ast_node_return_t *res;
-
-	res = (ast_node_return_t *) 
-	    ast_node_new(AST_NODE_RETURN, sizeof(*res), ast_node_free);
-
-	res->retval = retval;
-	
-	return AST_NODE(res);
-}
-
-ast_node_t *
 ast_node_break_new()
 {
 	ast_node_break_t *res;
@@ -551,11 +523,51 @@ ast_node_continue_new()
 }
 
 ast_node_t *
+ast_node_return_new(ast_node_t *retval)
+{
+	ast_node_return_t *res;
+
+	res = (ast_node_return_t *) 
+	    ast_node_new(AST_NODE_RETURN, sizeof(*res), ast_node_free);
+
+	res->retval = retval;
+	
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_import_new(ast_node_t **nodes, int len)
+{	
+	ast_node_import_t *res;
+	
+	res = (ast_node_import_t *) 
+	    ast_node_new(AST_NODE_IMPORT, sizeof(*res), ast_node_free);
+
+	res->nodes = nodes;
+	res->len = len;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_scope_new(ast_node_t *child)
+{
+	ast_node_scope_t *res;
+
+	res = (ast_node_scope_t *)
+	    ast_node_new(AST_NODE_SCOPE, sizeof(*res), ast_node_free);
+
+	AST_NODE(res)->child = child;
+
+	return AST_NODE(res);
+}
+
+ast_node_t *
 ast_node_stub_new()
 {
 	ast_node_stub_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
+	res = xmalloc(sizeof(*res));
 
 	memset(res, 0, sizeof(*res));
 	AST_NODE(res)->type = AST_NODE_STUB;

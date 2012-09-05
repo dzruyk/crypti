@@ -35,7 +35,7 @@ syn_ctx_new()
 {
 	struct syn_ctx *ctx;
 
-	ctx = malloc_or_die(sizeof(*ctx));
+	ctx = xmalloc(sizeof(*ctx));
 	memset(ctx, 0, sizeof(*ctx));
 
 	return ctx;
@@ -1275,6 +1275,7 @@ err:
 char *
 get_module_name()
 {
+	
 	return NULL;
 }
 
@@ -1282,11 +1283,12 @@ static ast_node_t *
 process_import()
 {
 	FILE *fd, *prev;
-	ast_node_import_t *import, *rtree;
+	ast_node_t *rtree, **nodes;
 	char *modname;
-	int ret, sz, len;
+	int i, sz, len;
+	int ret;
 
-	import = NULL;
+	nodes = NULL;
 	sz = len = 0;
 	
 	modname = get_module_name();
@@ -1329,21 +1331,28 @@ process_import()
 
 		if (len >= sz) {
 			sz += 8;
-			nodes = realloc_or_die(sizeof(*nodes) * sz);
+			nodes = realloc_or_die(nodes, sizeof(*nodes) * sz);
+		}
+		nodes[len++] = rtree;
 	 }
 
 	set_input(prev);
+	//FIXME: May be need global ctx for nerrors?
+	syntax_is_eof = 0;
+
 	ret = fclose(fd);
 	if (ret != 0) {
 		print_warn("Can't close input file\n");
-		goto err;
 	}
 
 	//return new import node
+	return ast_node_import_new(nodes, len);
 
-	print_warn_and_die("import WIP!\n");
 err:
-	ast_node_unref(AST_NODE(import));
+	for (i = 0; i < len; i++)
+		ast_node_unref(nodes[i]);
+	ufree(nodes);
+
 	nerrors++;
 	return ast_node_stub_new();
 }
@@ -1597,10 +1606,10 @@ array_init()
 	if (ndim == 0)
 		print_warn_and_die("this is should not happened\n");
 
-	dimlen = malloc_or_die(sizeof(dimlen) * ndim);
+	dimlen = xmalloc(sizeof(dimlen) * ndim);
 	memset(dimlen, 0, sizeof(dimlen) * ndim);
 
-	cnt = malloc_or_die(sizeof(dimlen) * ndim);
+	cnt = xmalloc(sizeof(dimlen) * ndim);
 	memset(cnt, 0, sizeof(dimlen) * ndim);
 
 	//all except cnt[ndim - 1] must be 1

@@ -20,7 +20,7 @@ eval_num_new(int value)
 {
 	eval_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
+	res = xmalloc(sizeof(*res));
 	res->type = EVAL_NUM;
 	res->value = value;
 
@@ -32,7 +32,7 @@ eval_arr_new(arr_t *arr)
 {
 	eval_t *res;
 	
-	res = malloc_or_die(sizeof(*res));
+	res = xmalloc(sizeof(*res));
 	res->type = EVAL_ARR;
 	res->arr = arr;
 

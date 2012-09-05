@@ -9,18 +9,18 @@ arr_new(int dims, int *len, int sz, int item_sz)
 {
 	arr_t *arr;
 
-	arr = malloc_or_die(sizeof(*arr));
+	arr = xmalloc(sizeof(*arr));
 
 	arr->dims = dims;
 
-	arr->len = malloc_or_die(sizeof(*len) * dims);
+	arr->len = xmalloc(sizeof(*len) * dims);
 	memcpy(arr->len, len, sizeof(*len) * dims);
 
 	arr->sz = sz;
 	
 	arr->item_sz = item_sz;
 	
-	arr->ptr = malloc_or_die(item_sz * sz);
+	arr->ptr = xmalloc(item_sz * sz);
 	
 	memset(arr->ptr, 0, item_sz * sz);
 
@@ -118,7 +118,7 @@ arr_print(arr_t *arr)
 	DEBUG(LOG_DEFAULT, "n = %d\n", n);
 #endif
 	
-	index = malloc_or_die(sizeof(*index) * arr->dims);
+	index = xmalloc(sizeof(*index) * arr->dims);
 	memset(index, 0, sizeof(*index) * arr->dims);
 	
 	

@@ -126,7 +126,7 @@ traverse_arr(ast_node_t *tree)
 	//size of int
 	arr = arr_new(dims, len, sz, sizeof(int));
 
-	index = malloc_or_die(dims * sizeof(*len));
+	index = xmalloc(dims * sizeof(*len));
 	memset(index, 0, dims * sizeof(*len));
 	
 	
@@ -189,7 +189,7 @@ traverse_access(ast_node_t *tree)
 		goto error;
 	}
 
-	ind = malloc_or_die(acc->dims * sizeof(*ind));
+	ind = xmalloc(acc->dims * sizeof(*ind));
 
 	for (i = 0; i < acc->dims; i++) {
 		traverse(acc->ind[i]);
@@ -357,7 +357,7 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	items = NULL;
 
 	if (call->nargs != 0) {
-		items = malloc_or_die(sizeof(*items) * func->nargs);
+		items = xmalloc(sizeof(*items) * func->nargs);
 		memset(items, 0, sizeof(*items) * func->nargs);
 	}
 
@@ -807,7 +807,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 		goto err;
 	}
 	
-	ind = malloc_or_die(node->dims * sizeof(*ind));
+	ind = xmalloc(node->dims * sizeof(*ind));
 
 	for (i = 0; i < node->dims; i++) {
 		traverse(node->ind[i]);

@@ -109,7 +109,7 @@ function_table_fill()
 		print_warn_and_die("func_table uninit\n");
 	
 	for (i = 0; i < ARRSZ(builtin); i++) {
-		tmp = malloc_or_die(sizeof(*tmp));
+		tmp = xmalloc(sizeof(*tmp));
 		
 		//fill table with built in functions
 		tmp->is_lib = 1;
@@ -170,7 +170,7 @@ func_new(char *name)
 {
 	func_t *func;
 
-	func = malloc_or_die(sizeof(*func));
+	func = xmalloc(sizeof(*func));
 
 	memset(func, 0, sizeof(*func));
 
@@ -206,7 +206,7 @@ func_set_args(func_t *func, char **args, int nargs)
 	int i;
 	
 	if (nargs > 0)
-		func->args = malloc_or_die(sizeof(*args) * nargs);
+		func->args = xmalloc(sizeof(*args) * nargs);
 
 	for (i = 0; i < nargs; i++)
 		func->args[i] = strdup_or_die(args[i]);

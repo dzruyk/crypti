@@ -9,7 +9,7 @@ print_usage(char *pname)
 }
 
 inline void *
-malloc_or_die(size_t sz)
+xmalloc(size_t sz)
 {	
 	void *tmp;
 	if ((tmp = malloc(sz)) == NULL)

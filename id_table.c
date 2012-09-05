@@ -61,7 +61,7 @@ id_item_new(char *name)
 {
 	id_item_t * item;
 
-	item = malloc_or_die(sizeof(*item));
+	item = xmalloc(sizeof(*item));
 	item->name = strdup_or_die(name);
 	item->type = ID_UNKNOWN;
 	item->destructor = id_item_default_release;
@@ -106,7 +106,7 @@ id_table_init()
 {
 	if (scopes != NULL)
 		print_warn_and_die("double id table initialisation\n");
-	scopes = malloc_or_die(sizeof(*scopes));
+	scopes = xmalloc(sizeof(*scopes));
 	memset(scopes, 0, sizeof(*scopes));
 
 	global = current = id_table_create();
@@ -135,7 +135,7 @@ id_table_push(struct hash_table *table)
 {
 	struct scopes *tmp;
 
-	tmp = malloc_or_die(sizeof(*tmp));
+	tmp = xmalloc(sizeof(*tmp));
 
 	tmp->prev = scopes;
 	tmp->scope = table;
