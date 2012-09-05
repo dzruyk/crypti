@@ -146,6 +146,8 @@ typedef struct {
 //Just stub now.
 typedef struct {
 	ast_node_t tree;
+	ast_node_t **nodes;
+	int sz;
 } ast_node_import_t;
 
 

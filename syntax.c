@@ -1282,8 +1282,12 @@ static ast_node_t *
 process_import()
 {
 	FILE *fd, *prev;
-	ast_node_import_t *import;
+	ast_node_import_t *import, *rtree;
 	char *modname;
+	int ret, sz, len;
+
+	import = NULL;
+	sz = len = 0;
 	
 	modname = get_module_name();
 
@@ -1291,6 +1295,11 @@ process_import()
 		print_warn("Can't get module name.\n");
 		goto err;
 	}
+
+	/* 
+	 * NOTE: Need to memorize import file name
+	 * because we wan't infinitie includes.
+	 */
 
 	fd = fopen(modname, "r");
 
@@ -1305,19 +1314,36 @@ process_import()
 
 	set_input(fd);
 
-	/*
-	 * tok_next();
-	 * while not EOF
+	 tok_next();
+	 /* while not EOF
 	 *	get_tree;
 	 *	push_new_node
 	 */
+	 while (is_eof() != TRUE) {
+		ret_t ret;
+		ret = program_start(&rtree);
+		if (ret != ret_ok) {
+			print_warn("module syntax error\n");
+			goto err;
+		}
+
+		if (len >= sz) {
+			sz += 8;
+			nodes = realloc_or_die(sizeof(*nodes) * sz);
+	 }
 
 	set_input(prev);
+	ret = fclose(fd);
+	if (ret != 0) {
+		print_warn("Can't close input file\n");
+		goto err;
+	}
 
 	//return new import node
 
 	print_warn_and_die("import WIP!\n");
 err:
+	ast_node_unref(AST_NODE(import));
 	nerrors++;
 	return ast_node_stub_new();
 }
@@ -1351,7 +1377,7 @@ err:
 
 	nerrors++;
 	//do cleanup
-	ast_node_unref((ast_node_t *)func);
+	ast_node_unref(AST_NODE(func));
 
 	return ast_node_stub_new();
 }
@@ -1494,7 +1520,7 @@ function_call()
 err:
 
 	nerrors++;
-	ast_node_unref((ast_node_t *)call);
+	ast_node_unref(AST_NODE(call));
 	
 	return ast_node_stub_new();
 }
