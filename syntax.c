@@ -1275,8 +1275,11 @@ err:
 char *
 get_module_name()
 {
-	
-	return NULL;
+	if (match(TOK_ID))
+		return lex_item_prev.name;
+
+	else
+		return NULL;
 }
 
 static ast_node_t *
@@ -1316,7 +1319,6 @@ process_import()
 
 	set_input(fd);
 
-	 tok_next();
 	 /* while not EOF
 	 *	get_tree;
 	 *	push_new_node
@@ -1338,6 +1340,7 @@ process_import()
 
 	set_input(prev);
 	//FIXME: May be need global ctx for nerrors?
+	//Need to restore current_tok
 	syntax_is_eof = 0;
 
 	ret = fclose(fd);
@@ -1345,12 +1348,14 @@ process_import()
 		print_warn("Can't close input file\n");
 	}
 
-	//return new import node
 	return ast_node_import_new(nodes, len);
 
 err:
+	sync_stream();
 	for (i = 0; i < len; i++)
 		ast_node_unref(nodes[i]);
+	
+	ufree(modname);
 	ufree(nodes);
 
 	nerrors++;

@@ -1074,6 +1074,12 @@ traverse_return(ast_node_t *tree)
 }
 
 static void
+traverse_import(ast_node_t *tree)
+{
+	print_warn_and_die("WIP\n");
+}
+
+static void
 traverse_break(ast_node_t *tree)
 {
 	helper.is_break++;
@@ -1095,24 +1101,25 @@ struct {
 	ast_type_t node;
 	traverse_cb callback;
 } node_type [] = {
-	{AST_NODE_AS, traverse_as},
-	{AST_NODE_UNARY, traverse_unary},
-	{AST_NODE_OP, traverse_op},
-	{AST_NODE_OP_AS, traverse_op_as},
+	{AST_NODE_NUM, traverse_num},
+	{AST_NODE_ID, traverse_id},
 	{AST_NODE_ARR, traverse_arr},
 	{AST_NODE_ACCESS, traverse_access},
 	{AST_NODE_DEF, traverse_func_def},
 	{AST_NODE_CALL, traverse_func_call},
-	{AST_NODE_SCOPE, traverse_scope},
+	{AST_NODE_UNARY, traverse_unary},
+	{AST_NODE_OP, traverse_op},
+	{AST_NODE_OP_AS, traverse_op_as},
+	{AST_NODE_AS, traverse_as},
 	{AST_NODE_IF, traverse_if},
 	{AST_NODE_FOR, traverse_for},
 	{AST_NODE_WHILE, traverse_while},
 	{AST_NODE_DO, traverse_do},
-	{AST_NODE_ID, traverse_id},
-	{AST_NODE_NUM, traverse_num},
-	{AST_NODE_RETURN, traverse_return},
 	{AST_NODE_BREAK, traverse_break},
 	{AST_NODE_CONTINUE, traverse_continue},
+	{AST_NODE_RETURN, traverse_return},
+	{AST_NODE_IMPORT, traverse_import},
+	{AST_NODE_SCOPE, traverse_scope},
 	{AST_NODE_STUB, traverse_stub},
 	{AST_NODE_UNKNOWN, NULL},
 };
