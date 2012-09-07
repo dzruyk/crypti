@@ -1076,7 +1076,15 @@ traverse_return(ast_node_t *tree)
 static void
 traverse_import(ast_node_t *tree)
 {
-	print_warn_and_die("WIP\n");
+	assert(tree != 0);
+
+	ast_node_import_t *import;
+	int i;
+
+	import = (ast_node_import_t *) tree;
+
+	for (i = 0; i < import->len; i++)
+		traverse(import->nodes[i]);
 }
 
 static void

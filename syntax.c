@@ -1332,18 +1332,15 @@ process_import()
 			print_warn("module syntax error\n");
 			goto err;
 		}
+		if (rtree == NULL)
+			continue;
 
 		if (len >= sz) {
 			sz += 8;
 			nodes = realloc_or_die(nodes, sizeof(*nodes) * sz);
 		}
 		nodes[len++] = rtree;
-		if (nerrors != 0) {
-			print_warn("can't import module "
-			    "(determinated some syntax mistakes");
-			goto err;
-		}
-	 }
+	}
 
 	set_input(prev);
 
@@ -1360,6 +1357,11 @@ process_import()
 
 err:
 	set_input(prev);
+
+	ret = fclose(fd);
+	if (ret != 0) {
+		print_warn("Can't close input file\n");
+	}
 
 	sync_stream();
 	for (i = 0; i < len; i++)

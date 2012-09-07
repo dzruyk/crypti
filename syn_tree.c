@@ -18,6 +18,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_while_t *whilenode;
 	ast_node_do_t *donode;
 	ast_node_unary_t *unary;
+	ast_node_import_t *import;
 	ast_node_return_t *ret;
 
 	int i, n;
@@ -78,6 +79,13 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_UNARY:
 		unary = (ast_node_unary_t *) tree;
 		ast_node_unref(unary->node);
+		break;
+	case AST_NODE_IMPORT:
+		import = (ast_node_import_t *) tree;
+
+		for (i = 0; i < import->len; i++)
+			ast_node_unref(import->nodes[i]);
+		ufree(import->nodes);
 		break;
 	case AST_NODE_OP:
 	case AST_NODE_OP_AS:

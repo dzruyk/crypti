@@ -71,16 +71,18 @@ begin:
 		
 		return TOK_ID;
 	}
-
+	// Trying to get string
 	if (peek == '\"') {
 		char *s = NULL;
 		char *tmp;
 		int len, used;
-		//get string
 
-		len = used = 0;
+		used = 0;
+		len = 64;
+		s = xmalloc(len);
 
 		peek = fgetc(input);
+
 		while (peek != EOF && peek != '"') {
 
 			if (used >= len - 1) {
@@ -93,7 +95,7 @@ begin:
 		}
 
 		if (peek != '"') {
-			print_warn("uncomplited string", s);
+			print_warn("uncomplited string");
 			free(s);
 			peek = ' ';
 			return TOK_UNKNOWN;
