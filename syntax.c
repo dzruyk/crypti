@@ -29,7 +29,6 @@ struct syn_ctx {
 
 struct syn_ctx *syn_ctx_new();
 
-
 struct syn_ctx *
 syn_ctx_new()
 {
@@ -126,6 +125,8 @@ update_token(struct lex_item *dst, const struct lex_item *src)
 	case TOK_NUM:
 		dst->num = src->num;
 		break;
+	case TOK_STRING:
+		dst->str = src->str;
 	default:
 		break;
 	}
@@ -166,7 +167,6 @@ tok_pop()
 	update_token(&lex_item, &lex_item_prev);
 
 	current_tok = lex_item.id;
-
 }
 
 static inline boolean_t
@@ -202,6 +202,9 @@ sync_stream()
 			ufree(lex_item.name);
 			lex_item.name = NULL;
 			break;
+		case TOK_STRING:
+			ufree(lex_item.str);
+			lex_item.name = NULL;
 		default:
 			break;
 		}
@@ -951,8 +954,8 @@ factor()
 	} else {
 		nerrors++;
 		print_warn("unsupported token tryed to factor\n");
-		tok_next();
-		
+		sync_stream();
+
 		return ast_node_stub_new();
 	}
 }
@@ -1275,9 +1278,8 @@ err:
 char *
 get_module_name()
 {
-	if (match(TOK_ID))
+	if (match(TOK_STRING))
 		return lex_item_prev.name;
-
 	else
 		return NULL;
 }
@@ -1311,7 +1313,7 @@ process_import()
 	if (fd == NULL) {
 		char *msg;
 		msg = strerror(errno);
-		print_warn("%s", msg);
+		print_warn("%s\n", msg);
 		goto err;
 	}
 
@@ -1319,11 +1321,11 @@ process_import()
 
 	set_input(fd);
 
-	 /* while not EOF
-	 *	get_tree;
-	 *	push_new_node
-	 */
-	 while (is_eof() != TRUE) {
+	/* while not EOF
+	*	get_tree;
+	*	push_new_node
+	*/
+	while (is_eof() != TRUE) {
 		ret_t ret;
 		ret = program_start(&rtree);
 		if (ret != ret_ok) {
@@ -1336,9 +1338,15 @@ process_import()
 			nodes = realloc_or_die(nodes, sizeof(*nodes) * sz);
 		}
 		nodes[len++] = rtree;
+		if (nerrors != 0) {
+			print_warn("can't import module "
+			    "(determinated some syntax mistakes");
+			goto err;
+		}
 	 }
 
 	set_input(prev);
+
 	//FIXME: May be need global ctx for nerrors?
 	//Need to restore current_tok
 	syntax_is_eof = 0;
@@ -1351,6 +1359,8 @@ process_import()
 	return ast_node_import_new(nodes, len);
 
 err:
+	set_input(prev);
+
 	sync_stream();
 	for (i = 0; i < len; i++)
 		ast_node_unref(nodes[i]);

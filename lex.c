@@ -72,6 +72,47 @@ begin:
 		return TOK_ID;
 	}
 
+	if (peek == '\"') {
+		char *s = NULL;
+		char *tmp;
+		int len, used;
+		//get string
+
+		len = used = 0;
+
+		peek = fgetc(input);
+		while (peek != EOF && peek != '"') {
+
+			if (used >= len - 1) {
+				len += 64;
+				s = realloc_or_die(s, len);
+			}
+
+			s[used++] = peek;
+			peek = fgetc(input);
+		}
+
+		if (peek != '"') {
+			print_warn("uncomplited string", s);
+			free(s);
+			peek = ' ';
+			return TOK_UNKNOWN;
+		}
+
+		s[used++] = '\0';
+
+		if ((tmp = realloc(s, used)) == NULL)
+			print_warn_and_die("realloc_err");
+		s = tmp;
+
+		lex_item.id = TOK_STRING;
+		lex_item.str = s;
+
+		peek = ' ';
+
+		return TOK_STRING;
+	}
+
 	switch (peek) {
 	case '=':
 		peek = fgetc(input);

@@ -7,6 +7,7 @@
 
 typedef enum {
 	TOK_KEYWORD,
+	TOK_STRING,
 	TOK_ID,
 	TOK_NUM,
 	
@@ -77,6 +78,7 @@ struct lex_item {
 	union {
 		int num;
 		char *name;
+		char *str;
 	};
 };
 
