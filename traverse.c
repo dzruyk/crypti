@@ -1079,12 +1079,21 @@ traverse_import(ast_node_t *tree)
 	assert(tree != 0);
 
 	ast_node_import_t *import;
-	int i;
+	int i, old;
 
 	import = (ast_node_import_t *) tree;
 
-	for (i = 0; i < import->len; i++)
+	old = nerrors;
+
+	for (i = 0; i < import->len; i++) {
+		nerrors = 0;
 		traverse(import->nodes[i]);
+
+		stack_flush((stack_item_free_t )eval_free);
+	}
+		
+	
+	nerrors = old;
 }
 
 static void
