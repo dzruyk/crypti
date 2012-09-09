@@ -1356,11 +1356,13 @@ process_import()
 	return ast_node_import_new(nodes, len);
 
 err:
-	set_input(prev);
+	if (fd != NULL) {
+		set_input(prev);
 
-	ret = fclose(fd);
-	if (ret != 0) {
-		print_warn("Can't close input file\n");
+		ret = fclose(fd);
+		if (ret != 0) {
+			print_warn("Can't close input file\n");
+		}
 	}
 
 	sync_stream();

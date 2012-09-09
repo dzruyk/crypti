@@ -7,6 +7,7 @@
 
 static char peek = ' ';
 
+/* current input file */
 FILE *input;
 
 static void

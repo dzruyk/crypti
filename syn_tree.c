@@ -98,7 +98,7 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(tree->right);
 		break;
 	default:
-		print_warn_and_die("something wrong, no such type\n");
+		print_warn_and_die("Something wrong, no such type\n");
 	}
 
 	ast_node_unref(tree->child);
