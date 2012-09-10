@@ -1,25 +1,37 @@
 CC=gcc
 CFLAGS=-Wall -ggdb
 
-LEX_OBJS = lex.o id_table.o hash.o primes.o keyword.o common.o array.o 
+BIN= ./bin
+SRC= ./src
+TEST= ./test
+INCLUDES= -I ./include
+LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o keyword.o common.o array.o)
 LEX_MAIN = lex_test.o
-LEX_TEST = lex_test
-TRAVERSE_OBJS = stack.o syntax.o syn_tree.o traverse.o eval.o function.o list.o libcall.o
-TRAVERSE_MAIN = crypti.o
-TRAVERSE_TEST = crypti
+LEX_TEST = $(BIN)/lex_test
 
-all: $(LEX_TEST) $(TRAVERSE_TEST)
+CRYPTI_OBJS = $(patsubst %,src/%,stack.o syntax.o syn_tree.o traverse.o eval.o function.o list.o libcall.o)
+CRYPTI_MAIN = crypti.o
+CRYPTI_TEST = $(BIN)/crypti
+
+VPATH= ./src
+
+all: $(LEX_TEST) $(CRYPTI_TEST)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $^
+	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
 
 $(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN)
-	$(CC) $(CFLAGS) -o $(LEX_TEST) $(LEX_OBJS) $(LEX_MAIN)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
-$(TRAVERSE_TEST): $(LEX_OBJS) $(TRAVERSE_OBJS) $(TRAVERSE_MAIN)
-	$(CC) $(CFLAGS) -o $(TRAVERSE_TEST) $(TRAVERSE_OBJS) $(LEX_OBJS) $(TRAVERSE_MAIN)
+$(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
 clean:
 	rm -f *.o
-	rm $(TRAVERSE_TEST) $(LEX_TEST)
+	rm -f $(SRC)/*.o
+	rm $(CRYPTI_TEST) $(LEX_TEST)
+
+test: $(CRYPTI_TEST)
+	bash $(TEST)/calc_test.sh
+	bash $(TEST)/memory_test.sh
 

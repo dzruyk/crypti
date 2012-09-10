@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 path=`dirname $0`
-PNAME='crypti'
+PNAME='bin/crypti'
 N=3
 
 for ((i=1; $i < $N + 1; i= $i + 1))

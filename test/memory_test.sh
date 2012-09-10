@@ -1,5 +1,5 @@
 #/usr/bin/env bash
-PNAME='crypti'
+PNAME='bin/crypti'
 N=4
 
 path=`dirname $0`
