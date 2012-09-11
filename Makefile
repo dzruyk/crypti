@@ -35,3 +35,5 @@ test: $(CRYPTI_TEST)
 	bash $(TEST)/calc_test.sh
 	bash $(TEST)/memory_test.sh
 
+rebuild: clean $(CRYPTI_TEST)
+

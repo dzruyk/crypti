@@ -3,10 +3,12 @@
 
 #include "common.h"
 #include "crypti.h"
+#include "eval.h"
 #include "function.h"
 #include "id_table.h"
 #include "keyword.h"
 #include "lex.h"
+#include "stack.h"
 #include "syntax.h"
 #include "syn_tree.h"
 #include "traverse.h"
@@ -75,6 +77,7 @@ initialisation()
 	id_table_init();
 	keyword_table_init();
 	function_table_init();
+	stack_init((stack_destructor)eval_free);
 }
 
 void
@@ -83,6 +86,7 @@ deinitialisation()
 	id_table_destroy();
 	keyword_table_destroy();
 	function_table_destroy();
+	stack_destroy();
 }
 
 int

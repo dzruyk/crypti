@@ -46,11 +46,6 @@ default_hash_cb(const void *ptr)
 static int
 default_key_cmp_cb(const void *a, const void *b)
 {
-	unsigned long ap, bp;
-
-	ap = (unsigned long) a;
-	bp = (unsigned long) b;
-
 	if (a > b)
 		return 1;
 	else if (a < b)

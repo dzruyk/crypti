@@ -1,60 +1,90 @@
+#include <assert.h>
+
 #include <stdlib.h>
 
 #include "stack.h"
 #include "common.h"
 
-//FIXME: may be need to implement stack with dynamic array
-//	 but I'm so tired...)
 
 struct stack {
-	struct stack *next;
-	void *data;
+	int cur;
+	int sz;
+	void **arr;
+	stack_destructor destructor;
 };
 
 struct stack *stack = NULL;
 
+void
+stack_init(stack_destructor destructor)
+{
+	assert(stack == NULL);
+	
+	stack = xmalloc(sizeof(*stack));
+
+	stack->arr = xmalloc(sizeof(*stack->arr) * stack_sz);
+	stack->cur = 0;
+	stack->sz = stack_sz;
+	stack->destructor = destructor;
+}
+
+void
+stack_destroy()
+{
+	assert (stack != NULL &&
+	    stack->sz > stack->cur + 1);
+
+	int i;
+
+	for (i = 0; i < stack->cur; i++)
+		stack->destructor(stack->arr[i]);
+
+	ufree(stack->arr);
+	ufree(stack);
+
+	stack = NULL;
+}
+
 void 
 stack_push(void *data)
 {
-	struct stack *nitem;
+	assert (stack != NULL &&
+	    stack->sz > stack->cur + 1);
 
 	if (data == NULL)
 		print_warn_and_die("INTERNAL_ERROR: try to push NULL in stack\n");
-	
-	nitem = xmalloc(sizeof(*nitem));
-	
-	nitem->data = data;
-	nitem->next = stack;
-	stack = nitem;
+
+	if (stack->cur + 1 == stack->sz)
+		print_warn_and_die("INTERNAL_ERR: stack overflow\n");
+
+	stack->arr[stack->cur++] = data;
 }
 
 void *
 stack_pop()
 {
-	struct stack *nitem;
-	void *data;
+	assert (stack != NULL &&
+	    stack->sz > stack->cur + 1);
 
-	if (stack == NULL)
+	if (stack->cur == 0)
 		return NULL;
-	
-	nitem = stack;
-	stack = stack->next;
 
-	data = nitem->data;
-	
-	free(nitem);
-	return data;
+	stack->cur--;
+
+	return stack->arr[stack->cur];
 }
 
 void 
-stack_flush(stack_item_free_t ifree)
+stack_flush()
 {
-	struct stack *next;
+	assert (stack != NULL && 
+	    stack->sz > stack->cur + 1);
 
-	for (; stack != NULL; stack = next) {
-		next = stack->next;
-		ifree(stack->data);
-		free(stack);
-	}
+	int i;
+
+	for (i = 0; i < stack->cur; i++)
+		stack->destructor(stack->arr[i]);
+
+	stack->cur = 0;
 }
 

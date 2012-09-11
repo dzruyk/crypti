@@ -1089,9 +1089,8 @@ traverse_import(ast_node_t *tree)
 		nerrors = 0;
 		traverse(import->nodes[i]);
 
-		stack_flush((stack_item_free_t )eval_free);
+		stack_flush();
 	}
-		
 	
 	nerrors = old;
 }
@@ -1169,7 +1168,7 @@ traverse_prog(ast_node_t *tree)
 	ast_node_unref(tree);
 
 	if (nerrors != 0) {
-		stack_flush((stack_item_free_t )eval_free);
+		stack_flush();
 		return ret_err;
 	}
 

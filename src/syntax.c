@@ -1321,10 +1321,6 @@ process_import()
 
 	set_input(fd);
 
-	/* while not EOF
-	*	get_tree;
-	*	push_new_node
-	*/
 	while (is_eof() != TRUE) {
 		ret_t ret;
 		ret = program_start(&rtree);
