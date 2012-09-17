@@ -1,0 +1,41 @@
+#RSA library
+
+def rsakg(const len, exp, n, d) {
+
+	p = rand_prime(len / 2);
+	q = rand_prime(len / 2);
+
+	n = p * q;
+
+	p -= 1
+	q -= 1
+
+	phi = p * q
+
+	d = mod_inv(e, phi);
+
+	return 0;
+}
+
+def rsaep(m, exp, n, cipher) {
+
+	if (m >= n) {
+		print("error\n");
+		return -1;
+	}
+
+	mod_exp(chipher, m, exp, n)
+	return 0;
+}
+
+def rsadp(chipher, d, n, m) {
+	
+	if (cipher >= n) {
+		print("error\n");
+		return -1;
+	}
+
+	mod_exp(m, chipher, d, n);
+	return 0;
+}
+

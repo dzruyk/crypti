@@ -17,7 +17,7 @@ VPATH= ./src
 
 all: $(LEX_TEST) $(CRYPTI_TEST)
 
-%.o: %.c
+.c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
 
 $(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN)
@@ -37,3 +37,5 @@ test: $(CRYPTI_TEST)
 
 rebuild: clean $(CRYPTI_TEST)
 
+debug:
+	echo $(LEX_OBJS)
