@@ -7,4 +7,9 @@ a(1,2,3)
 b = 44
 print(2 - b)
 
+def func(c) {
+return c
+}
+
+func(b)
 	

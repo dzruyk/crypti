@@ -31,6 +31,7 @@ clean:
 	rm -f $(SRC)/*.o
 	rm $(CRYPTI_TEST) $(LEX_TEST)
 
+.PHONY: test
 test: $(CRYPTI_TEST)
 	bash $(TEST)/calc_test.sh
 	bash $(TEST)/memory_test.sh
