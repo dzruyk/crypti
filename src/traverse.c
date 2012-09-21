@@ -313,7 +313,8 @@ get_next_argue(ast_node_t *argnode, char *hint)
 			print_warn("cant get id %s\n", id->name);
 			nerrors++;
 		}
-
+		//FIXME: need to copy value and
+		//change name to hint
 		return res;
 	}
 
