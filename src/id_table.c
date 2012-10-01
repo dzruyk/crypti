@@ -52,6 +52,9 @@ id_item_default_release(id_item_t *item)
 	case ID_NUM:
 	case ID_ARR:
 		break;
+	default:
+		print_warn_and_die("unknown id type\n");
+		break;
 	}
 }
 

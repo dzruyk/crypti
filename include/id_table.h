@@ -19,6 +19,7 @@ typedef struct id_item {
 	char *name;
 	union {
 		int value;
+		str_t *str;
 		arr_t *arr;
 	};
 

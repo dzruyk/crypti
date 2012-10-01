@@ -19,6 +19,51 @@ skip_comment()
 }
 
 tok_t
+get_string()
+{	
+	char *s = NULL;
+	char *tmp;
+	int len, used;
+
+	used = 0;
+	len = 64;
+	s = xmalloc(len);
+
+	peek = fgetc(input);
+
+	while (peek != EOF && peek != '"') {
+
+		if (used >= len - 1) {
+			len += 64;
+			s = realloc_or_die(s, len);
+		}
+
+		s[used++] = peek;
+		peek = fgetc(input);
+	}
+
+	if (peek != '"') {
+		print_warn("uncomplited string");
+		free(s);
+		peek = ' ';
+		return TOK_UNKNOWN;
+	}
+
+	s[used++] = '\0';
+
+	if ((tmp = realloc(s, used)) == NULL)
+		print_warn_and_die("realloc_err");
+	s = tmp;
+
+	lex_item.id = TOK_STRING;
+	lex_item.str = s;
+
+	peek = ' ';
+
+	return TOK_STRING;
+}
+
+tok_t
 get_next_token()
 {
 
@@ -72,49 +117,8 @@ begin:
 		
 		return TOK_ID;
 	}
-	// Trying to get string
-	if (peek == '\"') {
-		char *s = NULL;
-		char *tmp;
-		int len, used;
-
-		used = 0;
-		len = 64;
-		s = xmalloc(len);
-
-		peek = fgetc(input);
-
-		while (peek != EOF && peek != '"') {
-
-			if (used >= len - 1) {
-				len += 64;
-				s = realloc_or_die(s, len);
-			}
-
-			s[used++] = peek;
-			peek = fgetc(input);
-		}
-
-		if (peek != '"') {
-			print_warn("uncomplited string");
-			free(s);
-			peek = ' ';
-			return TOK_UNKNOWN;
-		}
-
-		s[used++] = '\0';
-
-		if ((tmp = realloc(s, used)) == NULL)
-			print_warn_and_die("realloc_err");
-		s = tmp;
-
-		lex_item.id = TOK_STRING;
-		lex_item.str = s;
-
-		peek = ' ';
-
-		return TOK_STRING;
-	}
+	if (peek == '\"')
+		return get_string();
 
 	switch (peek) {
 	case '=':
