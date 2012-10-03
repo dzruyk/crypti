@@ -8,9 +8,18 @@ str_t *
 str_new(void *ptr, int len)
 {
 	assert(ptr != NULL && len >= 0);
+
 	str_t *tmp;
+	char *src;
+	int i;
 
+	src = (char *) ptr;
 
+	tmp = str_new_clean(len);
+
+	for (i = 0; i < len; i++)
+		tmp->buff[i] = src[i];
+	
 	return tmp;
 }
 
@@ -23,8 +32,11 @@ str_new_clean(int len)
 	tmp = xmalloc(sizeof(*tmp));
 	memset(tmp, 0, sizeof(*tmp));
 
-	if (len > 0)
+	if (len > 0) {
 		tmp->buff = xmalloc(len);
+		memset(tmp->buff, 0, len);
+	}
+	tmp->len = len;
 
 	return tmp;
 }
@@ -57,8 +69,18 @@ str_concat(str_t *left, str_t *right)
 	assert(left != NULL && right != NULL);
 	
 	str_t *res;
+	unsigned char *dst;
+	int i;
+
 	res = str_new_clean(left->len + right->len);
-	//WRITEME
+	
+	dst = res->buff;
+	for (i = 0; i < left->len; i++)
+		*dst++ = left->buff[i];
+	
+	for (i = 0; i < right->len; i++)
+		*dst++ = right->buff[i];
+
 	return res;
 }
 
@@ -78,10 +100,13 @@ str_sub(str_t *str, int first, int len)
 	str_t *tmp;
 	int i;
 
+	if (first > str->len)
+		return str_new_clean(0);
+
 	if (first + len > str->len)
-		len = str->len - first;
+		len = str->len - first + 1;
 	
-	tmp = str_new_clean(len); 
+	tmp = str_new_clean(len);
 
 	//FIXME: rewrite me with ptrs.
 	for (i = 0; i < len; i++)
@@ -98,7 +123,7 @@ str_print(str_t *str)
 	int i;
 
 	for (i = 0; i < str->len; i++)
-		printf("\\0x%x", str->buff[i] & 0xff);
+		printf("%c", str->buff[i] & 0xff);
 
 }
 
@@ -107,9 +132,7 @@ str_del(str_t *str)
 {
 	assert (str != NULL);
 
-	if (str->len > 0)
-		ufree(str->buff);
-	
+	ufree(str->buff);
 	ufree(str);
 }
 
