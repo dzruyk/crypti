@@ -5,7 +5,7 @@ BIN= ./bin
 SRC= ./src
 TEST= ./test
 INCLUDES= -I ./include
-LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o keyword.o common.o array.o)
+LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o keyword.o common.o array.o str.o)
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test
 
