@@ -1,8 +1,14 @@
-Syntax description.
+Crypti is simple language for crypto researchers, that I write from scratch.
+Now bignum library and string type not integrated in project and documentation available only on russian.
+
+
+Short syntax description.
 
 	prog 		->	global_expr
 	
-	global_expr	->	def func_name(argues) stmts
+	global_expr	->	def func_name(argues) {stmts}
+			|	import "modname"
+			|	import <modname>
 			|	stmts
 
 	stmts		->	statesment
@@ -11,30 +17,49 @@ Syntax description.
 			|	if (logic_or) statesment [else statesment]
 			|	for (expr; logic_or; expr) statesment
 			|	while(logic_or) statesment
+			|	do { stmts } while(logic_or);
 			|	break
 			|	continue
 			|	return [expr]
 			|	expr
 	
-	expr		->	logic_or [ = expr]
+	expr		->	logic_or = expr
+				logic_or += expr
+				logic_or *= expr
+				logic_or /= expr
+				logic_or |= expr
+				logic_or ^= expr
+				logic_or <<= expr
+				logic_or >>= expr
+				logic_or
 
 	logic_or	->	logic_and [ || logic_or]
+				logic_and
 
 	logic_and	->	bool_or [ && bool_and]
+				bool_or
 
 	bool_or		->	bool_xor [ | bool_or]
+				bool_xor
 
 	bool_xor	->	bool_and [ ^ bool_xor]
+				bool_and
 
 	bool_and	->	equity	[ & bool_and]
+				equity
 
 	equity		->	rel_op [ == equity]
+				rel_op
 
-	rel_op		->	add_expr [ > rel_op]
-			|	add_expr [ >= rel_op]
-			|	add_expr [ < rel_op]
-			|	add_expr [ <= rel_op]
+	rel_op		->	shift_expr [ > rel_op]
+			|	shift_expr [ >= rel_op]
+			|	shift_expr [ < rel_op]
+			|	shift_expr [ <= rel_op]
+			|	shift_expr
 	
+	shift_expr	->	add_expr >> shift_expr
+				add_expr << shift_expr
+				add_expr
 
 	add_expr	->	mul_expr [ + add_expr]
 			|	mul_expr [ - add_expr]
@@ -43,10 +68,13 @@ Syntax description.
 			|	term [ / mul_expr]
 
 	
-	term		->	(expr)
+	term		->	!factor
+			|	+factor
+			|	-factor
 			|	factor
 	
-	factor		->	identifier
+	factor		->	(expr)
+			|	identifier
 			|	number
 			|	EMPTY
 
@@ -54,8 +82,6 @@ Syntax description.
 			|	id[logic_or]			//array reference
 			|	id ([expr, ...])			//function call
 	
-
-
 
 Remarks:
 1)	In id[statesment] statesment can't be EMPTY;

@@ -294,8 +294,10 @@ exec_function(func_t *func)
 	
 }
 
-//get next func argue
-//if fails return errors and/or inc nerrors
+/*
+ * Get next function argue..
+ * If fails return errors and/or inc nerrors
+ */
 id_item_t *
 get_next_argue(ast_node_t *argnode, char *hint)
 {
