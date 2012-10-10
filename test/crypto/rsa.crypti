@@ -39,3 +39,19 @@ def rsadp(chipher, d, n, m) {
 	return 0;
 }
 
+/*
+ * Without MGF hash OS2IP I2OSP functions
+ */
+def rsa_oaep_ep(n, e, M, L) {
+	//without error checks now
+	lHash = SOME_HASH(L);
+	hLen = len(lHash);
+
+	PS = new_str(k - mLen - 2hLen - 2, 0);
+	DB = lHash + PS + "\x01" + M
+
+	seed = rand_str(hLen);
+	dbMask = MGF(seed, k - hLen - 1)
+	maskedDB = DB ^ dbMask
+	seedMask = MGF()
+}

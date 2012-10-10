@@ -479,4 +479,8 @@ Crypti - язык со динамической типизацией (например как Python, Perl, PHP и т.д.)
 	3.random
 
 	4.string
+	
+	new_string(len, filler)
+		возвращает новую строку len байт длинны.
+		каждый байт строки равен filler.
 
