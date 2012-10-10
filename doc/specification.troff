@@ -460,14 +460,14 @@ Crypti - язык со динамической типизацией (например как Python, Perl, PHP и т.д.)
 
 	1. crypto
 	mod_inv(num, modulo)
-		находит обратное num число по модулю modulo
+		Находит обратное num число по модулю modulo.
 
 	mod_exp(res, n, exp, modulo)
-		вычисляет
+		Вычисляет
 		(n ** exp) % modulo
 		
 	rand_prime(len)
-		генерирует случайное число длиннной len байт
+		Генерирует случайное число длиннной len байт.
 	
 	2. stdio
 	num_from_file()
@@ -481,6 +481,9 @@ Crypti - язык со динамической типизацией (например как Python, Perl, PHP и т.д.)
 	4.string
 	
 	new_string(len, filler)
-		возвращает новую строку len байт длинны.
-		каждый байт строки равен filler.
+		Возвращает новую строку len байт длинны,
+		каждый байт которой равен filler.
+	subs(string, start, len)
+		Возвращает копию подстроки начиная с start,
+		len байт длинной.
 

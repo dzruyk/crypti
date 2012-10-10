@@ -40,18 +40,60 @@ def rsadp(chipher, d, n, m) {
 }
 
 /*
- * Without MGF hash OS2IP I2OSP functions
+ * Without MGF hash OS2I I2OS functions
  */
-def rsa_oaep_ep(n, e, M, L) {
+def rsa_oaep_ep(n, e, M, L, c) {
 	//without error checks now
 	lHash = SOME_HASH(L);
 	hLen = len(lHash);
+	mLen = len(M);
 
-	PS = new_str(k - mLen - 2hLen - 2, 0);
+	PS = new_str(k - mLen - 2 * hLen - 2, 0);
 	DB = lHash + PS + "\x01" + M
 
 	seed = rand_str(hLen);
 	dbMask = MGF(seed, k - hLen - 1)
 	maskedDB = DB ^ dbMask
-	seedMask = MGF()
+	seedMask = MGF(maskedDB, hLen)
+	maskedSeed = seed ^ seedMask
+
+	EM = "\x00" + maskedSeed + maskedDB
+
+	m = to_num(EM);
+
+	rsaep(m, e, n, cipher)
+	c = to_str(cipher);
+
+	return 0;
 }
+
+def rsa_oaep_dp(c, d, n, L, M) {
+
+	
+	cipher = to_int(c);
+	rsadp(cipher, d, n, m)
+	EM = to_str(m);
+	
+	lHash = SOME_HASH(L);
+	hLen = len(lHash);
+	k = len(n)
+
+	y = subs(EM, 0, 1)
+	maskedSeed = subs(EM, 1, hlen)
+	maskedDB = subs(EM, 1 + hlen, k - hlen - 1)
+	
+	seedMask = MGF(maskedDB, hlen)
+	seed = maskedSeed ^ seedMask
+	dbMask = MGF(seed, k - hLen - 1)
+	DB = maskedDB ^ dbMask
+
+	lHash2 = subs(DB, 0, hLen)
+	i = 0
+	while (DB[i] == 0)
+		i += 1
+
+	M = subs(DB, len(DB) - hlen - i)
+
+	return 0;
+}
+
