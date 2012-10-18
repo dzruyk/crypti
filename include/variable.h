@@ -17,6 +17,11 @@ struct variable {
 
 struct variable *var_init();
 
+struct variable *var_copy(struct variable *var);
+
+void var_deinit(struct variable *var);
+
+
 void var_set_string(struct variable *var, char *str);
 
 void var_set_oct_string(struct variable *var, struct oct_string *oct_str);
@@ -31,10 +36,5 @@ char *var_as_str(struct variable *var);
 struct oct_string *var_as_oct_str(struct variable *var);
 
 mp_int *var_as_bignum(struct variable *var);
-
-
-struct variable *var_copy(struct variable *var);
-
-void var_deinit(struct variable *var);
 
 #endif
