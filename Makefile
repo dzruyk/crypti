@@ -35,7 +35,7 @@ $(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN)
 clean:
 	rm -f *.o
 	rm -f $(SRC)/*.o
-	rm $(CRYPTI_TEST) $(LEX_TEST)
+	rm $(CRYPTI_TEST) $(LEX_TEST) $(STRING_TEST)
 
 .PHONY: test
 test: $(CRYPTI_TEST)

@@ -2,10 +2,10 @@
 #define __VARIABLE_H_
 
 typedef enum {
+	VAR_EMPTY = 0;
 	VAR_BIGNUM = 0x1;
 	VAR_OCTSTRING = 0x2;
 	VAR_STRING = 0x4;
-	VAR_EMPTY = 0;
 } var_type_t;
 
 struct variable {
