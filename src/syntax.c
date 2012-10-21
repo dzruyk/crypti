@@ -1333,7 +1333,7 @@ process_import()
 
 		if (len >= sz) {
 			sz += 8;
-			nodes = realloc_or_die(nodes, sizeof(*nodes) * sz);
+			nodes = xrealloc(nodes, sizeof(*nodes) * sz);
 		}
 		nodes[len++] = rtree;
 	}
@@ -1413,7 +1413,7 @@ func_add_next_argu(ast_node_func_t *func, char *name)
 
 	n = func->nargs++;
 
-	func->args = realloc_or_die(func->args, 
+	func->args = xrealloc(func->args, 
 	    func->nargs * sizeof(*(func->args)));
 
 	func->args[n] = name;
@@ -1572,7 +1572,7 @@ array_access()
 
 		if (dim >= sz) {
 			sz += 4;
-			ind = realloc_or_die(ind, sz * sizeof(*ind));
+			ind = xrealloc(ind, sz * sizeof(*ind));
 		}
 		
 		if (match(TOK_RBRACKET) == FALSE) {
@@ -1679,7 +1679,7 @@ array_init()
 
 		if (total >= arrsz) {
 			arrsz += 4;
-			arr = realloc_or_die(arr, arrsz * sizeof (*arr));
+			arr = xrealloc(arr, arrsz * sizeof (*arr));
 		}
 
 		cnt[depth - 1]++;

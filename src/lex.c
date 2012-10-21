@@ -35,7 +35,7 @@ get_string()
 
 		if (used >= len - 1) {
 			len += 64;
-			s = realloc_or_die(s, len);
+			s = xrealloc(s, len);
 		}
 
 		s[used++] = peek;
@@ -94,7 +94,7 @@ begin:
 		do {
 			if (used >= len - 1) {
 				len += 64;
-				s = realloc_or_die(s, len);
+				s = xrealloc(s, len);
 			}
 
 			s[used++] = peek;

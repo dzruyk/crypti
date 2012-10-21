@@ -379,7 +379,7 @@ ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node)
 
 	n = call->nargs++;
 
-	call->args = realloc_or_die(call->args,
+	call->args = xrealloc(call->args,
 	    call->nargs * sizeof(*(call->args)));
 
 	call->args[n] = node;

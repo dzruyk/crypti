@@ -18,7 +18,7 @@ xmalloc(size_t sz)
 }
 
 inline void *
-realloc_or_die(void *ptr, size_t sz)
+xrealloc(void *ptr, size_t sz)
 {
 	void *tmp;
 	if ((tmp = realloc(ptr, sz)) == NULL)

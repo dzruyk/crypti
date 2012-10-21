@@ -1,59 +1,24 @@
-#ifndef __STR_H__
-#define __STR_H__
-
-typedef struct {
-	int len;
-	unsigned char *buff;
-} str_t;
-
 /*
- * create new string, fill it with len bytes
- * from ptr
+ * str.h - string routines
  */
-str_t *str_new(void *ptr, int len);
+#ifndef STRING_H_
+#define STRING_H_
 
-/*
- * create new string with len bytes size,
- * zeroes all bytes
- */
-str_t *str_new_clean(int len);
+typedef struct buffer * str_t;
 
-/*
- * return length of string
- */
-int str_len(str_t *str);
+#define str_ptr(str)	((char *)(buffer_ptr((struct buffer*)str)))
 
-/*
- * resize string to str size
- */
-void str_resize(str_t *str, int sz);
+str_t str_new();
+void str_free(str_t *str);
+char *str_append(str_t str, const char *ptr);
+char *str_append_n(str_t str, const char *ptr, size_t n);
+char *str_append_str(str_t dst, str_t src);
+char *str_snprintf(str_t str, char *fmt, ...) __attribute__((format(printf,2,3)));
+char *str_putc(str_t str, char c);
+char *str_drop(str_t str, size_t n);
+char *str_trim(str_t str, size_t n);
+void str_reset(str_t str);
+size_t str_len(str_t str);
 
-/*
- * return result of concantenation left and right strings
- */
-str_t *str_concat(str_t *left, str_t *right);
-
-/*
- * duplicate passed string
- */
-str_t *str_dup(str_t *str);
-
-/*
- * return new substring of str
- * NOTE:
- * first must be positive or 0
- * len will cutoff to str->len - first
- */
-str_t *str_sub(str_t *str, int first, int len);
-
-/*
- * Print every character in hexadecimal form
- */
-void str_print(str_t *str);
-
-/*
- * Delete string
- */
-void str_del(str_t *str);
 
 #endif

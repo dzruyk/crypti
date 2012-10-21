@@ -1,139 +1,116 @@
-#include <assert.h>
+/*
+ * Dynamic strings
+ *
+ * Grigoriy Sitkarev, <sitkarev@unixkomi.ru>
+ */
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <limits.h>
 #include <string.h>
+#include <stdarg.h>
+#include <string.h>
+#include <errno.h>
 
-#include "common.h"
+#include "buffer.h"
+#include "macros.h"
 #include "str.h"
 
-str_t *
-str_new(void *ptr, int len)
+str_t str_new()
 {
-	assert(ptr != NULL && len >= 0);
+	struct buffer *buf;
 
-	str_t *tmp;
-	char *src;
-	int i;
-
-	src = (char *) ptr;
-
-	tmp = str_new_clean(len);
-
-	for (i = 0; i < len; i++)
-		tmp->buff[i] = src[i];
-	
-	return tmp;
+	buf = buffer_new();
+	buffer_zero(buf);
+	return buf;
 }
 
-str_t *
-str_new_clean(int len)
+void str_free(str_t *str)
 {
-	assert(len >= 0);
-	str_t *tmp;
-
-	tmp = xmalloc(sizeof(*tmp));
-	memset(tmp, 0, sizeof(*tmp));
-
-	if (len > 0) {
-		tmp->buff = xmalloc(len);
-		memset(tmp->buff, 0, len);
-	}
-	tmp->len = len;
-
-	return tmp;
+	buffer_free(*str);
+	*str = NULL;
 }
 
-int 
-str_len(str_t *str)
+char *str_append(str_t str, const char *ptr)
 {
-	assert(str != NULL);
-
-	return str->len;
+	buffer_put(str, ptr, strlen(ptr));
+	buffer_zero(str);
+	return buffer_ptr(str);
 }
 
-void
-str_resize(str_t *str, int sz)
+char *str_append_n(str_t str, const char *ptr, size_t n)
 {
-	assert(str != NULL && sz >= 0);
-	if (str->len == sz)
-		return;
-	
-	str->len = sz;
-	str->buff = realloc_or_die(str->buff, sz);
+	size_t len;
 
-	if (sz == 0)
-		str->buff = NULL;
+	len = strnlen(ptr, n);
+	buffer_put(str, ptr, len);
+	buffer_zero(str);
+	return buffer_ptr(str);
 }
 
-str_t *
-str_concat(str_t *left, str_t *right)
+char *str_append_str(str_t dst, str_t src)
 {
-	assert(left != NULL && right != NULL);
-	
-	str_t *res;
-	unsigned char *dst;
-	int i;
-
-	res = str_new_clean(left->len + right->len);
-	
-	dst = res->buff;
-	for (i = 0; i < left->len; i++)
-		*dst++ = left->buff[i];
-	
-	for (i = 0; i < right->len; i++)
-		*dst++ = right->buff[i];
-
-	return res;
+	buffer_copy(dst, src, buffer_size(src));
+	buffer_zero(dst);
+	return buffer_ptr(dst);
 }
 
-str_t *
-str_dup(str_t *str)
+char *str_putc(str_t str, char c)
 {
-	assert(str != NULL);
-
-	return str_sub(str, 0, str->len);
+	buffer_putc(str, c);
+	buffer_zero(str);
+	return buffer_ptr(str);
 }
 
-str_t *
-str_sub(str_t *str, int first, int len)
+#define STR_SNPRINTF_ADVANCE	4
+
+char *str_snprintf(str_t str, char *fmt, ...)
 {
-	assert(str != NULL && first >= 0);
-	
-	str_t *tmp;
-	int i;
+	size_t res, new_res;
+	va_list ap, ap_copy;
 
-	if (first > str->len)
-		return str_new_clean(0);
-
-	if (first + len > str->len)
-		len = str->len - first + 1;
-	
-	tmp = str_new_clean(len);
-
-	//FIXME: rewrite me with ptrs.
-	for (i = 0; i < len; i++)
-		tmp->buff[first + i] = str->buff[first + i];
-	
-	return tmp;
+	va_start(ap, fmt);
+	va_copy(ap_copy, ap);
+	buffer_reset(str);
+	buffer_advance(str, STR_SNPRINTF_ADVANCE);
+	res = vsnprintf(buffer_ptr(str), STR_SNPRINTF_ADVANCE, fmt, ap);
+	if (res < 0)
+		error(1, "str_snprintf: vsnprintf res=%d", (int)res);
+	if (res >= STR_SNPRINTF_ADVANCE) {
+		buffer_reset(str);
+		buffer_advance(str, res+1); /* plus one zero char */
+		new_res = vsnprintf(buffer_ptr(str), res+1, fmt, ap_copy);
+		if (new_res < 0 || new_res != res)
+			error(1, "str_snprintf: should not reach");
+	} else
+		buffer_trim(str, STR_SNPRINTF_ADVANCE-res);
+	/* now reduce buffer size down one byte because we have '\0' there */
+	buffer_trim(str, 1);
+	va_end(ap);
+	return buffer_ptr(str);
 }
 
-void 
-str_print(str_t *str)
+char *str_drop(str_t str, size_t n)
 {
-	assert(str != NULL);
-
-	int i;
-
-	for (i = 0; i < str->len; i++)
-		printf("%c", str->buff[i] & 0xff);
-
+	buffer_consume(str, n);
+	return buffer_ptr(str);
 }
 
-void
-str_del(str_t *str)
+char *str_trim(str_t str, size_t n)
 {
-	assert (str != NULL);
-
-	ufree(str->buff);
-	ufree(str);
+	buffer_trim(str, n);
+	buffer_zero(str);
+	return buffer_ptr(str);
 }
 
+void str_reset(str_t str)
+{
+	buffer_reset(str);
+	buffer_zero(str);
+}
 
+size_t str_len(str_t str)
+{
+	return buffer_size(str);
+}
