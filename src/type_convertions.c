@@ -6,7 +6,29 @@
 #include "type_convertions.h"
 #include "variable.h"
 
-struct type_conv morpher[] = {
+static void string_to_bignum(struct variable *to, const struct variable *from);
+static void string_to_octstring(struct variable *to, const struct variable *from);
+static void string_to_string(struct variable *to, const struct variable *from);
+
+static void octstring_to_bignum(struct variable *to, const struct variable *from);
+static void octstring_to_octstring(struct variable *to, const struct variable *from);
+static void octstring_to_string(struct variable *to, const struct variable *from);
+
+static void bignum_to_bignum(struct variable *to, const struct variable *from);
+static void bignum_to_octstring(struct variable *to, const struct variable *from);
+static void bignum_to_string(struct variable *to, const struct variable *from);
+
+static int type_conv_cmp(const void *a, const void *b);
+
+typedef (*type_converter_t)(struct variable *to, const struct variable *from);
+
+struct type_conv {
+	int from_type;
+	int to_type;
+	type_converter_t func;
+};
+
+struct type_conv func_table[] = {
 	{VAR_BIGNUM, VAR_BIGNUM, bignum_to_bignum},
 	{VAR_BIGNUM, VAR_OCTSTRING, bignum_to_octstring},
 	{VAR_BIGNUM, VAR_STRING, bignum_to_string},
@@ -20,65 +42,78 @@ struct type_conv morpher[] = {
 	{VAR_STRING, VAR_STRING, string_to_string},
 };
 
-void
+void convert_value(struct variable *dst_var, int to_type, struct variable *src_var, int from_type)
+{
+	struct type_conv conv, *res;
+
+	conv.from_type = from_type;
+	conv.to_type = to_type;
+
+	res = bsearch(&tmp, func_table, ARRSZ(func_table), sizeof(func_table[0]), type_conv_cmp);
+
+	if (res == NULL)
+		print_warn_and_die("can't force type, programmer mistake\n");
+	res->func(dst_var, src_var);
+}
+
+static void
 string_to_bignum(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "string to bignum\n");
 }
 
-void
+static void
 string_to_octstring(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "string to oct_string\n");
 
 }
 
-
-void
+static void
 string_to_string(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "string to string\n");
 }
 
-void
+static void
 octstring_to_bignum(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "oct_string to bignum\n");
 
 }
 
-void
+static void
 octstring_to_octstring(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "oct_string to oct_string\n");
 }
 
-void
+static void
 octstring_to_string(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "oct_string to string\n");
 
 }
 
-void
+static void
 bignum_to_bignum(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "bignum to bignum\n");
 }
 
-void
+static void
 bignum_to_octstring(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "bignum to oct_string\n");
 }
 
-void
+static void
 bignum_to_string(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "bignum ot string\n");
 }
 
-int
+static int
 type_conv_cmp(const void *a, const void *b)
 {
 	const struct type_conv *pa, *pb;

@@ -5,20 +5,20 @@ BIN= ./bin
 SRC= ./src
 TEST= ./test
 INCLUDES= -I ./include
-LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o keyword.o common.o array.o str.o)
+LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o keyword.o common.o array.o str.o buffer.o)
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test
-
-STRING_OBJS = $(patsubst %,src/%, str.o str_test.o common.o)
-STRING_TEST = $(BIN)/string_test
 
 CRYPTI_OBJS = $(patsubst %,src/%,stack.o syntax.o syn_tree.o traverse.o eval.o function.o list.o libcall.o)
 CRYPTI_MAIN = crypti.o
 CRYPTI_TEST = $(BIN)/crypti
 
+STR_OBJS = $(patsubst %,src/%, str_test.o)
+STR_TEST = $(BIN)/str_test
+
 VPATH= ./src
 
-all: $(LEX_TEST) $(CRYPTI_TEST) $(STRING_TEST)
+all: $(LEX_TEST) $(CRYPTI_TEST) $(STR_TEST)
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
@@ -26,16 +26,15 @@ all: $(LEX_TEST) $(CRYPTI_TEST) $(STRING_TEST)
 $(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
-$(STRING_TEST): $(STRING_OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
-
 $(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
+$(STR_TEST): $(STR_OBJS) $(LEX_OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 clean:
 	rm -f *.o
 	rm -f $(SRC)/*.o
-	rm $(CRYPTI_TEST) $(LEX_TEST) $(STRING_TEST)
+	rm $(CRYPTI_TEST) $(LEX_TEST) $(STR_TEST)
 
 .PHONY: test
 test: $(CRYPTI_TEST)

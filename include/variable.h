@@ -2,7 +2,6 @@
 #define __VARIABLE_H_
 
 typedef enum {
-	VAR_CLEAN = 0;
 	VAR_BIGNUM = 0x1;
 	VAR_OCTSTRING = 0x2;
 	VAR_STRING = 0x4;
@@ -10,33 +9,33 @@ typedef enum {
 
 struct variable {
 	var_type_t type;
+	mp_int bnum;
+	octcstr_t octstr;
 	str_t str;
-	struct oct_string *oct_str;
-	mp_int *bnum;
 };
 
-struct variable *var_init();
+void var_init(struct variable *var);
+/* Init null terminated list of variables. */
+void var_initv(struct variable *var, ...);
+void var_clear(struct variable *var);
+/* clear null terminated list of variables. */
+void var_clearv(struct variable *var, ...);
 
-void var_clean(struct variable *var);
-
-struct variable *var_copy(struct variable *var);
-
-void var_deinit(struct variable *var);
-
+void var_copy(struct variable *dst, struct variable *src);
 
 void var_set_string(struct variable *var, str_t str);
-
-void var_set_oct_string(struct variable *var, struct oct_string *oct_str);
-
+void var_set_str(struct variable *var, char *str);
+void var_set_octstr(struct variable *var, octstr *octstr);
 void var_set_bignum(struct variable *var, mp_int *bnum);
 
 void var_force_type(struct variable *var, var_type_t type);
 
+str_t var_cast_to_str(struct variable *var);
+octstr *var_cast_to_octstr(struct variable *var);
+mp_int *var_cast_to_bignum(struct variable *var);
 
-str_t var_as_str(struct variable *var);
-
-struct oct_string *var_as_oct_str(struct variable *var);
-
-mp_int *var_as_bignum(struct variable *var);
+str_t *var_str_ptr(struct variable *var);
+octstr *var_octstr_ptr(struct variable *var);
+mp_int *var_bignum_ptr(struct variable *var);
 
 #endif

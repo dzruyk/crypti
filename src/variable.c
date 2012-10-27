@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdlib.h>
 #include <memcpy.h>
 
@@ -8,98 +9,118 @@
 #include "type_convertions.h"
 #include "variable.h"
 
-static type_converter_t var_find_converter(int from_type, int to_type);
+static void var_convert_type(struct variable *var, var_type_t to_type);
 
-struct variable *
-var_init()
+void
+var_init(struct variable *var)
 {
-	struct variable *tmp;
+	var->type = 0;
 
-	tmp = xmalloc(sizeof(*tmp));
-	memset(tmp, 0, sizeof(*tmp));
-
-	return tmp;
+	//FIXME: need to check ret status
+	mp_init(var->bnum);
+	octstr_init(var->oct_str);
+	str_init(var->str);
 }
 
-void 
-var_clean(struct variable *var)
+void
+var_initv(struct variable *var, ...)
 {
-	if (var->type & VAR_BIGNUM)
-		mp_clear(&(var->bnum));
-	if (var->type & VAR_OCTSTRING)
-		octstr_free(&var->oct_str);
-	if (var->type & VAR_STRING)
-		str_free(var->str);
-	var->type = VAR_CLEAN;
+	struct variable *p;
+
+	va_list ap;
+
+	va_start(ap, var);
+	p = var;
+
+	while (p != NULL) {
+		var_init(p);
+		p = va_arg(ap, struct variable *);
+	}
 }
 
-struct variable *
-var_copy(struct variable *var)
+void
+var_clear(struct variable *var)
+{
+	mp_clear(var->bnum);
+	str_clear(var->str);
+	octstr_clear(var->oct_str);
+}
+
+void
+var_clearv(struct variable *var, ...)
+{
+	struct variable *p;
+
+	va_list ap;
+
+	va_start(ap, var);
+	p = var;
+
+	while (p != NULL) {
+		var_clear(p);
+		p = va_arg(ap, struct variable *);
+	}
+}
+
+void
+var_copy(struct variable *dst, struct variable *src)
 {
 	int types[] = {VAR_BIGNUM, VAR_OCTSTRING, VAR_STRING};
-	struct variable *tmp;
-	type_converter_t convert;
 	
 	int i;
 
-	tmp = var_init();
-	
+	dst->type = 0;
+
 	for (i = 0; i < ARRSZ(types); i++) {
-		if ((var->type & types[i]) == 0)
+		if ((src->type & types[i]) == 0)
 			continue;
 
-		convert = var_find_converter(types[i], types[i]);
+		convert_value(dst, types[i], src, types[i]);
 
-		convert(tmp, var);
-
-		tmp->type |= types[i];
+		dst->type |= types[i];
 	}
-
-	return tmp;
-}
-
-void 
-var_deinit(struct variable *var)
-{
-	if (var == NULL)
-		return;
-
-	var_clean(var);
-
-	ufree(var);
 }
 
 void
 var_set_string(struct variable *var, str_t str)
 {
-	var_clean(var);
-	var->type = VAR_STRING;
+	var->type |= VAR_STRING;
 
-	var->str = str;
+	str_copy(&var->str, str);
+}
+
+void
+var_set_str(struct varaible *var, char *str)
+{
+
 }
 
 void
 var_set_oct_string(struct variable *var, struct oct_string *oct_str)
 {
-	var_clean(var);
-	var->type = VAR_OCTSTRING;
+	var->type |= VAR_OCTSTRING;
 
-	var->oct_str =oct_str;
+	octstr_copy(&var->oct_str, oct_str);
 }
 
 void
 var_set_bignum(struct variable *var, mp_int *bnum)
 {
-	var_clean(var);
-	var->type = VAR_BIGNUM;
+	var->type |= VAR_BIGNUM;
 
-	var->bnum = bnum;
+	mp_copy(&var->bnum, bnum);
 }
 
 void
-var_force_type(struct variable *var, var_type_t to_type)
+var_force_type(struct variable *var, var_type_t type)
 {
-	type_converter_t convert;
+	
+	var->type = type;
+}
+
+static void
+var_convert_type(struct variable *var, var_type_t to_type)
+{
 	int from_type;
 
 	//type exist
@@ -113,54 +134,54 @@ var_force_type(struct variable *var, var_type_t to_type)
 	if (var->type & VAR_STRING)
 		from_type = VAR_STRING;
 	
-	convert = var_find_converter(from_type, to_type);
-
-	convert(var, var);
+	convert_value(var, to_type, var, from_type);
 
 	var->type |= type;
 }
 
-str_t
-var_as_str(struct variable *var)
+str_t *
+var_cast_to_str(struct variable *var)
 {
 	if ((var->type & VAR_STRING) == 0)
-		var_force_type(var, VAR_STRING);
+		var_convert_type(var, VAR_STRING);
 
-	return var->str;
+	return &var->str;
 }
 
-struct oct_string *
-var_as_oct_str(struct variable *var)
+ocstr_t *
+var_cast_to_octstr(struct variable *var)
 {
 	if ((var->type & VAR_OCTSTRING) == 0)
-		var_force_type(var, VAR_OCTSTRING);
+		var_convert_type(var, VAR_OCTSTRING);
 
-	return var->oct_str;
+	return &var->oct_str;
 }
 
 mp_int *
-var_as_bignum(struct variable *var)
+var_cast_to_bignum(struct variable *var)
 {
 	if ((var->type & VAR_BIGNUM) == 0)
-		var_force_type(var, VAR_BIGNUM);
+		var_convert_type(var, VAR_BIGNUM);
 
-	return var->bnum;
+	return &var->bnum;
 }
 
 
-static type_converter_t
-var_find_converter(int from_type, int to_type)
+str_t *
+var_str_ptr(struct variable *var)
 {
-	struct type_conv conv, *res;
-	
-	conv.from_type = from_type;
-	conv.to_type = to_type;
+	return &var->str;
+}
 
-	res = bsearch(&tmp, morpher, ARRSZ(morpher), sizeof(morpher[0]), type_conv_cmp);
+octstr_t *
+var_octstr_ptr(struct variable *var)
+{
+	return &var->oct_str;
+}
 
-	if (res == NULL)
-		print_warn_and_die("can't force type, programmer mistake\n");
-
-	return res->func;
+mp_int *
+var_bignum_ptr(struct variable *var)
+{
+	return &var->bnum;
 }
 
