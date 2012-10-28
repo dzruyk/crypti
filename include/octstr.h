@@ -11,6 +11,7 @@ void octstr_initv(octstr_t *octstr, ...);
 void octstr_clear(octstr_t *octstr);
 void octstr_clearv(octstr_t *octstr, ...);
 
+void octstr_copy(octstr_t *dst, octstr_t *src);
 char *octstr_append(octstr_t *octstr, const char *ptr);
 char *octstr_append_n(octstr_t *octstr, const char *ptr, size_t n);
 char *octstr_append_octstr(octstr_t *dst, octstr_t *src);

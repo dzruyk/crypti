@@ -2,15 +2,15 @@
 #define __VARIABLE_H_
 
 typedef enum {
-	VAR_BIGNUM = 0x1;
-	VAR_OCTSTRING = 0x2;
-	VAR_STRING = 0x4;
+	VAR_BIGNUM = 0x1,
+	VAR_OCTSTRING = 0x2,
+	VAR_STRING = 0x4,
 } var_type_t;
 
 struct variable {
 	var_type_t type;
 	mp_int bnum;
-	octcstr_t octstr;
+	octstr_t octstr;
 	str_t str;
 };
 
@@ -25,17 +25,17 @@ void var_copy(struct variable *dst, struct variable *src);
 
 void var_set_string(struct variable *var, str_t str);
 void var_set_str(struct variable *var, char *str);
-void var_set_octstr(struct variable *var, octstr *octstr);
+void var_set_octstr(struct variable *var, octstr_t *octstr);
 void var_set_bignum(struct variable *var, mp_int *bnum);
 
 void var_force_type(struct variable *var, var_type_t type);
 
-str_t var_cast_to_str(struct variable *var);
-octstr *var_cast_to_octstr(struct variable *var);
+str_t *var_cast_to_str(struct variable *var);
+octstr_t *var_cast_to_octstr(struct variable *var);
 mp_int *var_cast_to_bignum(struct variable *var);
 
 str_t *var_str_ptr(struct variable *var);
-octstr *var_octstr_ptr(struct variable *var);
+octstr_t *var_octstr_ptr(struct variable *var);
 mp_int *var_bignum_ptr(struct variable *var);
 
 #endif

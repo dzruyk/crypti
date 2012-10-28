@@ -15,6 +15,7 @@ void str_initv(str_t *str, ...);
 void str_clear(str_t *str);
 void str_clearv(str_t *str, ...);
 
+void str_copy(str_t *dst, str_t *src);
 char *str_append(str_t *str, const char *ptr);
 char *str_append_n(str_t *str, const char *ptr, size_t n);
 char *str_append_str(str_t *dst, str_t *src);

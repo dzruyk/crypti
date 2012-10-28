@@ -1,11 +1,15 @@
 CC=gcc
 CFLAGS=-Wall -ggdb
+MAKE = make
 
 BIN= ./bin
 SRC= ./src
 TEST= ./test
-INCLUDES= -I ./include
-LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o keyword.o common.o array.o str.o buffer.o)
+INCLUDES= -I ./include -I ./lib
+LIBS= ./lib/libmp.so
+LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o \
+	keyword.o common.o array.o str.o octstr.o buffer.o type_convertions.o variable.o)
+
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test
 
@@ -16,21 +20,26 @@ CRYPTI_TEST = $(BIN)/crypti
 STR_OBJS = $(patsubst %,src/%, str_test.o)
 STR_TEST = $(BIN)/str_test
 
+MP_LIB = ./lib/libmp.so.1.0
+
 VPATH= ./src
 
-all: $(LEX_TEST) $(CRYPTI_TEST) $(STR_TEST)
+all: $(LEX_TEST) $(CRYPTI_TEST) $(STR_TEST) $(MP_LIB)
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
 
 $(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
 
 $(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
 
 $(STR_TEST): $(STR_OBJS) $(LEX_OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+
+$(MP_LIB): 
+	$(MAKE) -C ./lib lib
 clean:
 	rm -f *.o
 	rm -f $(SRC)/*.o

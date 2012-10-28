@@ -1,10 +1,13 @@
+#include <stdint.h>
 
 #include "common.h"
 #include "crypti.h"
+#include "macros.h"
 #include "mp.h"
 #include "str.h"
-#include "type_convertions.h"
+#include "octstr.h"
 #include "variable.h"
+#include "type_convertions.h"
 
 static void string_to_bignum(struct variable *to, const struct variable *from);
 static void string_to_octstring(struct variable *to, const struct variable *from);
@@ -20,7 +23,7 @@ static void bignum_to_string(struct variable *to, const struct variable *from);
 
 static int type_conv_cmp(const void *a, const void *b);
 
-typedef (*type_converter_t)(struct variable *to, const struct variable *from);
+typedef void (*type_converter_t)(struct variable *to, const struct variable *from);
 
 struct type_conv {
 	int from_type;
@@ -49,7 +52,7 @@ void convert_value(struct variable *dst_var, int to_type, struct variable *src_v
 	conv.from_type = from_type;
 	conv.to_type = to_type;
 
-	res = bsearch(&tmp, func_table, ARRSZ(func_table), sizeof(func_table[0]), type_conv_cmp);
+	res = bsearch(&conv, func_table, ARRSZ(func_table), sizeof(func_table[0]), type_conv_cmp);
 
 	if (res == NULL)
 		print_warn_and_die("can't force type, programmer mistake\n");

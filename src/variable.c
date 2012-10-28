@@ -1,13 +1,15 @@
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdlib.h>
-#include <memcpy.h>
+#include <string.h>
 
 #include "common.h"
 #include "macros.h"
 #include "mp.h"
+#include "octstr.h"
 #include "str.h"
-#include "type_convertions.h"
 #include "variable.h"
+#include "type_convertions.h"
 
 static void var_convert_type(struct variable *var, var_type_t to_type);
 
@@ -17,9 +19,9 @@ var_init(struct variable *var)
 	var->type = 0;
 
 	//FIXME: need to check ret status
-	mp_init(var->bnum);
-	octstr_init(var->oct_str);
-	str_init(var->str);
+	mp_init(&var->bnum);
+	octstr_init(&var->octstr);
+	str_init(&var->str);
 }
 
 void
@@ -41,9 +43,9 @@ var_initv(struct variable *var, ...)
 void
 var_clear(struct variable *var)
 {
-	mp_clear(var->bnum);
-	str_clear(var->str);
-	octstr_clear(var->oct_str);
+	mp_clear(&var->bnum);
+	str_clear(&var->str);
+	octstr_clear(&var->octstr);
 }
 
 void
@@ -84,29 +86,29 @@ var_copy(struct variable *dst, struct variable *src)
 void
 var_set_string(struct variable *var, str_t str)
 {
-	var->type |= VAR_STRING;
+	var->type = VAR_STRING;
 
 	str_copy(&var->str, str);
 }
 
 void
-var_set_str(struct varaible *var, char *str)
+var_set_str(struct variable *var, char *str)
 {
-
+	print_warn_and_die("Lnly, write me plz\n");
 }
 
 void
-var_set_oct_string(struct variable *var, struct oct_string *oct_str)
+var_set_octstr(struct variable *var, octstr_t *octstr)
 {
-	var->type |= VAR_OCTSTRING;
+	var->type = VAR_OCTSTRING;
 
-	octstr_copy(&var->oct_str, oct_str);
+	octstr_copy(&var->octstr, octstr);
 }
 
 void
 var_set_bignum(struct variable *var, mp_int *bnum)
 {
-	var->type |= VAR_BIGNUM;
+	var->type = VAR_BIGNUM;
 
 	mp_copy(&var->bnum, bnum);
 }
@@ -124,7 +126,7 @@ var_convert_type(struct variable *var, var_type_t to_type)
 	int from_type;
 
 	//type exist
-	if ((var->type & type) != 0)
+	if ((var->type & to_type) != 0)
 		return;
 
 	if (var->type & VAR_BIGNUM)
@@ -136,7 +138,7 @@ var_convert_type(struct variable *var, var_type_t to_type)
 	
 	convert_value(var, to_type, var, from_type);
 
-	var->type |= type;
+	var->type |= to_type;
 }
 
 str_t *
@@ -148,13 +150,13 @@ var_cast_to_str(struct variable *var)
 	return &var->str;
 }
 
-ocstr_t *
+octstr_t *
 var_cast_to_octstr(struct variable *var)
 {
 	if ((var->type & VAR_OCTSTRING) == 0)
 		var_convert_type(var, VAR_OCTSTRING);
 
-	return &var->oct_str;
+	return &var->octstr;
 }
 
 mp_int *
@@ -176,7 +178,7 @@ var_str_ptr(struct variable *var)
 octstr_t *
 var_octstr_ptr(struct variable *var)
 {
-	return &var->oct_str;
+	return &var->octstr;
 }
 
 mp_int *

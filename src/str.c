@@ -3,6 +3,7 @@
  *
  * Grigoriy Sitkarev, <sitkarev@unixkomi.ru>
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -20,6 +21,8 @@
 void
 str_init(str_t *str)
 {
+	assert(str != NULL);
+
 	str->buf = buffer_new();
 	buffer_zero(str->buf);
 }
@@ -43,6 +46,8 @@ str_initv(str_t *str, ...)
 void
 str_clear(str_t *str)
 {
+	assert(str != NULL);
+
 	buffer_free(str->buf);
 	str->buf = NULL;
 }
@@ -63,9 +68,21 @@ str_clearv(str_t *str, ...)
 	}
 }
 
+void
+str_copy(str_t *dst, str_t *src)
+{
+	assert(src != NULL && dst != NULL
+	    &&  src->buf != NULL && dst->buf != NULL);
+
+	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
+
+}
+
 char *
 str_append(str_t *str, const char *ptr)
 {
+	assert(str != NULL);
+
 	buffer_put(str->buf, ptr, strlen(ptr));
 	buffer_zero(str->buf);
 	return buffer_ptr(str->buf);
@@ -74,6 +91,8 @@ str_append(str_t *str, const char *ptr)
 char *
 str_append_n(str_t *str, const char *ptr, size_t n)
 {
+	assert(str != NULL);
+
 	size_t len;
 
 	len = strnlen(ptr, n);
@@ -85,6 +104,8 @@ str_append_n(str_t *str, const char *ptr, size_t n)
 char *
 str_append_str(str_t *dst, str_t *src)
 {
+	assert(src != NULL && dst != NULL);
+
 	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
 	buffer_zero(dst->buf);
 	return buffer_ptr(dst->buf);
@@ -93,8 +114,11 @@ str_append_str(str_t *dst, str_t *src)
 char *
 str_putc(str_t *str, char c)
 {
+	assert(str != NULL);
+
 	buffer_putc(str->buf, c);
 	buffer_zero(str->buf);
+
 	return buffer_ptr(str->buf);
 }
 
@@ -103,6 +127,8 @@ str_putc(str_t *str, char c)
 char *
 str_snprintf(str_t *str, char *fmt, ...)
 {
+	assert(str != NULL);
+
 	size_t res, new_res;
 	va_list ap, ap_copy;
 
@@ -120,7 +146,7 @@ str_snprintf(str_t *str, char *fmt, ...)
 		if (new_res < 0 || new_res != res)
 			error(1, "str_snprintf: should not reach");
 	} else
-		buffer_trim(str->buf, STR_SNPRINTF_ADVANCE-res);
+		buffer_trim(str->buf, STR_SNPRINTF_ADVANCE - res);
 	/* now reduce buffer size down one byte because we have '\0' there */
 	buffer_trim(str->buf, 1);
 	va_end(ap);
@@ -130,6 +156,8 @@ str_snprintf(str_t *str, char *fmt, ...)
 char *
 str_drop(str_t *str, size_t n)
 {
+	assert(str != NULL);
+
 	buffer_consume(str->buf, n);
 	return buffer_ptr(str->buf);
 }
@@ -137,6 +165,8 @@ str_drop(str_t *str, size_t n)
 char *
 str_trim(str_t *str, size_t n)
 {
+	assert(str != NULL);
+
 	buffer_trim(str->buf, n);
 	buffer_zero(str->buf);
 	return buffer_ptr(str->buf);
@@ -145,6 +175,8 @@ str_trim(str_t *str, size_t n)
 void
 str_reset(str_t *str)
 {
+	assert(str != NULL);
+
 	buffer_reset(str->buf);
 	buffer_zero(str->buf);
 }
@@ -152,12 +184,16 @@ str_reset(str_t *str)
 size_t
 str_len(str_t *str)
 {
+	assert(str != NULL);
+
 	return buffer_size(str->buf);
 }
 
 char *
 str_ptr(str_t *str)
 {
+	assert(str != NULL);
+
 	return buffer_ptr(str->buf);
 }
 
