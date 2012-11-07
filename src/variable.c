@@ -106,8 +106,8 @@ var_set_str(struct variable *var, char *str)
 
 	var->type = VAR_STRING;
 
-	str_reset(var->str);
-	str_append(var->str, str);
+	str_reset(&var->str);
+	str_append(&var->str, str);
 }
 
 void
@@ -142,9 +142,9 @@ static void
 var_convert_type(struct variable *var, var_type_t to_type)
 {
 	assert(var != NULL && (
-	    type == VAR_BIGNUM ||
-	    type == VAR_STRING ||
-	    type == VAR_OCTSTRING);
+	    to_type == VAR_BIGNUM ||
+	    to_type == VAR_STRING ||
+	    to_type == VAR_OCTSTRING));
 	
 	int from_type;
 

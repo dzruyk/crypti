@@ -6,7 +6,7 @@ BIN= ./bin
 SRC= ./src
 TEST= ./test
 INCLUDES= -I ./include -I ./lib
-LIBS= -L ./lib -lmp
+LIBS= ./lib/libmp.a
 LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o \
 	keyword.o common.o array.o str.o octstr.o buffer.o type_convertions.o variable.o var_op.o)
 
@@ -31,25 +31,25 @@ all: $(LEX_TEST) $(CRYPTI_TEST) $(STR_TEST) $(VAROP_TEST) $(MP_LIB)
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
 
-$(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN)
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+$(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
-$(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN)
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+$(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
-$(STR_TEST): $(STR_OBJS) $(LEX_OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+$(STR_TEST): $(STR_OBJS) $(LEX_OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
-$(VAROP_TEST): $(VAROP_OBJS) $(LEX_OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+$(VAROP_TEST): $(VAROP_OBJS) $(LEX_OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES)  -o $@ $^
 	
-
 $(MP_LIB): 
 	$(MAKE) -C ./lib lib
 clean:
 	rm -f *.o
 	rm -f $(SRC)/*.o
 	rm $(CRYPTI_TEST) $(LEX_TEST) $(STR_TEST)
+	$(MAKE) -C ./lib clean
 
 .PHONY: test
 test: $(CRYPTI_TEST)
