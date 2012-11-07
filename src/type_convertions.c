@@ -32,17 +32,17 @@ struct type_conv {
 };
 
 struct type_conv func_table[] = {
-	{VAR_BIGNUM, VAR_BIGNUM, bignum_to_bignum},
-	{VAR_BIGNUM, VAR_OCTSTRING, bignum_to_octstring},
-	{VAR_BIGNUM, VAR_STRING, bignum_to_string},
+	{ VAR_BIGNUM, VAR_BIGNUM, bignum_to_bignum},
+	{ VAR_BIGNUM, VAR_OCTSTRING, bignum_to_octstring},
+	{ VAR_BIGNUM, VAR_STRING, bignum_to_string},
 	
-	{VAR_OCTSTRING, VAR_BIGNUM, octstring_to_bignum},
-	{VAR_OCTSTRING, VAR_OCTSTRING, octstring_to_octstring},
-	{VAR_OCTSTRING, VAR_STRING, octstring_to_string},
+	{ VAR_OCTSTRING, VAR_BIGNUM, octstring_to_bignum},
+	{ VAR_OCTSTRING, VAR_OCTSTRING, octstring_to_octstring},
+	{ VAR_OCTSTRING, VAR_STRING, octstring_to_string},
 
-	{VAR_STRING, VAR_BIGNUM, string_to_bignum},
-	{VAR_STRING, VAR_OCTSTRING, string_to_octstring},
-	{VAR_STRING, VAR_STRING, string_to_string},
+	{ VAR_STRING, VAR_BIGNUM, string_to_bignum },
+	{ VAR_STRING, VAR_OCTSTRING, string_to_octstring },
+	{ VAR_STRING, VAR_STRING, string_to_string },
 };
 
 void convert_value(struct variable *dst_var, int to_type, struct variable *src_var, int from_type)

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -16,6 +17,8 @@ static void var_convert_type(struct variable *var, var_type_t to_type);
 void
 var_init(struct variable *var)
 {
+	assert(var != NULL);
+
 	var->type = 0;
 
 	//FIXME: need to check ret status
@@ -43,6 +46,8 @@ var_initv(struct variable *var, ...)
 void
 var_clear(struct variable *var)
 {
+	assert(var != NULL);
+
 	mp_clear(&var->bnum);
 	str_clear(&var->str);
 	octstr_clear(&var->octstr);
@@ -67,6 +72,8 @@ var_clearv(struct variable *var, ...)
 void
 var_copy(struct variable *dst, struct variable *src)
 {
+	assert(dst != NULL && src != NULL);
+
 	int types[] = {VAR_BIGNUM, VAR_OCTSTRING, VAR_STRING};
 	
 	int i;
@@ -84,8 +91,9 @@ var_copy(struct variable *dst, struct variable *src)
 }
 
 void
-var_set_string(struct variable *var, str_t str)
+var_set_string(struct variable *var, str_t *str)
 {
+	assert(var != NULL && str != NULL);
 	var->type = VAR_STRING;
 
 	str_copy(&var->str, str);
@@ -94,12 +102,19 @@ var_set_string(struct variable *var, str_t str)
 void
 var_set_str(struct variable *var, char *str)
 {
-	print_warn_and_die("Lnly, write me plz\n");
+	assert(var != NULL && str != NULL);
+
+	var->type = VAR_STRING;
+
+	str_reset(var->str);
+	str_append(var->str, str);
 }
 
 void
 var_set_octstr(struct variable *var, octstr_t *octstr)
 {
+	assert(var != NULL && octstr != NULL);
+
 	var->type = VAR_OCTSTRING;
 
 	octstr_copy(&var->octstr, octstr);
@@ -108,6 +123,8 @@ var_set_octstr(struct variable *var, octstr_t *octstr)
 void
 var_set_bignum(struct variable *var, mp_int *bnum)
 {
+	assert(var != NULL && bnum != NULL);
+
 	var->type = VAR_BIGNUM;
 
 	mp_copy(&var->bnum, bnum);
@@ -116,13 +133,19 @@ var_set_bignum(struct variable *var, mp_int *bnum)
 void
 var_force_type(struct variable *var, var_type_t type)
 {
-	
+	assert(var != NULL && ((var->type & type) != 0));
+
 	var->type = type;
 }
 
 static void
 var_convert_type(struct variable *var, var_type_t to_type)
 {
+	assert(var != NULL && (
+	    type == VAR_BIGNUM ||
+	    type == VAR_STRING ||
+	    type == VAR_OCTSTRING);
+	
 	int from_type;
 
 	//type exist
@@ -144,6 +167,8 @@ var_convert_type(struct variable *var, var_type_t to_type)
 str_t *
 var_cast_to_str(struct variable *var)
 {
+	assert(var != NULL);
+
 	if ((var->type & VAR_STRING) == 0)
 		var_convert_type(var, VAR_STRING);
 
@@ -153,6 +178,8 @@ var_cast_to_str(struct variable *var)
 octstr_t *
 var_cast_to_octstr(struct variable *var)
 {
+	assert(var != NULL);
+
 	if ((var->type & VAR_OCTSTRING) == 0)
 		var_convert_type(var, VAR_OCTSTRING);
 
@@ -162,6 +189,8 @@ var_cast_to_octstr(struct variable *var)
 mp_int *
 var_cast_to_bignum(struct variable *var)
 {
+	assert(var != NULL);
+
 	if ((var->type & VAR_BIGNUM) == 0)
 		var_convert_type(var, VAR_BIGNUM);
 
@@ -172,18 +201,24 @@ var_cast_to_bignum(struct variable *var)
 str_t *
 var_str_ptr(struct variable *var)
 {
+	assert(var != NULL);
+
 	return &var->str;
 }
 
 octstr_t *
 var_octstr_ptr(struct variable *var)
 {
+	assert(var != NULL);
+
 	return &var->octstr;
 }
 
 mp_int *
 var_bignum_ptr(struct variable *var)
 {
+	assert(var != NULL);
+
 	return &var->bnum;
 }
 

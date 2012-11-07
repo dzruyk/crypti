@@ -104,9 +104,14 @@ mp_uchar.o: mp_uchar.c $(MP_HEADERS)
 # Unix shared libraries.
 #######
 
-.PHONY: lib clean
+.PHONY: libso lib clean
 
-lib: libmp.so.1.0
+lib: libmp.a
+
+libmp.a: $(MP_HEADERS) $(MP_OBJECTS)
+	$(AR) -r $@ $^
+
+libso: libmp.so.1.0
 
 libmp.so.1.0: $(MP_HEADERS) $(MP_OBJECTS)
 	$(CC) -shared -Wl,--version-script=libmp.ver,-soname,libmp.so.1 \

@@ -69,13 +69,19 @@ str_clearv(str_t *str, ...)
 }
 
 void
-str_copy(str_t *dst, str_t *src)
+str_copy(str_t *dst, const str_t *src)
 {
 	assert(src != NULL && dst != NULL
 	    &&  src->buf != NULL && dst->buf != NULL);
 
 	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
+}
 
+void
+str_concat(str_t *dst, const str_t *a, const str_t *b)
+{
+	str_copy(dst, a);
+	str_append_str(dst, b);
 }
 
 char *
@@ -102,11 +108,11 @@ str_append_n(str_t *str, const char *ptr, size_t n)
 }
 
 char *
-str_append_str(str_t *dst, str_t *src)
+str_append_str(str_t *dst, const str_t *src)
 {
 	assert(src != NULL && dst != NULL);
 
-	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
+	buffer_append(dst->buf, src->buf, buffer_size(src->buf));
 	buffer_zero(dst->buf);
 	return buffer_ptr(dst->buf);
 }

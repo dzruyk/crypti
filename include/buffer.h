@@ -19,6 +19,7 @@ void buffer_trim(struct buffer *buffer, size_t size);
 void buffer_consume(struct buffer *buf, size_t size);
 void buffer_putc(struct buffer *buffer, char c);
 void buffer_zero(struct buffer *buffer);
+void buffer_append(struct buffer *dst, struct buffer *src, size_t size);
 void buffer_copy(struct buffer *dst, struct buffer *src, size_t size);
 struct buffer *buffer_dup(struct buffer *buffer);
 void buffer_peek(struct buffer *buffer, void *dst, size_t size, size_t offset);

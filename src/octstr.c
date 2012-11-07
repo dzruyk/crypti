@@ -67,12 +67,19 @@ octstr_clearv(octstr_t *octstr, ...)
 }
 
 void
-octstr_copy(octstr_t *dst, octstr_t *src)
+octstr_copy(octstr_t *dst, const octstr_t *src)
 {
 	assert(src != NULL && dst != NULL
 	    &&  src->buf != NULL && dst->buf != NULL);
 
 	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
+}
+
+void
+octstr_concat(octstr_t *dst, const octstr_t *a, const octstr_t *b)
+{
+	octstr_copy(dst, a);
+	octstr_append_octstr(dst, b);
 }
 
 char *
@@ -94,11 +101,11 @@ octstr_append_n(octstr_t *octstr, const char *ptr, size_t n)
 }
 
 char *
-octstr_append_octstr(octstr_t *dst, octstr_t *src)
+octstr_append_octstr(octstr_t *dst, const octstr_t *src)
 {
 	assert(dst != NULL && src != NULL);
 
-	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
+	buffer_append(dst->buf, src->buf, buffer_size(src->buf));
 	return buffer_ptr(dst->buf);
 }
 

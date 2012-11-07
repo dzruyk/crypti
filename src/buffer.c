@@ -499,14 +499,14 @@ inline uint32_t buffer_get_u32(struct buffer *buffer)
 	return val;
 }
 
-static inline void _buffer_copy(struct buffer *dst, struct buffer *src, size_t size)
+static inline void _buffer_append(struct buffer *dst, struct buffer *src, size_t size)
 {
 	buffer_ensure(dst, size);
 	memcpy(dst->data + dst->head, src->data + src->tail, size);
 	dst->head += size;
 }
 
-void buffer_copy(struct buffer *dst, struct buffer *src, size_t size)
+void buffer_append(struct buffer *dst, struct buffer *src, size_t size)
 {
 	BUFFER_CHECK(dst);
 	BUFFER_CHECK(src);
@@ -518,7 +518,16 @@ void buffer_copy(struct buffer *dst, struct buffer *src, size_t size)
 		error(1, "buffer: copy %lu bytes src buffer size %lu bytes",
 				(unsigned long)size, (unsigned long)BUFFER_SIZE(src));
 
-	_buffer_copy(dst, src, size);
+	_buffer_append(dst, src, size);
+}
+
+void buffer_copy(struct buffer *dst, struct buffer *src, size_t size)
+{
+	BUFFER_CHECK(dst);
+	BUFFER_CHECK(src);
+
+	buffer_reset(dst);
+	_buffer_append(dst, src, size);
 }
 
 struct buffer *buffer_dup(struct buffer *buffer)
@@ -527,7 +536,7 @@ struct buffer *buffer_dup(struct buffer *buffer)
 
 	BUFFER_CHECK(buffer);
 	new = buffer_new();
-	_buffer_copy(new, buffer, BUFFER_SIZE(buffer));
+	buffer_append(new, buffer, BUFFER_SIZE(buffer));
 
 	return new;
 }

@@ -23,7 +23,7 @@ void var_clearv(struct variable *var, ...);
 
 void var_copy(struct variable *dst, struct variable *src);
 
-void var_set_string(struct variable *var, str_t str);
+void var_set_string(struct variable *var, str_t *str);
 void var_set_str(struct variable *var, char *str);
 void var_set_octstr(struct variable *var, octstr_t *octstr);
 void var_set_bignum(struct variable *var, mp_int *bnum);

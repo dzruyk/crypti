@@ -6,9 +6,9 @@ BIN= ./bin
 SRC= ./src
 TEST= ./test
 INCLUDES= -I ./include -I ./lib
-LIBS= ./lib/libmp.so
+LIBS= -L ./lib -lmp
 LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o \
-	keyword.o common.o array.o str.o octstr.o buffer.o type_convertions.o variable.o)
+	keyword.o common.o array.o str.o octstr.o buffer.o type_convertions.o variable.o var_op.o)
 
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test
@@ -19,12 +19,14 @@ CRYPTI_TEST = $(BIN)/crypti
 
 STR_OBJS = $(patsubst %,src/%, str_test.o)
 STR_TEST = $(BIN)/str_test
+VAROP_OBJS = $(patsubst %,src/%, var_op_test.o)
+VAROP_TEST = $(BIN)/varop_test
 
-MP_LIB = ./lib/libmp.so.1.0
+MP_LIB = ./lib/libmp.a
 
 VPATH= ./src
 
-all: $(LEX_TEST) $(CRYPTI_TEST) $(STR_TEST) $(MP_LIB)
+all: $(LEX_TEST) $(CRYPTI_TEST) $(STR_TEST) $(VAROP_TEST) $(MP_LIB)
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
@@ -37,6 +39,10 @@ $(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN)
 
 $(STR_TEST): $(STR_OBJS) $(LEX_OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+
+$(VAROP_TEST): $(VAROP_OBJS) $(LEX_OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $@ $^
+	
 
 $(MP_LIB): 
 	$(MAKE) -C ./lib lib
