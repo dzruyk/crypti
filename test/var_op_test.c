@@ -47,7 +47,7 @@ main()
 	mp_set_uint(bp, 12);
 	mp_set_uint(cp, 6);
 
-	printf("cp is %s\n", mp_sprint(cp, bnum, TEST_LEN));
+	printf("cp = 6 and mp_sprintf shows %s\n", mp_sprint(cp, bnum, TEST_LEN));
 
 	var_force_type(&a, VAR_BIGNUM);
 	var_force_type(&b, VAR_BIGNUM);
@@ -57,7 +57,7 @@ main()
 
 	resp = var_bignum_ptr(&res);
 
-	printf("res is %s\n", mp_sprint(resp, bnum, TEST_LEN));
+	printf("42 + 12 =  %s\n", mp_sprint(resp, bnum, TEST_LEN));
 
 	var_clearv(&a, &b, &c, &res, NULL);
 

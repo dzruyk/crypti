@@ -7,13 +7,13 @@ HEADERS = $(MP_HEADERS) rsa.h sha1.h sha256.h emeoaep.h
 BINARIES = test
 
 MP_OBJECTS = mp_util.o mp_copy.o mp_ensure.o mp_add.o \
-	     mp_sub.o mp_cmp.o mp_shift.o mp_mul.o mp_sqr.o \
+	     mp_sub.o mp_cmp.o mp_shift.o mp_bitwise.o mp_mul.o mp_exp.o mp_sqr.o \
 	     mp_reduce.o mp_div.o mp_random.o mp_primality.o \
 	     mp_gcd.o mp_mod_inv.o mp_mod_exp.o mp_init.o \
 	     mp_clear.o mp_set.o mp_uchar.o
 
 MP_SOURCES = mp_util.c mp_copy.c mp_ensure.c mp_add.c \
-	     mp_sub.c mp_cmp.c mp_shift.c mp_mul.c mp_sqr.c \
+	     mp_sub.c mp_cmp.c mp_shift.c mp_bitwise.c mp_mul.c mp_exp.c mp_sqr.c \
 	     mp_reduce.c mp_div.c mp_random.c mp_primality.c \
 	     mp_gcd.c mp_mod_inv.c mp_mod_exp.c mp_init.c \
 	     mp_clear.c mp_set.c mp_uchar.c
@@ -61,7 +61,13 @@ mp_cmp.o: mp_cmp.c $(MP_HEADERS)
 mp_shift.o: mp_shift.c $(MP_HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+mp_bitwise.o: mp_bitwise.c $(MP_HEADERS)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 mp_mul.o: mp_mul.c $(MP_HEADERS)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+mp_exp.o: mp_exp.c $(MP_HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 mp_sqr.o: mp_sqr.c $(MP_HEADERS)
@@ -125,5 +131,5 @@ test: test.c $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ test.c $(OBJECTS) 
 
 clean:
-	-rm -rf $(OBJECTS) $(BINARIES) libmp.so libmp.so.1 libmp.so.1.0
+	-rm -rf $(OBJECTS) $(BINARIES) libmp.so libmp.so.1 libmp.so.1.0 libmp.a
 

@@ -15,10 +15,10 @@ typedef int (*bnum_op_func_t)(mp_int *c, const mp_int *a, const mp_int *b);
 static inline int
 varop_bnum_op(struct variable *c, struct variable *a, struct variable *b, bnum_op_func_t mp_func)
 {
-	assert(c != NULL && a != NULL && b != NULL && mp_func != NULL);
 	int ret;
-
 	mp_int *ap, *bp, *cp;
+
+	assert(c != NULL && a != NULL && b != NULL && mp_func != NULL);
 
 	ap = var_cast_to_bignum(a);
 	bp = var_cast_to_bignum(b);
@@ -74,9 +74,21 @@ varop_mul(struct variable *c, struct variable *a, struct variable *b)
 int
 varop_div(struct variable *c, struct variable *a, struct variable *b)
 {
+	mp_int *ap, *bp, *cp;
+	int ret;
+
 	assert(c != NULL && a != NULL && b != NULL);
 
-	print_warn_and_die("WIP!\n");
+	ap = var_cast_to_bignum(a);
+	bp = var_cast_to_bignum(b);
+	cp = var_bignum_ptr(c);
+
+	ret = mp_div(cp, NULL, ap, bp);
+	if (ret != MP_OK) {
+		return 1;
+	}
+
+	var_force_type(c, VAR_BIGNUM);
 
 	return 0;
 }
@@ -86,7 +98,11 @@ varop_pow(struct variable *c, struct variable *a, struct variable *b)
 {
 	assert(c != NULL && a != NULL && b != NULL);
 
-	print_warn_and_die("WIP!\n");
+	if (varop_bnum_op(c, a, b, mp_exp) != 0) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 int
@@ -106,8 +122,11 @@ varop_or(struct variable *c, struct variable *a, struct variable *b)
 {
 	assert(c != NULL && a != NULL && b != NULL);
 
-	print_warn_and_die("WIP!\n");
-
+	if (varop_bnum_op(c, a, b, mp_or) != 0) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 int
@@ -115,8 +134,11 @@ varop_xor(struct variable *c, struct variable *a, struct variable *b)
 {
 	assert(c != NULL && a != NULL && b != NULL);
 
-	print_warn_and_die("WIP!\n");
-
+	if (varop_bnum_op(c, a, b, mp_xor) != 0) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 int
@@ -124,17 +146,20 @@ varop_and(struct variable *c, struct variable *a, struct variable *b)
 {
 	assert(c != NULL && a != NULL && b != NULL);
 
-	print_warn_and_die("WIP!\n");
-
+	if (varop_bnum_op(c, a, b, mp_and) != 0) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 int
 varop_cmp(struct variable *dst, struct variable *a, struct variable *b)
 {
-	assert(dst != NULL && a != NULL && b != NULL);
-
 	mp_int *ap, *bp, *cp;
 	int res;
+
+	assert(dst != NULL && a != NULL && b != NULL);
 
 	ap = var_cast_to_bignum(a);
 	bp = var_cast_to_bignum(b);
@@ -155,9 +180,9 @@ varop_cmp(struct variable *dst, struct variable *a, struct variable *b)
 int
 varop_not(struct variable *dst, struct variable *src)
 {
-	assert(dst != NULL && src != NULL);
-
 	mp_int *ap, *bp;
+
+	assert(dst != NULL && src != NULL);
 
 	ap = var_cast_to_bignum(src);
 	bp = var_bignum_ptr(dst);
@@ -202,17 +227,16 @@ varop_shr(struct variable *c, struct variable *a, struct variable *b)
 	assert(c != NULL && a != NULL && b != NULL);
 	
 	print_warn_and_die("WIP!\n");
-
 }
 
 /* String operations: */
 int
 varop_str_concat(struct variable*c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
-	
 	str_t *ap, *bp, *cp;
 
+	assert(c != NULL && a != NULL && b != NULL);
+	
 	ap = var_cast_to_str(a);
 	bp = var_cast_to_str(b);
 	cp = var_str_ptr(c);
@@ -228,10 +252,10 @@ varop_str_concat(struct variable*c, struct variable *a, struct variable *b)
 int
 varop_oct_concat(struct variable*c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
-	
 	octstr_t *ap, *bp, *cp;
 
+	assert(c != NULL && a != NULL && b != NULL);
+	
 	ap = var_cast_to_octstr(a);
 	bp = var_cast_to_octstr(b);
 	cp = var_octstr_ptr(c);

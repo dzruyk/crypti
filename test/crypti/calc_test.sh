@@ -6,7 +6,7 @@ N=4
 echo 'statesments tests...';
 for ((i=1; $i < $N + 1; i= $i + 1))
 do
-	err=`cat $path/test_$i.txt | $path/../$PNAME 2>/dev/null| diff - $path/answer_$i.txt`
+	err=`cat $path/test_$i.txt | $path/../../$PNAME 2>/dev/null| diff - $path/answer_$i.txt`
 
 	if [ -n "$err" ]
 		then
@@ -19,7 +19,7 @@ echo 'sorting tests...'
 N=1
 for ((i=1; $i < $N + 1; i= $i + 1))
 do
-	err=`cat $path/test_sort_$i.txt | $path/../$PNAME 2>/dev/null| diff - $path/answer_test_sort_$i.txt`
+	err=`cat $path/test_sort_$i.txt | $path/../../$PNAME 2>/dev/null| diff - $path/answer_test_sort_$i.txt`
 
 	if [ -n "$err" ]
 		then

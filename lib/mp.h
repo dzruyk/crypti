@@ -77,6 +77,9 @@ int mp_nr_bits(const mp_int *a);
 
 int mp_shr(mp_int *a, unsigned int nr);
 int mp_shl(mp_int *a, unsigned int nr);
+int mp_and(mp_int *c, const mp_int *a, const mp_int *b);
+int mp_or(mp_int *c, const mp_int *a, const mp_int *b);
+int mp_xor(mp_int *c, const mp_int *a, const mp_int *b);
 
 int mp_add(mp_int *c, const mp_int *a, const mp_int *b);
 int mp_sub(mp_int *c, const mp_int *a, const mp_int *b);
@@ -84,6 +87,7 @@ int mp_mul(mp_int *c, const mp_int *a, const mp_int *b);
 int mp_mul_ndig(mp_int *c, const mp_int *a, const mp_int *b, int ndig);
 int mp_mul_dig(mp_int *c, const mp_int *a, _mp_int_t b);
 int mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x);
+int mp_exp(mp_int *c, const mp_int *a, const mp_int *b);
 int mp_sqr(mp_int *c, const mp_int *x);
 
 int mp_gcd(mp_int *c, const mp_int *a, const mp_int *b);

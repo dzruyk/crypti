@@ -48,6 +48,8 @@ traverse_num(ast_node_t *tree)
 {
 	eval_t *ev;
 	int val;
+
+	assert(tree != NULL);
 	
 	val = ((ast_node_num_t *)tree)->num;
 	
@@ -62,6 +64,8 @@ traverse_id(ast_node_t *tree)
 	eval_t *ev;
 	char *name;
 	id_item_t *item;
+
+	assert(tree != NULL);
 
 	name = ((ast_node_id_t *)tree)->name;
 
@@ -94,6 +98,8 @@ get_next_index(int *index, int dims, int *len)
 {
 	int i;
 	
+	assert(index != NULL && dims > 0);
+
 	i = dims - 1;
 
 	while (i >= 0) {
@@ -163,6 +169,8 @@ traverse_access(ast_node_t *tree)
 	int i, num;
 	int *ind;
 	char *name;
+
+	assert(tree != NULL);
 
 	ind = NULL;
 	if (nerrors != 0)
@@ -239,6 +247,8 @@ traverse_func_def(ast_node_t *tree)
 	ast_node_func_t *synfunc;
 	int ret;
 
+	assert(tree != NULL);
+
 	synfunc = (ast_node_func_t *)tree;
 
 	func = function_table_lookup(synfunc->name);
@@ -269,6 +279,8 @@ exec_function(func_t *func)
 	//FIXME: write me!
 	ast_node_t *next;
 	res_type_t res;
+
+	assert(func != NULL);
 
 	next = func->body;
 
@@ -408,11 +420,11 @@ static void
 add_args_to_scope(func_t *func, ast_node_func_call_t *call,
     struct hash_table *scope)
 {
-	assert(func != NULL && func->args != NULL);
-
 	int i;
 	id_item_t *item;
 	char *name;
+
+	assert(func != NULL && func->args != NULL);
 
 	for (i = 0; i < func->nargs; i++) {
 		name = func->args[i];
@@ -485,6 +497,8 @@ traverse_body(ast_node_t *tree)
 {
 	res_type_t res;
 
+	assert(tree != NULL);
+
 	//FIXME: mb need rewrite me?
 	traverse(tree);
 
@@ -528,6 +542,8 @@ traverse_scope(ast_node_t *tree)
 	res_type_t res;
 	struct hash_table *idtable;
 
+	assert(tree != NULL);
+
 	idtable = id_table_create();
 	id_table_push(idtable);
 	
@@ -569,6 +585,8 @@ traverse_cond(ast_node_t *tree)
 	eval_t *ev;
 	boolean_t ret;
 
+	assert(tree != NULL);
+
 	traverse(tree);
 
 	if (nerrors != 0)
@@ -597,6 +615,8 @@ traverse_if(ast_node_t *tree)
 	ast_node_if_t *ifnode;
 	boolean_t ret;
 
+	assert(tree != NULL);
+
 	ifnode = (ast_node_if_t *) tree;
 
 	ret = traverse_cond(ifnode->_if);
@@ -616,6 +636,8 @@ traverse_for(ast_node_t *tree)
 {
 	ast_node_for_t *fornode;
 	res_type_t res;
+
+	assert(tree != NULL);
 
 	fornode = (ast_node_for_t *)tree;
 
@@ -674,6 +696,8 @@ traverse_while(ast_node_t *tree)
 	ast_node_while_t *whilenode;
 	res_type_t res;
 
+	assert(tree != NULL);
+
 	whilenode = (ast_node_while_t *) tree;
 
 	helper.is_cycle++;
@@ -721,6 +745,8 @@ traverse_do(ast_node_t *tree)
 	ast_node_do_t *donode;
 	res_type_t res;
 
+	assert(tree != NULL);
+
 	donode = (ast_node_do_t *) tree;
 
 	helper.is_cycle++;
@@ -767,7 +793,7 @@ finalize:
 void
 set_value_id(id_item_t *item, eval_t *ev)
 {
-		
+	
 	switch (ev->type) {
 	case EVAL_NUM:
 		id_item_set(item, ID_NUM, &(ev->value));
@@ -784,12 +810,12 @@ set_value_id(id_item_t *item, eval_t *ev)
 static void
 set_value_node_access(ast_node_access_t *node, eval_t *newval)
 {
-	assert(newval != NULL);
-
 	eval_t *ev;
 	id_item_t *item;
 	int *ind;
 	int i;
+
+	assert(newval != NULL);
 
 	ev = NULL;
 	ind = NULL;
@@ -854,6 +880,8 @@ set_value_node(ast_node_t *ltree, eval_t *ev)
 	ast_node_id_t *id;
 	ast_node_access_t *acc;
 
+	assert(ltree != NULL && ev != NULL);
+
 	switch (ltree->type) {
 	case AST_NODE_ID: {
 		id_item_t *item;
@@ -888,6 +916,8 @@ traverse_as_rest(ast_node_t *tree)
 	ast_node_t *ltree;
 	eval_t *right;
 
+	assert(tree != NULL);
+
 	ltree = (ast_node_t *)tree->left;
 
 	if (tree->right->type == AST_NODE_AS)
@@ -919,9 +949,9 @@ traverse_as_rest(ast_node_t *tree)
 static void
 traverse_as(ast_node_t *tree)
 {
-	return_if_fail(tree != NULL);
-
 	eval_t *right;
+
+	assert(tree != NULL);
 
 	traverse_as_rest(tree);
 
@@ -943,6 +973,8 @@ traverse_unary(ast_node_t *tree)
 {
 	ast_node_unary_t *unary;
 	eval_t *ev, *res;
+
+	assert(tree != NULL);
 
 	ev = res = NULL;
 
@@ -979,6 +1011,8 @@ traverse_op(ast_node_t *tree)
 {
 	ast_node_op_t *optree;
 	eval_t *left, *right, *res;
+
+	assert(tree != NULL);
 
 	traverse(tree->left);	
 	traverse(tree->right);
@@ -1020,6 +1054,8 @@ traverse_op_as(ast_node_t *tree)
 	ast_node_op_as_t *optree;
 	eval_t *left, *right, *res;
 
+	assert(tree != NULL);
+
 	res = NULL;
 
 	traverse(tree->left);	
@@ -1060,6 +1096,8 @@ traverse_return(ast_node_t *tree)
 {
 	ast_node_return_t *rettree;
 
+	assert(tree != NULL);
+
 	rettree = (ast_node_return_t *) tree;
 
 	if (rettree->retval == NULL) {
@@ -1079,10 +1117,10 @@ traverse_return(ast_node_t *tree)
 static void
 traverse_import(ast_node_t *tree)
 {
-	assert(tree != 0);
-
 	ast_node_import_t *import;
 	int i, old;
+
+	assert(tree != 0);
 
 	import = (ast_node_import_t *) tree;
 
@@ -1101,18 +1139,24 @@ traverse_import(ast_node_t *tree)
 static void
 traverse_break(ast_node_t *tree)
 {
+	assert(tree != 0);
+
 	helper.is_break++;
 }
 
 static void
 traverse_continue(ast_node_t *tree)
 {
+	assert(tree != 0);
+
 	helper.is_continue++;
 }
 
 static void
 traverse_stub(ast_node_t *tree)
 {
+	assert(tree != 0);
+
 	return;
 }
 
@@ -1147,7 +1191,8 @@ static void
 traverse(ast_node_t *tree)
 {
 	int i;
-	return_if_fail(tree != NULL);
+
+	assert(tree != 0);
 
 	for (i = 0; node_type[i].node != AST_NODE_UNKNOWN; i++)
 		if (node_type[i].node == tree->type) {
