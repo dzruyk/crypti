@@ -12,7 +12,7 @@
 #include "variable.h"
 #include "type_convertions.h"
 
-static void var_convert_type(struct variable *var, var_type_t to_type);
+static void *var_convert_type(struct variable *var, var_type_t to_type);
 
 void
 var_init(struct variable *var)
@@ -133,7 +133,7 @@ var_force_type(struct variable *var, var_type_t type)
 	var->type = type;
 }
 
-static void
+static void *
 var_convert_type(struct variable *var, var_type_t to_type)
 {
 	int from_type;
@@ -154,9 +154,9 @@ var_convert_type(struct variable *var, var_type_t to_type)
 	if (var->type & VAR_STRING)
 		from_type = VAR_STRING;
 	
-	convert_value(var, to_type, var, from_type);
-
 	var->type |= to_type;
+
+	return convert_value(var, to_type, var, from_type);
 }
 
 str_t *
@@ -164,8 +164,7 @@ var_cast_to_str(struct variable *var)
 {
 	assert(var != NULL);
 
-	var_convert_type(var, VAR_STRING);
-	return &var->str;
+	return (str_t *)var_convert_type(var, VAR_STRING);
 }
 
 octstr_t *
@@ -173,8 +172,7 @@ var_cast_to_octstr(struct variable *var)
 {
 	assert(var != NULL);
 
-	var_convert_type(var, VAR_OCTSTRING);
-	return &var->octstr;
+	return (octstr_t *)var_convert_type(var, VAR_OCTSTRING);
 }
 
 mp_int *
@@ -182,8 +180,7 @@ var_cast_to_bignum(struct variable *var)
 {
 	assert(var != NULL);
 
-	var_convert_type(var, VAR_BIGNUM);
-	return &var->bnum;
+	return (mp_int *)var_convert_type(var, VAR_BIGNUM);
 }
 
 

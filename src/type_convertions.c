@@ -9,21 +9,21 @@
 #include "variable.h"
 #include "type_convertions.h"
 
-static void string_to_bignum(struct variable *to, const struct variable *from);
-static void string_to_octstring(struct variable *to, const struct variable *from);
-static void string_to_string(struct variable *to, const struct variable *from);
+static void *string_to_bignum(struct variable *to, const struct variable *from);
+static void *string_to_octstring(struct variable *to, const struct variable *from);
+static void *string_to_string(struct variable *to, const struct variable *from);
 
-static void octstring_to_bignum(struct variable *to, const struct variable *from);
-static void octstring_to_octstring(struct variable *to, const struct variable *from);
-static void octstring_to_string(struct variable *to, const struct variable *from);
+static void *octstring_to_bignum(struct variable *to, const struct variable *from);
+static void *octstring_to_octstring(struct variable *to, const struct variable *from);
+static void *octstring_to_string(struct variable *to, const struct variable *from);
 
-static void bignum_to_bignum(struct variable *to, const struct variable *from);
-static void bignum_to_octstring(struct variable *to, const struct variable *from);
-static void bignum_to_string(struct variable *to, const struct variable *from);
+static void *bignum_to_bignum(struct variable *to, const struct variable *from);
+static void *bignum_to_octstring(struct variable *to, const struct variable *from);
+static void *bignum_to_string(struct variable *to, const struct variable *from);
 
 static int type_conv_cmp(const void *a, const void *b);
 
-typedef void (*type_converter_t)(struct variable *to, const struct variable *from);
+typedef void *(*type_converter_t)(struct variable *to, const struct variable *from);
 
 struct type_conv {
 	int from_type;
@@ -45,7 +45,7 @@ struct type_conv func_table[] = {
 	{ VAR_STRING, VAR_STRING, string_to_string },
 };
 
-void convert_value(struct variable *dst_var, int to_type, struct variable *src_var, int from_type)
+void *convert_value(struct variable *dst_var, int to_type, struct variable *src_var, int from_type)
 {
 	struct type_conv conv, *res;
 
@@ -56,64 +56,80 @@ void convert_value(struct variable *dst_var, int to_type, struct variable *src_v
 
 	if (res == NULL)
 		print_warn_and_die("can't force type, programmer mistake\n");
-	res->func(dst_var, src_var);
+
+	return res->func(dst_var, src_var);
 }
 
-static void
+static void *
 string_to_bignum(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "string to bignum\n");
+
+	return (void *)&to->bnum;
 }
 
-static void
+static void *
 string_to_octstring(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "string to oct_string\n");
-
+	
+	return (void *)&to->octstr;
 }
 
-static void
+static void *
 string_to_string(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "string to string\n");
+
+	return (void *)&to->octstr;
 }
 
-static void
+static void *
 octstring_to_bignum(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "oct_string to bignum\n");
-
+	
+	return (void *)&to->bnum;
 }
 
-static void
+static void *
 octstring_to_octstring(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "oct_string to oct_string\n");
+
+	return (void *)&to->octstr;
 }
 
-static void
+static void *
 octstring_to_string(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "oct_string to string\n");
-
+	
+	return (void *)&to->str;
 }
 
-static void
+static void *
 bignum_to_bignum(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "bignum to bignum\n");
+
+	return (void *)&to->bnum;
 }
 
-static void
+static void *
 bignum_to_octstring(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "bignum to oct_string\n");
+
+	return (void *)&to->octstr;
 }
 
-static void
+static void *
 bignum_to_string(struct variable *to, const struct variable *from)
 {
 	DEBUG(LOG_VERBOSE, "bignum ot string\n");
+
+	return (void *)&to->str;
 }
 
 static int
