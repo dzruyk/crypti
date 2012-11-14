@@ -28,7 +28,7 @@ mp_exp(mp_int *c, const mp_int *a, const mp_int *b)
 
 	while(!mp_iszero(&v)) {
 		if (mp_isodd(&v)) {
-			mp_mul(&res, &res, u);
+			mp_mul(&res, &res, &u);
 			if (rc != MP_OK)
 				goto err;
 		}
@@ -42,7 +42,9 @@ mp_exp(mp_int *c, const mp_int *a, const mp_int *b)
 			goto err;
 	}
 
+	mp_copy(c, &res);
 	mp_canonicalize(c);
+
 	rc = MP_OK;
 err:
 	mp_clearv(&res, &tmp, &u, &v, NULL);
