@@ -121,22 +121,64 @@ octstring_to_string(struct variable *to, const struct variable *from)
 static void *
 bignum_to_bignum(struct variable *to, const struct variable *from)
 {
-	DEBUG(LOG_VERBOSE, "bignum to bignum\n");
+	mp_int *dst, *src;
+	int rc;
 
-	return (void *)&to->bnum;
+	DEBUG(LOG_VERBOSE, "bignum to bignum\n");
+	
+	if (to == from) {
+		DEBUG(LOG_DEFAULT, "same bignum used in convertion\n");
+		return (void *)&to->bnum;
+	}
+
+	src = var_bignum_ptr((struct variable *)from);
+	dst = var_bignum_ptr(to);
+
+	rc = mp_copy(dst, src);
+	if (rc != MP_OK)
+		goto err;
+
+	return dst;
+
+err:
+	print_warn_and_die("fail!");
 }
 
+/* WARN:
+ * can produce problem with byte order
+ */
 static void *
 bignum_to_octstring(struct variable *to, const struct variable *from)
 {
 	mp_int *bnum;
+	_mp_int_t *dig;
 	octstr_t *octstr;
+	int bytes, i, n;
 
 	DEBUG(LOG_VERBOSE, "bignum to oct_string\n");
 
 	bnum = var_bignum_ptr((struct variable *)from);
 	octstr = var_octstr_ptr(to);
 	octstr_reset(octstr);
+
+	if (mp_isneg(bnum))
+		warning("neg bnum to str convertion: sign mismatc\n");
+	
+	if (mp_iszero(bnum)) {
+		octstr_putc(octstr, '\x00');
+		return octstr;
+	}
+
+	n = mp_nr_bits(bnum);
+
+	//get byte size of used space
+	bytes = n / CHAR_BIT;
+	if (n % CHAR_BIT != 0)
+		bytes++;
+
+	dig = bnum->dig;
+
+	octstr_append_n(octstr, dig, bytes);
 
 	return octstr;
 }
