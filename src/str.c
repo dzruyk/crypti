@@ -84,6 +84,22 @@ str_concat(str_t *dst, const str_t *a, const str_t *b)
 	str_append_str(dst, b);
 }
 
+void
+str_reverse(str_t *str)
+{
+	char *start, *end;
+	char tmp;
+	
+	start = buffer_ptr(str->buf);
+	end = start + buffer_size(str->buf) - 1;
+
+	while (start < end) {
+		tmp = *start;
+		*start++ = *end;
+		*end-- = tmp;
+	}
+}
+
 char *
 str_append(str_t *str, const char *ptr)
 {

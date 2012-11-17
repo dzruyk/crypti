@@ -13,14 +13,22 @@ mp_mod_exp(mp_int *res, const mp_int *a, const mp_int *y, const mp_int *b)
 {
 
 	mp_int w[MP_MODEXP_STACK];
-	mp_int e, c, mu;
+	mp_int e, c, mu, z;
 	_mp_int_t *dp, buffer;
 	int i, k, nbits, rc;
 	int do_single;
 	unsigned int mask, x, n, tmp, cnt;
 
-	if ((rc = mp_initv(&e, &c, &mu, NULL)) != MP_OK)
+	if ((rc = mp_initv(&e, &c, &mu, &z, NULL)) != MP_OK)
 		return rc;
+
+	if (mp_isneg(y)) {
+		if ((rc = mp_mod_inv(&z, a, b)) != MP_OK)
+			goto end;
+	} else {
+		if ((rc = mp_copy(&z, a)) != MP_OK)
+			goto end;
+	}
 
 	n = mp_nr_bits(y);
 
@@ -46,13 +54,13 @@ mp_mod_exp(mp_int *res, const mp_int *a, const mp_int *y, const mp_int *b)
 		if (rc != MP_OK) {
 			for (i = 0; i < cnt; i++)
 				mp_clear(&w[i]);
-			return rc;
+			goto end;
 		}
 		++cnt;
 	}
 
 	/* e = a */
-	rc = mp_copy(&e, a);
+	rc = mp_copy(&e, &z);
 	if (rc != MP_OK)
 		goto err;
 
@@ -81,7 +89,7 @@ mp_mod_exp(mp_int *res, const mp_int *a, const mp_int *y, const mp_int *b)
 
 	for (i = 1; i < 1 << (k-1); i++) {
 		/* w[i] = (w[i-1] * a) mod b */
-		rc = mp_mul(&w[i], &w[i-1], a);
+		rc = mp_mul(&w[i], &w[i-1], &z);
 		if (rc != MP_OK)
 			goto err;
 		rc = mp_reduce_barrett(&w[i], &w[i], b, &mu);
@@ -197,7 +205,7 @@ mp_mod_exp(mp_int *res, const mp_int *a, const mp_int *y, const mp_int *b)
 
 			if (x & (1 << (n-1))) {
 				/* c = c * a mod b*/
-				rc = mp_mul(&c, &c, a);
+				rc = mp_mul(&c, &c, &z);
 				if (rc != MP_OK)
 					goto err;
 				rc = mp_reduce_barrett(&c, &c, b, &mu);
@@ -217,8 +225,8 @@ mp_mod_exp(mp_int *res, const mp_int *a, const mp_int *y, const mp_int *b)
 err:
 	for (i = 0; i < (1 << (k-1)); i++)
 		mp_clear(&w[i]);
-
-	mp_clearv(&c, &e, &mu, NULL);
+end:
+	mp_clearv(&c, &e, &mu, &z, NULL);
 
 	return rc;
 }

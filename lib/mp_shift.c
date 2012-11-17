@@ -18,6 +18,11 @@ mp_shr(mp_int *a, unsigned int nr)
 	if (nr == 0 || mp_iszero(a))
 		return MP_OK;
 
+	if (nr >= mp_nr_bits(a)) {
+		mp_zero(a);
+		return MP_OK;
+	}
+
 	ndigs = nr / MP_INT_BITS;
 	nbits = nr % MP_INT_BITS;
 

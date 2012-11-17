@@ -14,6 +14,8 @@ mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x)
 	mp_int u, v, tmp;
 	_mp_int_t dig;
 	int norm, cnt, rc;
+	int ytop, ysign;
+	int xtop, xsign;
 	int i, n, t, sign;
 
 	if (mp_iszero(x))
@@ -21,7 +23,7 @@ mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x)
 
 	if (mp_abs_cmp(x, y) == MP_CMP_GT) {
 		if (r != NULL) {
-			if ((rc = mp_copy(r, x)) != MP_OK)
+			if ((rc = mp_copy(r, y)) != MP_OK)
 				return rc;
 		}
 		mp_zero(q);
@@ -37,20 +39,28 @@ mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x)
 	if ((rc = mp_copy(&v, x)) != MP_OK)
 		goto err;
 
+	u.sign = MP_SIGN_POS;
+	v.sign = MP_SIGN_POS;
+
+	ytop = y->top;
+	xtop = x->top;
+	ysign = y->sign;
+	xsign = x->sign;
+
 	/* Guess about the result sign. */
-	sign = (y->sign == x->sign) ? MP_SIGN_POS: MP_SIGN_NEG;
+	sign = (ysign == xsign) ? MP_SIGN_POS: MP_SIGN_NEG;
 
 	/* Reserve memory in quotient and remainder. */
-	if ((rc = mp_ensure(q, y->top - x->top + 1)) != MP_OK)
+	if ((rc = mp_ensure(q, ytop - xtop + 1)) != MP_OK)
 		goto err;
 
 	if (r != NULL) {
-		if ((rc = mp_ensure(r, x->top + 1)) != MP_OK)
+		if ((rc = mp_ensure(r, xtop + 1)) != MP_OK)
 			goto err;
 	}
 
 	/* Count bits of the topmost digit of divider. */
-	dig = x->dig[x->top];
+	dig = x->dig[xtop];
 	cnt = 0;
 	while (dig > 0) {
 		dig >>= 1;
@@ -70,7 +80,7 @@ mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x)
 
 	/* Setup quotient properties known in advance. */
 	mp_zero(q);
-	q->top = y->top - x->top;
+	q->top = ytop - xtop;
 	q->sign = sign;
 
 	for (;;) {
@@ -100,9 +110,9 @@ mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x)
 		int qpos;
 
 		/* Skip empty dividend digits. */
-		if (i > u.top)
+/*		if (i > u.top)
 			continue;
-
+*/
 		/* Precalculate quotient digit position. */
 		qpos = i - t - 1;
 
@@ -176,7 +186,7 @@ mp_div(mp_int *q, mp_int *r, const mp_int *y, const mp_int *x)
 		mp_copy(r, &u);
 		if (norm > 0)
 			mp_shr(r, norm);
-		r->sign = y->sign;
+		r->sign = ysign;
 	}
 
 	mp_canonicalize(q);

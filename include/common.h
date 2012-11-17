@@ -21,8 +21,6 @@ typedef enum {
 
 inline void print_usage(char *pname);
 
-inline void print_warn_and_die(char *str);
-
 #define print_warn_and_die(fmt, arg...) \
 do { \
 	fprintf(stderr, "%s %d %s warning:"fmt, \
@@ -32,8 +30,6 @@ do { \
 			##arg); \
 	exit(1); \
 } while (0)
-
-
 
 #define print_warn(fmt, arg...) \
 do { \

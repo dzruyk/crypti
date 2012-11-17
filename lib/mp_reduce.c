@@ -54,6 +54,19 @@ mp_reduce_barrett(mp_int *c, const mp_int *a, const mp_int *b, const mp_int *mu)
 	if (rc != MP_OK)
 		goto err;
 
+	rc = mp_shr(&q, 1);
+	if (rc != MP_OK)
+		goto err;
+
+	if (mp_abs_cmp(&q, b) == MP_CMP_LT) {
+		rc = MP_ERR;
+		goto err;
+	}
+
+	rc = mp_copy(&q, a);
+	if (rc != MP_OK)
+		goto err;
+
 	rc = mp_shr(&q, (m-1)*MP_INT_BITS);
 	if (rc != MP_OK)
 		goto err;

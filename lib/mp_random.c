@@ -19,7 +19,6 @@ mp_random(mp_int *a, int size,
 	int nbits;
 	unsigned char c;
 
-	rc = MP_ERR;
 	ndig = (size * CHAR_BIT) / MP_INT_BITS;
 	ndig += (size * CHAR_BIT) % MP_INT_BITS ? 1 : 0;
 
@@ -35,6 +34,7 @@ mp_random(mp_int *a, int size,
 
 	c = ns = nb = nc = nbuf = 0;
 	bufptr = NULL;
+	rc = MP_ERR;
 
 	while (nbits > 0) {
 

@@ -86,7 +86,7 @@ mp_set_str(mp_int *a, const char *str, int base)
 {
 	mp_int tmp;
 	int i, n, rc;
-	int dig;
+	int dig, sign;
 	char c;
 
 	if (base < 2 || base > 36)
@@ -96,10 +96,16 @@ mp_set_str(mp_int *a, const char *str, int base)
 	if (rc != MP_OK)
 		return rc;
 
+	if (*str == '-') {
+		sign = MP_SIGN_NEG;
+		str++;
+	} else {
+		sign = MP_SIGN_POS;
+	}
+
 	mp_zero(a);
 
 	n = strlen(str);
-
 	for (i = 0; i < n; i++) {
 
 		c = *str++;
@@ -124,7 +130,8 @@ mp_set_str(mp_int *a, const char *str, int base)
 		if (rc != MP_OK)
 			goto err;
 	}
-	
+
+	a->sign = sign;
 	rc = MP_OK;
 err:
 	mp_clear(&tmp);

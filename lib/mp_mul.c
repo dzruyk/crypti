@@ -2,11 +2,316 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
+#include <limits.h>
 
 #include "mp.h"
 #include "mp_common.h"
 
 extern void mp_canonicalize(mp_int *a);
+
+int
+_mp_mul_toom_three(mp_int *c, const mp_int *a, const mp_int *b)
+{
+	mp_int p, p0, p1, p2, p3, p4;
+	mp_int q, q0, q1, q2, q3, q4;
+	mp_int m0, m1, m2;
+	mp_int n0, n1, n2;
+	mp_int three;
+	_mp_int_t num;
+	int n, top, atop, btop, nbits;
+	int rc;
+
+	rc = mp_initv(&p, &p0 ,&p1, &p2, &p3, &p4, &q, &q0, &q1, &q2, &q3, &q4, NULL);
+	if (rc != MP_OK)
+		return rc;
+
+	num = 0;
+
+	atop = a->top;
+	btop = b->top;
+
+	n = (atop > btop) ? atop : btop;
+	n++;
+	n = (n % 3 == 0) ? n/3 : n/3 + 1;
+	top = n - 1;
+
+	/* set up initial values */
+	m0.sign  = MP_SIGN_POS;
+	m0.alloc = 0;
+	m0.top   = (atop < top) ? atop : top;
+	m0.dig   = a->dig;
+
+	m1.sign  = MP_SIGN_POS;
+	m1.alloc = 0;
+	if (atop < top) {
+		m1.top = -1;
+		m1.dig = &num;
+	} else {
+		m1.top = (atop < 2*top) ? atop - top : top;
+		m1.dig = a->dig + n;
+	}
+
+	m2.sign  = MP_SIGN_POS;
+	m2.alloc = 0;
+	if (atop < 2*top) {
+		m2.top = -1;
+		m2.dig = &num;
+	} else {
+		m2.top = (atop < 3*top) ? atop - (2*top) : top;
+		m2.dig = a->dig + (2*n);
+	}
+
+	n0.sign  = MP_SIGN_POS;
+	n0.alloc = 0;
+	n0.top   = (btop < top) ? btop : top;
+	n0.dig   = b->dig;
+
+	n1.sign  = MP_SIGN_POS;
+	n1.alloc = 0;
+	if (btop < top) {
+		n1.top = -1;
+		n1.dig = &num;
+	} else {
+		n1.top = (btop < 2*top) ? btop - top : top;
+		n1.dig = b->dig + n;
+	}
+
+	n2.sign  = MP_SIGN_POS;
+	n2.alloc = 0;
+	if (btop < 2*top) {
+		n2.top = -1;
+		n2.dig = &num;
+	} else {
+		n2.top = (btop < 3*top) ? btop - (2*top) : top;
+		n2.dig = b->dig + (2*n);
+	}
+
+	/* prepare polynomial coefficients for p */
+	/* p = m0 + m2 */
+	rc = mp_add(&p, &m0, &m2);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p0 = m0 */
+	rc = mp_copy(&p0, &m0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p1 = p + m1 */
+	rc = mp_add(&p1, &p, &m1);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p2 = p - m1 */
+	rc = mp_sub(&p2, &p, &m1);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p3 = (p2 + m2)*2 - m0 */
+	rc = mp_add(&p3, &p2, &m2);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shl(&p3, 1);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_sub(&p3, &p3, &m0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p4 = m2 */
+	rc = mp_copy(&p4, &m2);
+	if (rc != MP_OK)
+		goto err;
+
+	/* prepare polynomial coefficients for q */
+	/* q = n0 + n2 */
+	rc = mp_add(&q, &n0, &n2);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q0 = n0 */
+	rc = mp_copy(&q0, &n0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q1 = q + n1 */
+	rc = mp_add(&q1, &q, &n1);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q2 = q - n1 */
+	rc = mp_sub(&q2, &q, &n1);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q3 = (q2 + n2)*2 - n0 */
+	rc = mp_add(&q3, &q2, &n2);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shl(&q3, 1);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_sub(&q3, &q3, &n0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q4 = n2 */
+	rc = mp_copy(&q4, &n2);
+	if (rc != MP_OK)
+		goto err;
+
+	/* pointwise multiplication */
+	/* q0 = q0 * p0 */
+	rc = mp_mul(&q0, &q0, &p0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q1 = q1 * p1 */
+	rc = mp_mul(&q1, &q1, &p1);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q2 = q2 * p2 */
+	rc = mp_mul(&q2, &q2, &p2);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q3 = q3 * p3 */
+	rc = mp_mul(&q3, &q3, &p3);
+	if (rc != MP_OK)
+		goto err;
+
+	/* q4 = q4 * p4 */
+	rc = mp_mul(&q4, &q4, &p4);
+	if (rc != MP_OK)
+		goto err;
+
+	/* interpolation */
+	/* p0 = q0 */
+	rc = mp_copy(&p0, &q0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p4 = q4 */
+	rc = mp_copy(&p4, &q4);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p3 = (q3 - q1)/3 */
+	rc = mp_sub(&p3, &q3, &q1);
+	if (rc != MP_OK)
+		goto err;
+
+	num = 3;
+
+	three.sign  = MP_SIGN_POS;
+	three.alloc = 0;
+	three.top   = 0;
+	three.dig   = &num;
+
+	rc = mp_div(&p3, NULL, &p3, &three);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p1 = (q1 - q2)/2 */
+	rc = mp_sub(&p1, &q1, &q2);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shr(&p1, 1);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p2 = q2 - q0 */
+	rc = mp_sub(&p2, &q2, &q0);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p3 = (p2 - p3)/2 + 2*q4 */
+	rc = mp_sub(&p3, &p2, &p3);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shr(&p3, 1);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shl(&q4, 1);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_add(&p3, &p3, &q4);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p2 = p2 + p1 - p4 */
+	rc = mp_add(&p2, &p2, &p1);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_sub(&p2, &p2, &p4);
+	if (rc != MP_OK)
+		goto err;
+
+	/* p1 = p1 - p3 */
+	rc = mp_sub(&p1, &p1, &p3);
+	if (rc != MP_OK)
+		goto err;
+
+	/* evaluate the result */
+	mp_zero(c);
+
+	rc = mp_copy(c, &p0);
+	if (rc != MP_OK)
+		goto err;
+
+	nbits = MP_INT_BITS * n;
+
+	rc = mp_shl(&p1, nbits);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_add(c, c, &p1);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shl(&p2, 2*nbits);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_add(c, c, &p2);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shl(&p3, 3*nbits);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_add(c, c, &p3);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_shl(&p4, 4*nbits);
+	if (rc != MP_OK)
+		goto err;
+
+	rc = mp_add(c, c, &p4);
+	if (rc != MP_OK)
+		goto err;
+
+	c->sign = (a->sign == b->sign) ? MP_SIGN_POS : MP_SIGN_NEG;
+
+	rc = MP_OK;
+err:
+	mp_clearv(&p, &p0 ,&p1, &p2, &p3, &p4, &q, &q0, &q1, &q2, &q3, &q4, NULL);
+
+	return rc;
+}
 
 int
 _mp_mul_karatsuba(mp_int *c, const mp_int *a, const mp_int *b)

@@ -144,8 +144,14 @@ var_convert_type(struct variable *var, var_type_t to_type)
 	    to_type == VAR_OCTSTRING));
 	
 	//type exist
-	if ((var->type & to_type) != 0)
-		return;
+	if ((var->type & to_type) != 0) {
+		if (var->type & VAR_BIGNUM)
+			return &var->bnum;
+		if (var->type & VAR_OCTSTRING)
+			return &var->octstr;
+		if (var->type & VAR_STRING)
+			return &var->str;
+	}
 
 	if (var->type & VAR_BIGNUM)
 		from_type = VAR_BIGNUM;

@@ -22,7 +22,6 @@ mp_primality_miller_rabin(const mp_int *m, int r,
 	rc = mp_initv(&m_minus_one, &one, &a, &t, &x, &mu, NULL);
 	if (rc != MP_OK)
 		return rc;
-
 	/* m_mod = |m| */
 	m_mod.dig = m->dig;
 	m_mod.top = m->top;

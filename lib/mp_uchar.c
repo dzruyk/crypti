@@ -124,6 +124,8 @@ mp_set_uchar(mp_int *a, const unsigned char *buf, int len)
 	for (i = ndig; i <= oldtop; i++)
 		*dig++ = 0;
 
+	mp_canonicalize(a);
+
 	return MP_OK;
 }
 
