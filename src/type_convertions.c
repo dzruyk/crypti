@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <ctype.h>
 #include <stdint.h>
+#include <limits.h>
 
 #include "common.h"
 #include "crypti.h"
@@ -89,9 +91,21 @@ string_to_octstring(struct variable *to, const struct variable *from)
 static void *
 string_to_string(struct variable *to, const struct variable *from)
 {
-	DEBUG(LOG_VERBOSE, "string to string\n");
+	str_t *dst, *src;
 
-	return (void *)&to->octstr;
+	DEBUG(LOG_VERBOSE, "string to string\n");
+	
+	if (to == from) {
+		DEBUG(LOG_DEFAULT, "same octstring used in convertion\n");
+		return (void *)&to->str;
+	}
+
+	src = var_str_ptr((struct variable *)from);
+	dst = var_str_ptr(to);
+
+	str_copy(dst, src);
+
+	return dst;
 }
 
 static void *
@@ -105,16 +119,54 @@ octstring_to_bignum(struct variable *to, const struct variable *from)
 static void *
 octstring_to_octstring(struct variable *to, const struct variable *from)
 {
-	DEBUG(LOG_VERBOSE, "oct_string to oct_string\n");
+	octstr_t *dst, *src;
 
-	return (void *)&to->octstr;
+	DEBUG(LOG_VERBOSE, "oct_string to oct_string\n");
+	
+	if (to == from) {
+		DEBUG(LOG_DEFAULT, "same octstring used in convertion\n");
+		return (void *)&to->octstr;
+	}
+
+	src = var_octstr_ptr((struct variable *)from);
+	dst = var_octstr_ptr(to);
+
+	octstr_copy(dst, src);
+
+	return dst;
 }
 
 static void *
 octstring_to_string(struct variable *to, const struct variable *from)
 {
+	octstr_t *octstr;
+	str_t *str;
+	char *src;
+	int i, len;
+
 	DEBUG(LOG_VERBOSE, "oct_string to string\n");
-	
+
+	octstr = var_octstr_ptr((struct variable *)from);
+	str = var_str_ptr(to);
+
+	str_reset(str);
+
+	len = octstr_len(octstr);
+	src = octstr_ptr(octstr);
+
+	for (i = 0; i < len; i++) {
+		char ch;
+		ch = src[i];
+		if (isprint(ch)) {
+			str_putc(str, ch);
+		} else {
+			char ccode[4] = "\\x00";
+
+			//str_append(str, "\xCHAR_CODE(ch));
+
+		}
+	}
+
 	return (void *)&to->str;
 }
 
@@ -141,7 +193,7 @@ bignum_to_bignum(struct variable *to, const struct variable *from)
 	return dst;
 
 err:
-	print_warn_and_die("fail!");
+	error(1, "convertion fail");
 }
 
 /* WARN:

@@ -92,7 +92,7 @@ octstr_append(octstr_t *octstr, const char *ptr)
 }
 
 char *
-octstr_append_n(octstr_t *octstr, const char *ptr, size_t n)
+octstr_append_n(octstr_t *octstr, const void *ptr, size_t n)
 {
 	assert(octstr != NULL);
 
