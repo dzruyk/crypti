@@ -56,6 +56,39 @@ str_to_bnum()
 	var_clear(&a);
 }
 
+void
+test_octstr_str(struct variable *var, char *buf, int sz)
+{
+	octstr_t *octstr;
+	str_t *str;
+
+	octstr = var_octstr_ptr(var);
+
+	octstr_reset(octstr);
+	octstr_append_n(octstr, buf, sz);
+	var_force_type(var, VAR_OCTSTRING);
+	str = var_cast_to_str(var);
+
+	printf("\"%s\"\n", str_ptr(str));
+
+}
+
+void
+octstr_to_str()
+{
+	struct variable a;
+	char buf[32];
+	int sz;
+
+	sz = sizeof(buf);
+	var_init(&a);
+
+	memset(buf, 0, sz);
+	test_octstr_str(&a, buf, sz);
+
+	var_clear(&a);
+}
+
 int
 main()
 {
@@ -64,6 +97,9 @@ main()
 	
 	printf("testing str_to_bnum:\n");
 	str_to_bnum();
+
+	printf("testinh octstring_to_string:\n");
+	octstr_to_str();
 
 	return 0;
 }

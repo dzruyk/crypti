@@ -55,6 +55,8 @@ void *convert_value(struct variable *dst_var, int to_type, struct variable *src_
 {
 	struct type_conv conv, *res;
 
+	assert(dst_var != NULL && src_var != NULL);
+
 	conv.from_type = from_type;
 	conv.to_type = to_type;
 
@@ -69,23 +71,58 @@ void *convert_value(struct variable *dst_var, int to_type, struct variable *src_
 static void *
 string_to_bignum(struct variable *to, const struct variable *from)
 {
-	DEBUG(LOG_VERBOSE, "string to bignum\n");
 	mp_int *bnum;
 	str_t *str;
+	char *src;
+	int rc;
+
+	DEBUG(LOG_VERBOSE, "string to bignum\n");
 
 	str = var_str_ptr((struct variable *)from);
 	bnum = var_bignum_ptr(to);
 
-
-	return (void *)&to->bnum;
+	src = str_ptr(str);
+	rc = mp_set_str(bnum, src, STR_BASE);
+	if (rc != MP_OK)
+		error(1, "mp_set_str error");
+	
+	return bnum;
 }
 
 static void *
 string_to_octstring(struct variable *to, const struct variable *from)
 {
+	str_t *str;
+	octstr_t *octstr;
+	char *src;
+	int i, len;
+
 	DEBUG(LOG_VERBOSE, "string to oct_string\n");
 	
-	return (void *)&to->octstr;
+	str = var_str_ptr((struct variable *)from);
+	octstr = var_octstr_ptr(to);
+
+	octstr_reset(octstr);
+
+	len = str_len(str);
+	src = str_ptr(str);
+
+	for (i = 0; i < len; i++) {
+		char ch;
+		ch = src[i];
+		if (isprint(ch)) {
+			str_putc(str, ch);
+		} else {
+			char ccode[5];
+			
+			snprintf(ccode, sizeof(ccode), "\\x%.2X", ch);
+			str_append(str, ccode);
+		}
+	}
+
+
+
+	return octstr;
 }
 
 static void *
@@ -111,9 +148,24 @@ string_to_string(struct variable *to, const struct variable *from)
 static void *
 octstring_to_bignum(struct variable *to, const struct variable *from)
 {
+	mp_int *bnum;
+	octstr_t *octstr;
+	char *src;
+	int rc, sz;
+
 	DEBUG(LOG_VERBOSE, "oct_string to bignum\n");
-	
-	return (void *)&to->bnum;
+
+	octstr = var_octstr_ptr((struct variable *)from);
+	bnum = var_bignum_ptr(to);
+
+	src = octstr_ptr(octstr);
+	sz = octstr_len(octstr);
+
+	rc = mp_set_uchar(bnum, (const unsigned char *)src, sz);
+	if (rc != MP_OK)
+		error(1, "mp_set_uchar error\n");
+
+	return bnum;
 }
 
 static void *
@@ -136,6 +188,10 @@ octstring_to_octstring(struct variable *to, const struct variable *from)
 	return dst;
 }
 
+/*
+ * FIXME:
+ * now use fat snprintf version, write light version of itoa;
+ */
 static void *
 octstring_to_string(struct variable *to, const struct variable *from)
 {
@@ -160,14 +216,14 @@ octstring_to_string(struct variable *to, const struct variable *from)
 		if (isprint(ch)) {
 			str_putc(str, ch);
 		} else {
-			char ccode[4] = "\\x00";
-
-			//str_append(str, "\xCHAR_CODE(ch));
-
+			char ccode[5];
+			
+			snprintf(ccode, sizeof(ccode), "\\x%.2X", ch);
+			str_append(str, ccode);
 		}
 	}
 
-	return (void *)&to->str;
+	return str;
 }
 
 static void *
@@ -196,7 +252,8 @@ err:
 	error(1, "convertion fail");
 }
 
-/* WARN:
+/* 
+ * WARN:
  * can produce problem with byte order
  */
 static void *
@@ -205,7 +262,7 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 	mp_int *bnum;
 	_mp_int_t *dig;
 	octstr_t *octstr;
-	int bytes, i, n;
+	int bytes, n;
 
 	DEBUG(LOG_VERBOSE, "bignum to oct_string\n");
 
@@ -214,7 +271,7 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 	octstr_reset(octstr);
 
 	if (mp_isneg(bnum))
-		warning("neg bnum to str convertion: sign mismatc\n");
+		warning("neg bnum to str convertion: sign mismatch\n");
 	
 	if (mp_iszero(bnum)) {
 		octstr_putc(octstr, '\x00');

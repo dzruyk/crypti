@@ -1,1 +1,3 @@
 1)tryed to write +- number handler in lex.c( don't do this!) bcs then expressions like a-2 will be interpret incorrect
+2) May be byte order problems with bignum_to_octstring
+
