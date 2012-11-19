@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "common.h"
-#include "crypti.h"
+#include "log.h"
 #include "keyword.h"
 #include "macros.h"
 #include "syntax.h"

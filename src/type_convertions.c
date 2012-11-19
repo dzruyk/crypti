@@ -4,7 +4,7 @@
 #include <limits.h>
 
 #include "common.h"
-#include "crypti.h"
+#include "log.h"
 #include "macros.h"
 #include "mp.h"
 #include "str.h"
@@ -119,8 +119,6 @@ string_to_octstring(struct variable *to, const struct variable *from)
 			str_append(str, ccode);
 		}
 	}
-
-
 
 	return octstr;
 }

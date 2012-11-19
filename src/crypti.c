@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 #include "common.h"
-#include "crypti.h"
+#include "log.h"
 #include "eval.h"
 #include "function.h"
 #include "id_table.h"

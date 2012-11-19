@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "array.h"
-#include "crypti.h"
+#include "log.h"
 #include "common.h"
 #include "function.h"
 #include "eval.h"

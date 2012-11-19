@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "crypti.h"
+#include "log.h"
 #include "hash.h"
 #include "id_table.h"
 #include "lex.h"

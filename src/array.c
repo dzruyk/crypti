@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "array.h"
-#include "crypti.h"
+#include "log.h"
 
 arr_t *
 arr_new(int dims, int *len, int sz, int item_sz)

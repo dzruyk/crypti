@@ -2,13 +2,14 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "log.h"
+#include "macros.h"
 #include "mp.h"
 #include "octstr.h"
 #include "str.h"
 #include "variable.h"
 
-
-void
+int
 test_bnum_str(struct variable *var, int num, char *expected)
 {
 	mp_int *ap;
@@ -20,30 +21,63 @@ test_bnum_str(struct variable *var, int num, char *expected)
 	var_force_type(var, VAR_BIGNUM);
 	str = var_cast_to_str(var);
 
-	if (expected == NULL)
-		printf("res = %s\n", str_ptr(str));
-	else if (strcmp(str_ptr(str), expected) != 0) {
-		printf("WARN: %s != %s\n", str_ptr(str), expected);
-	} else {
-	       printf("SUCCESS!\n");
+	if (expected == NULL) {
+		DEBUG(LOG_DEFAULT, "res = %s\n", str_ptr(str));
+		return 0;
+	} else if (strcmp(str_ptr(str), expected) != 0) {
+		DEBUG(LOG_DEFAULT, "WARN: %s != %s\n", str_ptr(str), expected);
+		return 1;
 	}
+
+	return 0;
 }
 
 void
 bnum_to_str()
 {
 	struct variable a;
+	int i, nerrors;
+	struct {
+		int num;
+		char *expected;
+	} vectors [] = {
+		{0x1, "1"},
+		{0x0, "0"},
+		{0xAA, "AA"},
+		{-0xAA, "-AA"},
+		{-0, "0"},
+		{0xABCDE, "ABCDE"},
+
+
+	};
 
 	var_init(&a);
 
-	test_bnum_str(&a, 0x1, "1");
-	test_bnum_str(&a, 0x0, "0");
-	test_bnum_str(&a, 0xAA, "AA");
-	test_bnum_str(&a, -0xAA, "-AA");
-	test_bnum_str(&a, -0, "0");
-	test_bnum_str(&a, 0xABCDE, "ABCDE");
+	for (i = nerrors = 0; i< ARRSZ(vectors); i++) {
+		int ret;
+		ret = test_bnum_str(&a, vectors[i].num, vectors[i].expected);
+		if (ret != 0)
+			printf("error at %d: expected %s\n", i, vectors[i].expected);
+
+		nerrors += ret;
+	}
+	
+	if (nerrors == 0)
+		printf("SUCCESS!\n");
 
 	var_clear(&a);
+}
+
+void
+bnum_to_octstr()
+{
+
+}
+
+void
+bnum_to_bnum()
+{
+
 }
 
 void
@@ -54,6 +88,18 @@ str_to_bnum()
 	var_init(&a);
 
 	var_clear(&a);
+}
+
+void
+str_to_octstr()
+{
+
+}
+
+void
+str_to_str()
+{
+
 }
 
 void
@@ -89,17 +135,42 @@ octstr_to_str()
 	var_clear(&a);
 }
 
+void
+octstr_to_bnum()
+{
+
+}
+
+void
+octstr_to_octstr()
+{
+
+
+}
+
 int
-main()
+main(int argc, char *argv[])
 {
 	printf("testing bnum_to_str:\n");
 	bnum_to_str();
+	printf("testing bnum_to_octstr:\n");
+	bnum_to_octstr();
+	printf("testing bnum_to_bnum:\n");
+	bnum_to_bnum();
 	
 	printf("testing str_to_bnum:\n");
 	str_to_bnum();
+	printf("testing str_to_octstr:\n");
+	str_to_octstr();
+	printf("testing str_to_str\n");
+	str_to_str();
 
-	printf("testinh octstring_to_string:\n");
+	printf("testing octstring_to_string:\n");
 	octstr_to_str();
+	printf("testing octstring_to_bnum:\n");
+	octstr_to_bnum();
+	printf("testing octstring_to_octstring:\n");
+	octstr_to_octstr();
 
 	return 0;
 }
