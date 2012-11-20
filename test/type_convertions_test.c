@@ -9,6 +9,11 @@
 #include "str.h"
 #include "variable.h"
 
+
+/*
+ * NOTE:
+ * assume that STR_BASE is 16
+ */
 int
 test_bnum_str(struct variable *var, int num, char *expected)
 {
@@ -47,8 +52,6 @@ bnum_to_str()
 		{-0xAA, "-AA"},
 		{-0, "0"},
 		{0xABCDE, "ABCDE"},
-
-
 	};
 
 	var_init(&a);
@@ -71,7 +74,11 @@ bnum_to_str()
 void
 bnum_to_octstr()
 {
+	struct variable a;
 
+	var_init(&a);
+	var_clear(&a);
+}
 }
 
 void

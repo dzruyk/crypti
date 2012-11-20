@@ -38,11 +38,15 @@ mp_and(mp_int *c, const mp_int *a, const mp_int *b)
 	for (i = btop + 1; i < ctop; i++)
 		*cp++ = 0;
 
+	c->sign = MP_SIGN_POS;
+
 	mp_canonicalize(c);
 
 	return MP_OK;
 }
 
+/* Rewrite me later */
+/* c = |a| | |b| */
 int
 mp_or(mp_int *c, const mp_int *a, const mp_int *b)
 {
@@ -76,11 +80,15 @@ mp_or(mp_int *c, const mp_int *a, const mp_int *b)
 	for (i = atop + 1; i < ctop; i++)
 		*cp++ = 0;
 
+	c->sign = MP_SIGN_POS;
+
 	mp_canonicalize(c);
 	
 	return MP_OK;
 }
 
+/* Rewrite me later */
+/* c = |a| ^ |b| */
 int
 mp_xor(mp_int *c, const mp_int *a, const mp_int *b)
 {
@@ -114,6 +122,7 @@ mp_xor(mp_int *c, const mp_int *a, const mp_int *b)
 	for (i = atop + 1; i < ctop; i++)
 		*cp++ = 0;
 
+	c->sign = MP_SIGN_POS;
 
 	mp_canonicalize(c);
 	
