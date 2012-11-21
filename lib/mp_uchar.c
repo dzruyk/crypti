@@ -7,6 +7,8 @@
 #include "mp.h"
 #include "mp_common.h"
 
+extern void mp_canonicalize(mp_int *a);
+
 int
 mp_to_uchar(const mp_int *a, unsigned char *buf, int len)
 {

@@ -72,6 +72,7 @@ int  mp_set_str(mp_int *a, const char *str, int base);
 
 int mp_set_uchar(mp_int *a, const unsigned char *buf, int len);
 int mp_to_uchar(const mp_int *a, unsigned char *buf, int len);
+int mp_to_uint(mp_int *a, unsigned long *val);
 
 int mp_nr_bits(const mp_int *a);
 

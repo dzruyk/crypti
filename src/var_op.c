@@ -1,7 +1,9 @@
 #include <assert.h>
+#include <limits.h>
 #include <stdint.h>
 
 #include "common.h"
+#include "log.h"
 #include "mp.h"
 #include "octstr.h"
 #include "str.h"
@@ -215,18 +217,83 @@ varop_neg(struct variable *res, struct variable *var)
 int
 varop_shl(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
-	
-	print_warn_and_die("WIP!\n");
+	int n, ret;
+	unsigned int shift;
+	mp_int *ap, *bp, *cp;
 
+	assert(c != NULL && a != NULL && b != NULL);
+
+	ap = var_cast_to_bignum(a);
+	bp = var_cast_to_bignum(b);
+	cp = var_bignum_ptr(c);
+
+	if (mp_isneg(bp)) {
+		DEBUG(LOG_DEFAULT, "negative shift integer\n");
+		return 1;
+	}
+
+	n = mp_nr_bits(bp);
+
+	if (n < sizeof(int) * CHAR_BIT) {
+		DEBUG(LOG_DEFAULT, "can't convert to int, overflow\n");
+		return 1;
+	}
+
+	ret = mp_to_uint(bp, shift);
+	if (ret != MP_OK) {
+		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
+		return 1;
+	}
+
+	ret = mp_shl(ap, shift);
+	if (ret != MP_OK) {
+		DEBUG(LOG_DEFAULT, "can't shift left\n");
+		return 1;
+	}
+
+	var_force_type(c, VAR_BIGNUM);
+	return 0;
 }
 
 int
 varop_shr(struct variable *c, struct variable *a, struct variable *b)
 {
+	int n, ret;
+	unsigned int shift;
+	mp_int *ap, *bp, *cp;
+
 	assert(c != NULL && a != NULL && b != NULL);
-	
-	print_warn_and_die("WIP!\n");
+
+	ap = var_cast_to_bignum(a);
+	bp = var_cast_to_bignum(b);
+	cp = var_bignum_ptr(c);
+
+	if (mp_isneg(bp)) {
+		DEBUG(LOG_DEFAULT, "negative shift integer\n");
+		return 1;
+	}
+
+	n = mp_nr_bits(bp);
+
+	if (n < sizeof(int) * CHAR_BIT) {
+		DEBUG(LOG_DEFAULT, "can't convert to int, overflow\n");
+		return 1;
+	}
+
+	ret = mp_to_uint(bp, shift);
+	if (ret != MP_OK) {
+		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
+		return 1;
+	}
+
+	ret = mp_shr(ap, shift);
+	if (ret != MP_OK) {
+		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
+		return 1;
+	}
+
+	var_force_type(c, VAR_BIGNUM);
+	return 0;
 }
 
 /* String operations: */

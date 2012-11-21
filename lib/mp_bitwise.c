@@ -32,7 +32,7 @@ mp_and(mp_int *c, const mp_int *a, const mp_int *b)
 	btop = b->top;
 	ctop = c->top;
 	
-	for (i = 0; i < btop; i++)
+	for (i = 0; i <= btop; i++)
 		*cp++ = (*ap++) & (*bp++);
 	
 	for (i = btop + 1; i < ctop; i++)
@@ -71,10 +71,10 @@ mp_or(mp_int *c, const mp_int *a, const mp_int *b)
 	btop = b->top;
 	ctop = c->top;
 
-	for (i = 0; i < btop; i++)
+	for (i = 0; i <= btop; i++)
 		*cp++ = (*ap++) | (*bp++);
 	
-	for (i = btop + 1; i < atop; i++)
+	for (i = btop + 1; i <= atop; i++)
 		*cp++ = *ap++;
 
 	for (i = atop + 1; i < ctop; i++)
@@ -113,10 +113,10 @@ mp_xor(mp_int *c, const mp_int *a, const mp_int *b)
 	btop = b->top;
 	ctop = c->top;
 
-	for (i = 0; i < btop; i++)
+	for (i = 0; i <= btop; i++)
 		*cp++ = (*ap++) ^ (*bp++);
 	
-	for (i = btop + 1; i < atop; i++)
+	for (i = btop + 1; i <= atop; i++)
 		*cp++ = *ap++;
 
 	for (i = atop + 1; i < ctop; i++)

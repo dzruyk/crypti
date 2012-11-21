@@ -45,7 +45,7 @@ bnum_to_str()
 	struct {
 		int num;
 		char *expected;
-	} vectors [] = {
+	} vectors[] = {
 		{0x1, "1"},
 		{0x0, "0"},
 		{0xAA, "AA"},
@@ -79,7 +79,6 @@ bnum_to_octstr()
 	var_init(&a);
 	var_clear(&a);
 }
-}
 
 void
 bnum_to_bnum()
@@ -109,8 +108,8 @@ str_to_str()
 
 }
 
-void
-test_octstr_str(struct variable *var, char *buf, int sz)
+int
+test_octstr_str(struct variable *var, char *buf, int sz, char *expected)
 {
 	octstr_t *octstr;
 	str_t *str;
@@ -122,23 +121,47 @@ test_octstr_str(struct variable *var, char *buf, int sz)
 	var_force_type(var, VAR_OCTSTRING);
 	str = var_cast_to_str(var);
 
-	printf("\"%s\"\n", str_ptr(str));
+	if (expected == NULL) {
+		DEBUG(LOG_DEFAULT, "res = %s\n", str_ptr(str));
+		return 0;
+	} else if (strcmp(str_ptr(str), expected) != 0) {
+		DEBUG(LOG_DEFAULT, "WARN: %s != %s\n", str_ptr(str), expected);
+		return 1;
+	}
 
+	return 0;
 }
 
 void
 octstr_to_str()
 {
 	struct variable a;
-	char buf[32];
-	int sz;
+	int i, nerrors;
+	struct {
+		char *buf;
+		int sz;
+		char *expected;
+	} vectors[] = {
+		{"\x00\x00\x00\x00\x00\x00", 6,
+		    "\\x00\\x00\\x00\\x00\\x00\\x00"},
+		{"", 0, ""},
+		{"\xff", 1, "\\xFF"},
+	};
 
-	sz = sizeof(buf);
 	var_init(&a);
 
-	memset(buf, 0, sz);
-	test_octstr_str(&a, buf, sz);
+	for (i = nerrors = 0; i< ARRSZ(vectors); i++) {
+		int ret;
+		ret = test_octstr_str(&a, vectors[i].buf, vectors[i].sz,
+		    vectors[i].expected);
+		if (ret != 0)
+			printf("error at %d: expected %s\n", i, vectors[i].expected);
 
+		nerrors += ret;
+	}
+
+	if (nerrors == 0)
+		printf("SUCCESS!\n");
 	var_clear(&a);
 }
 
