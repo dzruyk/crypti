@@ -535,12 +535,30 @@ def
 	
 [res] rand_prime(len)
 	Генерирует случайное число длиннной len байт.
+
+[ctx] md5_ctx_new()
+[] md5_ctx_update(ctx, msg)
+[digest] md5_ctx_final(ctx)
+
+[ctx] whirpool_ctx_new()
+[] whirpool_ctx_update(ctx, msg)
+[digest] whirpool_ctx_final(ctx)
+
+[ctx] sha1_ctx_new()
+[] sha1_ctx_update(ctx, msg)
+[digest] sha1_ctx_final(ctx)
+
+[ctx] sha256_ctx_new()
+[] sha256_ctx_update(ctx, msg)
+[digest] sha256_ctx_final(ctx)
+
+[ctx] aes_ctx_new()
+[] aes_set_key(ctx, key, keylen)
+[out] aes_encrypt(ctx, in)
+[out] aes_decrypt(ctx, in)
+
 =============================================================
 //WIP
-md5
-aes
-sha1
-sha256
 rsa
 режимы шифрования
 =============================================================
