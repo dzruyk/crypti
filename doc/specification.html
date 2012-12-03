@@ -801,49 +801,240 @@ const модификатор в функции.
 <h2 id="_содержание">Содержание:</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Введение.</p></div>
-<div class="paragraph"><p>Типы переменных.
-        Строки
-        Числа
-        Массивы</p></div>
-<div class="paragraph"><p>Преобразование типов</p></div>
-<div class="paragraph"><p>Лексические элементы.
-        Идентификаторы
-        Ключевые слова
-                Условия, циклы
-                break/continue
-                return
-                import
-                def
-        Массивы
-                Определение
-                Доступ к элементам
-        Переменные
-        Операторы
-                Бинарные, унарные опреаторы
-                Приоритет операций
-        Функции
-                Определение
-                Вызов
-                builtin функции
-        Области видимости
-                Глобальная область видимости.
-                Локальные области видимости.</p></div>
-<div class="paragraph"><p>Модули.
-        Подключение модуля
-        Стандартные пути</p></div>
-<div class="paragraph"><p>Стандартная библиотека.
-        Описание builtin модулей
-        crypto
-                mod_inv
-                mod_exp
-                rand_prime
-        stdio
-                num_from_file
-                fopen
-                fclose
-                fread
-                fwrite
-        random</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Типы переменных.
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Строки
+</p>
+</li>
+<li>
+<p>
+Числа
+</p>
+</li>
+<li>
+<p>
+Массивы
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Преобразование типов
+</p>
+</li>
+<li>
+<p>
+Лексические элементы.
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Идентификаторы
+</p>
+</li>
+<li>
+<p>
+Ключевые слова
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Условия, циклы
+</p>
+</li>
+<li>
+<p>
+break/continue
+</p>
+</li>
+<li>
+<p>
+return
+</p>
+</li>
+<li>
+<p>
+import
+</p>
+</li>
+<li>
+<p>
+def
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Массивы
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Определение
+</p>
+</li>
+<li>
+<p>
+Доступ к элементам
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Переменные
+</p>
+</li>
+<li>
+<p>
+Операторы
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Доступные операторы
+</p>
+</li>
+<li>
+<p>
+Приоритет операций
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Функции
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Определение
+</p>
+</li>
+<li>
+<p>
+Вызов
+</p>
+</li>
+<li>
+<p>
+builtin функции
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Области видимости
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Глобальная область видимости.
+</p>
+</li>
+<li>
+<p>
+Локальные области видимости.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Модули
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Подключение модуля
+</p>
+</li>
+<li>
+<p>
+Стандартные пути
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Стандартная библиотека.
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+crypto
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+mod_inv
+</p>
+</li>
+<li>
+<p>
+mod_exp
+</p>
+</li>
+<li>
+<p>
+rand_prime
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+stdio
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+num_from_file
+</p>
+</li>
+<li>
+<p>
+fopen
+</p>
+</li>
+<li>
+<p>
+fclose
+</p>
+</li>
+<li>
+<p>
+fread
+</p>
+</li>
+<li>
+<p>
+fwrite
+</p>
+</li>
+<li>
+<p>
+random
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
 </div>
 </div>
 <div class="sect1">
@@ -1001,13 +1192,13 @@ b = a " universe"</tt></pre>
 <div class="sect2">
 <h3 id="_ключевые_слова">Ключевые слова</h3>
 <div class="paragraph"><p><strong>if</strong>/<strong>else</strong></p></div>
-<div class="paragraph"><p>Выражение if используется для условного ветвления:</p></div>
+<div class="paragraph"><p>Выражение <strong>if</strong> используется для условного ветвления:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>if (condition) block1
 [else block2]</tt></pre>
 </div></div>
-<div class="paragraph"><p>block1 выполняется только в том случае если condition не равно 0.</p></div>
+<div class="paragraph"><p><em>block1</em> выполняется только в том случае если <em>condition</em> не равно 0.</p></div>
 <div class="paragraph"><p><strong>while</strong></p></div>
 <div class="paragraph"><p><strong>while</strong> используется для последовательного выполнения блока кода пока
 условие верно.</p></div>
@@ -1015,7 +1206,7 @@ b = a " universe"</tt></pre>
 <div class="content">
 <pre><tt>while (condition) block;</tt></pre>
 </div></div>
-<div class="paragraph"><p>Если condition не указано то
+<div class="paragraph"><p>Если <em>condition</em> не указано то
 получившийся цикл аналогичен этому:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1028,7 +1219,7 @@ b = a " universe"</tt></pre>
 <div class="content">
 <pre><tt>do block while(condition)</tt></pre>
 </div></div>
-<div class="paragraph"><p>выражение эквивалентно выражению:</p></div>
+<div class="paragraph"><p>Выражение эквивалентно выражению:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>        block;
@@ -1040,7 +1231,7 @@ b = a " universe"</tt></pre>
 <div class="content">
 <pre><tt>        for (expr1; condition; expr2) block;</tt></pre>
 </div></div>
-<div class="paragraph"><p>цикл for аналогичен данному циклу while:</p></div>
+<div class="paragraph"><p>Цикл <strong>for</strong> аналогичен данному циклу <strong>while</strong>:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>        expr1;
@@ -1049,9 +1240,9 @@ b = a " universe"</tt></pre>
                 expr2
         }</tt></pre>
 </div></div>
-<div class="paragraph"><p>expr1, expr2 и condition могут быть пустыми</p></div>
+<div class="paragraph"><p><em>expr1</em>, <em>expr2</em> и <em>condition</em> могут быть пустыми</p></div>
 <div class="paragraph"><p><strong>break</strong></p></div>
-<div class="paragraph"><p>break может встречаться только внутри циклов
+<div class="paragraph"><p><strong>break</strong> может встречаться только внутри циклов
 <strong>for</strong>, <strong>while</strong>, <strong>do</strong>&#8230;<strong>while</strong>, его выполнение
 приводит к немедленному
 выходу из внутреннего охватывающего цикла.</p></div>
@@ -1073,7 +1264,7 @@ import &lt;modname&gt;</tt></pre>
 </div></div>
 <div class="paragraph"><p>Ключевое слово, позволяющее импортировать модули в
 область главную область видимости.
-import должен присутствовать в глобальной области видимости
+<strong>import</strong> должен присутствовать в глобальной области видимости
 (внутри условий, циклов,
 вложенных областях видимости import не обрабатывается).</p></div>
 <div class="paragraph"><p><strong>def</strong></p></div>
@@ -1143,7 +1334,7 @@ arr["example", "of", "multidimentional", "array"] = "there";</tt></pre>
 arr["two"]
 arr["42"]</tt></pre>
 </div></div>
-<div class="paragraph"><p>Попытка доступа к несуществующему элементу будет приводить к &lt;Runtime error&gt;</p></div>
+<div class="paragraph"><p>Попытка доступа к несуществующему элементу будет приводить к <strong>&lt;Runtime error&gt;</strong></p></div>
 </div>
 </div>
 <div class="sect2">
@@ -1153,6 +1344,8 @@ arr["42"]</tt></pre>
 </div>
 <div class="sect2">
 <h3 id="_операторы">Операторы</h3>
+<div class="sect3">
+<h4 id="_доступные_операторы">Доступные операторы</h4>
 <div class="paragraph"><p>Ниже приведён список доступных операторов.
 Если не будет указано обратное то операторы бинарные.</p></div>
 <div class="paragraph"><p>Синтаксис использования бинарных операторов:</p></div>
@@ -1164,7 +1357,8 @@ arr["42"]</tt></pre>
 стоящие слева и справа от оператора; OP один из возможных операторов.</p></div>
 <div class="paragraph"><p>Арифметические, логические, побитовые операторы представляют операнды как числа а затем выполняют
 одну из следующих операций.</p></div>
-<div class="paragraph"><p>Арифметические операторы:</p></div>
+<div class="sect4">
+<h5 id="_арифметические_операторы">Арифметические операторы</h5>
 <div class="tableblock">
 <table rules="all"
 width="100%"
@@ -1214,7 +1408,9 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Логические операторы:</p></div>
+</div>
+<div class="sect4">
+<h5 id="_логические_операторы">Логические операторы</h5>
 <div class="tableblock">
 <table rules="all"
 width="100%"
@@ -1246,7 +1442,9 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Побитовые операторы:</p></div>
+</div>
+<div class="sect4">
+<h5 id="_побитовые_операторы">Побитовые операторы</h5>
 <div class="tableblock">
 <table rules="all"
 width="100%"
@@ -1290,7 +1488,9 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Операторы присваивания:</p></div>
+</div>
+<div class="sect4">
+<h5 id="_операторы_присваивания">Операторы присваивания</h5>
 <div class="tableblock">
 <table rules="all"
 width="100%"
@@ -1320,20 +1520,83 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Операторы с октетными строками
-Представляют операнды как октетные строки и выполняют операцию.
-        #        Выполняет конкатенацию a и b</p></div>
-<div class="paragraph"><p>Операторы с печатными строками
-Представляют операнды как печатные строки и выполняют операцию.
-         (пробел) Выполняет конкатенацию a и b
-Прочие операторы:
-        .       Синтаксис: a.b. операция взятия атрибута b у переменной a.
-                попытка взятия не существующего атрибута приводит к &lt;Runtime error&gt;</p></div>
-<div class="paragraph"><p>Приоритетность
-В таблице, приведённой ниже операторы перечисленны
+</div>
+<div class="sect4">
+<h5 id="_операторы_с_октетными_строками">Операторы с октетными строками</h5>
+<div class="paragraph"><p>Представляют операнды как октетные строки и выполняют операцию.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Описание</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">#</p></td>
+<td align="left" valign="top"><p class="table">Выполняет конкатенацию a и b</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_операторы_с_печатными_строками">Операторы с печатными строками</h5>
+<div class="paragraph"><p>Представляют операнды как печатные строки и выполняют операцию.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Описание</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">(пробел)</p></td>
+<td align="left" valign="top"><p class="table">Выполняет конкатенацию a и b</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_прочие_операторы">Прочие операторы</h5>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Описание</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">.</p></td>
+<td align="left" valign="top"><p class="table">Синтаксис: a.b. операция взятия атрибута b у переменной a.
+                попытка взятия не существующего атрибута приводит к <strong>&lt;Runtime error&gt;</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_приоритетность">Приоритетность</h4>
+<div class="paragraph"><p>В таблице, приведённой ниже операторы перечисленны
 по возрастающей приоритетности.</p></div>
-<div class="paragraph"><p>Обозначения:
-LR очерёдность слева на право.
+<div class="paragraph"><p>Обозначения:</p></div>
+<div class="paragraph"><p>LR очерёдность слева на право.
 RL очерёдность справа на лево.</p></div>
 <div class="paragraph"><p>ТАБЛИЦА</p></div>
 <div class="tableblock">
@@ -1420,6 +1683,7 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
+</div>
 <div class="sect2">
 <h3 id="_функции">Функции</h3>
 <div class="paragraph"><p>Функции - набор логически выделенных инструкций, вызываемых по требованию.
@@ -1432,7 +1696,7 @@ cellspacing="0" cellpadding="4">
 Возвращаемые значения записываются в квадратных скобках при определении функции.
 При достижении конца функции или ключевого слова return возвращаются их текущие значения
 Если на момент выхода из функции одно или несколько значений не определены -
-генерируется &lt;Runtime error&gt;</p></div>
+генерируется <strong>&lt;Runtime error&gt;</strong></p></div>
 <div class="paragraph"><p>Пример:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1457,11 +1721,11 @@ func(a);</tt></pre>
 }</tt></pre>
 </div></div>
 <div class="paragraph"><p>Где:</p></div>
-<div class="paragraph"><p>[ret1, ret2] - список возвращаемых функцией аргументов (который может быть пустым)
-func_name - идентификатор,
+<div class="paragraph"><p>[<em>ret1</em>, <em>ret2</em>] - список возвращаемых функцией аргументов (который может быть пустым)
+<em>func_name</em> - идентификатор,
 являющийся именем функции.
-parameter_list - перечисленные через запятую идентификаторы, являющиеся аргументами функции
-body - набор инструкций, выполняемых при вызове функции.
+<em>parameter_list</em> - перечисленные через запятую идентификаторы, являющиеся аргументами функции
+<em>body</em> - набор инструкций, выполняемых при вызове функции.
 Для блока инструкций внутри тела функции создаётся
 отдельная область видимости (см. Области видимости),
 локальные переменные определённые в ней пропадают
@@ -1475,8 +1739,8 @@ body - набор инструкций, выполняемых при вызов
 <pre><tt>func_name(parameter_list)</tt></pre>
 </div></div>
 <div class="paragraph"><p>Где:
-func_name - идентификатор уже определённой функции.
-parameter_name - перечисленные через запятую выражения,
+<em>func_name</em> - идентификатор уже определённой функции.
+<em>parameter_name</em> - перечисленные через запятую выражения,
 результаты которых будут являться аргументами функции.</p></div>
 </div>
 <div class="sect3">
@@ -1530,10 +1794,7 @@ parameter_name - перечисленные через запятую выраж
 <div class="paragraph"><p>Внешняя область видимости.
 В ней доступны инструкции для подключения модулей,
 возможость определения новых функций.</p></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Локальные области видимости.</tt></pre>
-</div></div>
+<div class="paragraph"><p>Локальные области видимости.</p></div>
 </div>
 </div>
 </div>
@@ -1542,7 +1803,7 @@ parameter_name - перечисленные через запятую выраж
 <h2 id="_модули">Модули</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Модуль это файл, написаный на языке crypti и импортированный в программу
-с помощью инструкции import.
+с помощью инструкции <strong>import</strong>.
 Все функции и переменные, определённые в модуле,
 импортируются в глобальную область видимости.
 для предотвращения бесконечного импортирования модулей
@@ -1554,7 +1815,7 @@ parameter_name - перечисленные через запятую выраж
 Это означает что если произошёл импорт,
 и затем произошли изменения в модуле то не существует никакого способа
 обновления данных модуля. Возможно в следующих версиях интерпретатора
-будет реализована специальная инструкция "require",
+будет реализована специальная инструкция <strong>require</strong>,
 с помощью которой будет доступна перезагрузка содержания модуля.</p></div>
 <div class="sect2">
 <h3 id="_подключение">Подключение</h3>
@@ -1641,7 +1902,7 @@ fwrite()
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-04 01:53:39 MSK
+Last updated 2012-12-04 02:40:13 MSK
 </div>
 </div>
 </body>
