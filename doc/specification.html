@@ -3,24 +3,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.6" />
+<meta name="generator" content="AsciiDoc 8.6.4" />
 <title>Черновик документации по crypti.</title>
 <style type="text/css">
-/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
-
-/* Default font. */
-body {
-  font-family: Georgia,serif;
-}
-
-/* Title font. */
+/* Sans-serif font. */
 h1, h2, h3, h4, h5, h6,
 div.title, caption.title,
 thead, p.table.header,
-#toctitle,
-#author, #revnumber, #revdate, #revremark,
-#footer {
+div#toctitle,
+span#author, span#revnumber, span#revdate, span#revremark,
+div#footer {
   font-family: Arial,Helvetica,sans-serif;
+}
+
+/* Serif font. */
+div.sectionbody {
+  font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+/* Monospace font. */
+tt {
+  font-size: inherit;
 }
 
 body {
@@ -45,6 +48,11 @@ strong {
   color: #083194;
 }
 
+tt {
+  font-size: inherit;
+  color: navy;
+}
+
 h1, h2, h3, h4, h5, h6 {
   color: #527bbd;
   margin-top: 1.2em;
@@ -63,9 +71,6 @@ h3 {
 }
 h3 + * {
   clear: left;
-}
-h5 {
-  font-size: 1.0em;
 }
 
 div.sectionbody {
@@ -92,36 +97,36 @@ pre {
   margin: 0;
 }
 
-#author {
+span#author {
   color: #527bbd;
   font-weight: bold;
   font-size: 1.1em;
 }
-#email {
+span#email {
 }
-#revnumber, #revdate, #revremark {
+span#revnumber, span#revdate, span#revremark {
 }
 
-#footer {
+div#footer {
   font-size: small;
   border-top: 2px solid silver;
   padding-top: 0.5em;
   margin-top: 4.0em;
 }
-#footer-text {
+div#footer-text {
   float: left;
   padding-bottom: 0.5em;
 }
-#footer-badges {
+div#footer-badges {
   float: right;
   padding-bottom: 0.5em;
 }
 
-#preamble {
+div#preamble {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
-div.imageblock, div.exampleblock, div.verseblock,
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
   margin-top: 1.0em;
@@ -179,7 +184,7 @@ div.quoteblock, div.verseblock {
   margin-left: 1.0em;
   margin-right: 10%;
   border-left: 5px solid #f0f0f0;
-  color: #888;
+  color: #777777;
 }
 
 div.quoteblock > div.attribution {
@@ -262,12 +267,35 @@ div.compact div, div.compact div {
   margin-bottom: 0.1em;
 }
 
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
 tfoot {
   font-weight: bold;
 }
 td > div.verse {
   white-space: pre;
 }
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
 
 div.hdlist {
   margin-top: 0.8em;
@@ -334,14 +362,14 @@ div.colist td img {
 }
 
 @media print {
-  #footer-badges { display: none; }
+  div#footer-badges { display: none; }
 }
 
-#toc {
+div#toc {
   margin-bottom: 2.5em;
 }
 
-#toctitle {
+div#toctitle {
   color: #527bbd;
   font-size: 1.1em;
   font-weight: bold;
@@ -402,144 +430,10 @@ span.yellow-background { background: yellow; }
 
 span.big { font-size: 2em; }
 span.small { font-size: 0.6em; }
-
-span.underline { text-decoration: underline; }
-span.overline { text-decoration: overline; }
-span.line-through { text-decoration: line-through; }
-
-
-/*
- * xhtml11 specific
- *
- * */
-
-tt {
-  font-family: monospace;
-  font-size: inherit;
-  color: navy;
-}
-
-div.tableblock {
-  margin-top: 1.0em;
-  margin-bottom: 1.5em;
-}
-div.tableblock > table {
-  border: 3px solid #527bbd;
-}
-thead, p.table.header {
-  font-weight: bold;
-  color: #527bbd;
-}
-p.table {
-  margin-top: 0;
-}
-/* Because the table frame attribute is overriden by CSS in most browsers. */
-div.tableblock > table[frame="void"] {
-  border-style: none;
-}
-div.tableblock > table[frame="hsides"] {
-  border-left-style: none;
-  border-right-style: none;
-}
-div.tableblock > table[frame="vsides"] {
-  border-top-style: none;
-  border-bottom-style: none;
-}
-
-
-/*
- * html5 specific
- *
- * */
-
-.monospaced {
-  font-family: monospace;
-  font-size: inherit;
-  color: navy;
-}
-
-table.tableblock {
-  margin-top: 1.0em;
-  margin-bottom: 1.5em;
-}
-thead, p.tableblock.header {
-  font-weight: bold;
-  color: #527bbd;
-}
-p.tableblock {
-  margin-top: 0;
-}
-table.tableblock {
-  border-width: 3px;
-  border-spacing: 0px;
-  border-style: solid;
-  border-color: #527bbd;
-  border-collapse: collapse;
-}
-th.tableblock, td.tableblock {
-  border-width: 1px;
-  padding: 4px;
-  border-style: solid;
-  border-color: #527bbd;
-}
-
-table.tableblock.frame-topbot {
-  border-left-style: hidden;
-  border-right-style: hidden;
-}
-table.tableblock.frame-sides {
-  border-top-style: hidden;
-  border-bottom-style: hidden;
-}
-table.tableblock.frame-none {
-  border-style: hidden;
-}
-
-th.tableblock.halign-left, td.tableblock.halign-left {
-  text-align: left;
-}
-th.tableblock.halign-center, td.tableblock.halign-center {
-  text-align: center;
-}
-th.tableblock.halign-right, td.tableblock.halign-right {
-  text-align: right;
-}
-
-th.tableblock.valign-top, td.tableblock.valign-top {
-  vertical-align: top;
-}
-th.tableblock.valign-middle, td.tableblock.valign-middle {
-  vertical-align: middle;
-}
-th.tableblock.valign-bottom, td.tableblock.valign-bottom {
-  vertical-align: bottom;
-}
-
-
-/*
- * manpage specific
- *
- * */
-
-body.manpage h1 {
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  border-top: 2px solid silver;
-  border-bottom: 2px solid silver;
-}
-body.manpage h2 {
-  border-style: none;
-}
-body.manpage div.sectionbody {
-  margin-left: 3em;
-}
-
-@media print {
-  body.manpage div#toc { display: none; }
-}
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -601,25 +495,6 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
-  if (!toc) {
-    return;
-  }
-
-  // Delete existing TOC entries in case we're reloading the TOC.
-  var tocEntriesToRemove = [];
-  var i;
-  for (i = 0; i < toc.childNodes.length; i++) {
-    var entry = toc.childNodes[i];
-    if (entry.nodeName == 'div'
-     && entry.getAttribute("class")
-     && entry.getAttribute("class").match(/^toclevel/))
-      tocEntriesToRemove.push(entry);
-  }
-  for (i = 0; i < tocEntriesToRemove.length; i++) {
-    toc.removeChild(tocEntriesToRemove[i]);
-  }
-
-  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -647,44 +522,24 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  // Delete existing footnote entries in case we're reloading the footnodes.
-  var i;
-  var noteholder = document.getElementById("footnotes");
-  if (!noteholder) {
-    return;
-  }
-  var entriesToRemove = [];
-  for (i = 0; i < noteholder.childNodes.length; i++) {
-    var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'div' && entry.getAttribute("class") == "footnote")
-      entriesToRemove.push(entry);
-  }
-  for (i = 0; i < entriesToRemove.length; i++) {
-    noteholder.removeChild(entriesToRemove[i]);
-  }
-
-  // Rebuild footnote entries.
   var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      var note = spans[i].getAttribute("data-note");
-      if (!note) {
-        // Use [\s\S] in place of . so multi-line matches work.
-        // Because JavaScript has no s (dotall) regex flag.
-        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
-        spans[i].innerHTML =
-          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-          "' title='View footnote' class='footnote'>" + n + "</a>]";
-        spans[i].setAttribute("data-note", note);
-      }
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -704,32 +559,9 @@ footnotes: function () {
       }
     }
   }
-},
-
-install: function(toclevels) {
-  var timerId;
-
-  function reinstall() {
-    asciidoc.footnotes();
-    if (toclevels) {
-      asciidoc.toc(toclevels);
-    }
-  }
-
-  function reinstallAndRemoveTimer() {
-    clearInterval(timerId);
-    reinstall();
-  }
-
-  timerId = setInterval(reinstall, 500);
-  if (document.addEventListener)
-    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
-  else
-    window.onload = reinstallAndRemoveTimer;
 }
 
 }
-asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -800,8 +632,12 @@ const модификатор в функции.
 <div class="sect1">
 <h2 id="_содержание">Содержание:</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Введение.</p></div>
 <div class="ulist"><ul>
+<li>
+<p>
+Введение.
+</p>
+</li>
 <li>
 <p>
 Типы переменных
@@ -1034,6 +870,11 @@ random
 </li>
 </ul></div>
 </li>
+<li>
+<p>
+Примеры
+</p>
+</li>
 </ul></div>
 </div>
 </div>
@@ -1103,22 +944,24 @@ b = a " universe"</tt></pre>
 <li>
 <p>
 Десятичной
-Запись производится в соответствии с регулярным выражением:
-[<tt>-]*[0-9]</tt>
-</p>
-</li>
-<li>
-<p>
-Шестнадцатиричной
-        Число записывается с помощью регулярного выражения:
-        [<tt>-]*0x[0-9A-F]</tt>
-Если перед числом указано больше одного знака,
-то результирующий знак определяется по следующему правилу:
--) Если количество минусов перед знаком нечётное
-+) В противном случае
 </p>
 </li>
 </ol></div>
+<div class="paragraph"><p>Запись производится в соответствии с регулярным выражением:
+[<tt>-]*[0-9]</tt></p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Шестнадцатиричной
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>Число записывается с помощью регулярного выражения:
+[<tt>-]*0x[0-9A-F]</tt>
+Если перед числом указано больше одного знака,
+то результирующий знак определяется по следующему правилу:
+-) Если количество минусов перед знаком нечётное
++) В противном случае</p></div>
 <div class="paragraph"><p>Примеры определения чисел:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1353,8 +1196,10 @@ arr["42"]</tt></pre>
 <div class="content">
 <pre><tt>a OP b</tt></pre>
 </div></div>
-<div class="paragraph"><p>Где a и b операнды - переменные или выражения
-стоящие слева и справа от оператора; OP один из возможных операторов.</p></div>
+<div class="paragraph"><p>Где:</p></div>
+<div class="paragraph"><p><em>a</em> и <em>b</em> операнды - переменные или выражения
+стоящие слева и справа от оператора;</p></div>
+<div class="paragraph"><p><tt>OP</tt> один из возможных операторов.</p></div>
 <div class="paragraph"><p>Арифметические, логические, побитовые операторы представляют операнды как числа а затем выполняют
 одну из следующих операций.</p></div>
 <div class="sect4">
@@ -1368,42 +1213,42 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">+</p></td>
-<td align="left" valign="top"><p class="table">Складывает a и b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>+</tt></p></td>
+<td align="left" valign="top"><p class="table">Складывает <em>a</em> и <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">-</p></td>
-<td align="left" valign="top"><p class="table">Вычитает b из a.</p></td>
+<td align="left" valign="top"><p class="table"><tt>-</tt></p></td>
+<td align="left" valign="top"><p class="table">Вычитает <em>b</em> из <em>a</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">*</p></td>
-<td align="left" valign="top"><p class="table">Перемножает a и b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>*</tt></p></td>
+<td align="left" valign="top"><p class="table">Перемножает <em>a</em> и <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">/</p></td>
-<td align="left" valign="top"><p class="table">Делит a на b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>/</tt></p></td>
+<td align="left" valign="top"><p class="table">Делит <em>a</em> на <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">**</p></td>
-<td align="left" valign="top"><p class="table">Возводит a в степень b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>**</tt></p></td>
+<td align="left" valign="top"><p class="table">Возводит <em>a</em> в степень <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">%</p></td>
-<td align="left" valign="top"><p class="table">Находит отстаток от деления a на b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>%</tt></p></td>
+<td align="left" valign="top"><p class="table">Находит отстаток от деления <em>a</em> на <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">+</p></td>
-<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: +a.
+<td align="left" valign="top"><p class="table"><tt>+</tt></p></td>
+<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: <tt>+</tt> <em>a</em>.
                 Возвращает значение числа a.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">-</p></td>
-<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: -a.
-                Находит арифметически обратное число для a.</p></td>
+<td align="left" valign="top"><p class="table"><tt>-</tt></p></td>
+<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: <tt>-</tt> <em>a</em>.
+                Находит арифметически обратное число для <em>a</em>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1420,24 +1265,24 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">&amp;&amp;</p></td>
-<td align="left" valign="top"><p class="table">Находит результат логического И a и b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>&amp;&amp;</tt></p></td>
+<td align="left" valign="top"><p class="table">Находит результат логического И <em>a</em> и <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">||</p></td>
-<td align="left" valign="top"><p class="table">Находит результат логического ИЛИ a и b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>||</tt></p></td>
+<td align="left" valign="top"><p class="table">Находит результат логического ИЛИ <em>a</em> и <em>b</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">!</p></td>
-<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: !a. Находит логическое НЕ a.</p></td>
+<td align="left" valign="top"><p class="table"><tt>!</tt></p></td>
+<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: <tt>!</tt> <em>a</em>. Находит логическое НЕ <em>a</em>.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">==</p></td>
-<td align="left" valign="top"><p class="table">Проверяет равны ли a и b.</p></td>
+<td align="left" valign="top"><p class="table"><tt>==</tt></p></td>
+<td align="left" valign="top"><p class="table">Проверяет равны ли <em>a</em> и <em>b</em>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1454,35 +1299,35 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">^</p></td>
-<td align="left" valign="top"><p class="table">Находит результат исключающего ИЛИ a и b.
+<td align="left" valign="top"><p class="table"><tt>^</tt></p></td>
+<td align="left" valign="top"><p class="table">Находит результат исключающего ИЛИ <em>a</em> и _b-.
                 Дополняет старшие разряды меньшего числа нулями.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">|</p></td>
-<td align="left" valign="top"><p class="table">Находит результат бинарного ИЛИ a и b.
+<td align="left" valign="top"><p class="table"><tt>|</tt></p></td>
+<td align="left" valign="top"><p class="table">Находит результат бинарного ИЛИ <em>a</em> и <em>b</em>.
                 Дополняет старшие разряды меньшего числа нулями.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">&amp;</p></td>
-<td align="left" valign="top"><p class="table">Находит результат бинарного ИЛИ a и b.
+<td align="left" valign="top"><p class="table"><tt>&amp;</tt></p></td>
+<td align="left" valign="top"><p class="table">Находит результат бинарного ИЛИ <em>a</em> и <em>b</em>.
                 Дополняет старшие разряды меньшего числа нулями.</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"></p></td>
-<td align="left" valign="top"><p class="table">Сдвигает a на b разрядов вправо</p></td>
+<td align="left" valign="top"><p class="table"><tt>&gt;&gt;</tt></p></td>
+<td align="left" valign="top"><p class="table">Сдвигает <em>a</em> на <em>b</em> разрядов вправо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"></p></td>
-<td align="left" valign="top"><p class="table">Сдвигает a на b разрядов влево</p></td>
+<td align="left" valign="top"><p class="table"><tt>&lt;&lt;</tt></p></td>
+<td align="left" valign="top"><p class="table">Сдвигает <em>a</em> на <em>b</em> разрядов влево</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">~</p></td>
-<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: ~a. Находит побитовое НЕ a.</p></td>
+<td align="left" valign="top"><p class="table"><tt>~</tt></p></td>
+<td align="left" valign="top"><p class="table">Унарный оператор. Синтаксис использования: <tt>~</tt> <em>a</em>. Находит побитовое НЕ <em>a</em>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1499,22 +1344,20 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">=</p></td>
-<td align="left" valign="top"><p class="table">Присваивает a значение b
+<td align="left" valign="top"><p class="table"><tt>=</tt></p></td>
+<td align="left" valign="top"><p class="table">Присваивает <em>a</em> значение <em>b</em>
                 Доступно параллельное присваивание.
                 Например:</p>
-<p class="table">----
-                        [a, b] = [b, a]
-                        [n, l, y] = func_with_3_outputs()
-----</p></td>
+<p class="table">                        <tt>[a, b] = [b, a]</tt>
+                        <tt>[n, l, y] = func_with_3_outputs()</tt></p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">op=</p></td>
-<td align="left" valign="top"><p class="table">Выполняет операцию op с a и b, затем присваивает a получившийся результат.</p></td>
+<td align="left" valign="top"><p class="table"><tt>op=</tt></p></td>
+<td align="left" valign="top"><p class="table">Выполняет операцию <tt>op</tt> с <em>a</em> и <em>b</em>, затем присваивает <em>a</em> получившийся результат.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1532,12 +1375,12 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">#</p></td>
-<td align="left" valign="top"><p class="table">Выполняет конкатенацию a и b</p></td>
+<td align="left" valign="top"><p class="table"><tt>#</tt></p></td>
+<td align="left" valign="top"><p class="table">Выполняет конкатенацию <em>a</em> и <em>b</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -1555,12 +1398,12 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">(пробел)</p></td>
-<td align="left" valign="top"><p class="table">Выполняет конкатенацию a и b</p></td>
+<td align="left" valign="top"><p class="table">Выполняет конкатенацию <em>a</em> и <em>b</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -1577,12 +1420,12 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">OP:</p></td>
+<td align="left" valign="top"><p class="table">Оператор</p></td>
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">.</p></td>
-<td align="left" valign="top"><p class="table">Синтаксис: a.b. операция взятия атрибута b у переменной a.
+<td align="left" valign="top"><p class="table"><tt>.</tt></p></td>
+<td align="left" valign="top"><p class="table">Синтаксис: <em>a.b</em>. операция взятия атрибута <em>b</em> у переменной <em>a</em>.
                 попытка взятия не существующего атрибута приводит к <strong>&lt;Runtime error&gt;</strong></p></td>
 </tr>
 </tbody>
@@ -1604,75 +1447,75 @@ cellspacing="0" cellpadding="4">
 <col width="50%" />
 <tbody>
 <tr>
-<td align="left" valign="top"><p class="table">операция</p></td>
+<td align="left" valign="top"><p class="table">Операция</p></td>
 <td align="left" valign="top"><p class="table">Очерёдность</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">a[]</p></td>
+<td align="left" valign="top"><p class="table"><em>a</em> <tt>[]</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">a.b</p></td>
+<td align="left" valign="top"><p class="table"><em>a.b</em></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">**</p></td>
+<td align="left" valign="top"><p class="table"><tt>**</tt></p></td>
 <td align="left" valign="top"><p class="table">справа налево</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">~</p></td>
+<td align="left" valign="top"><p class="table"><tt>~</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">+a -a</p></td>
+<td align="left" valign="top"><p class="table"><tt>+</tt> <em>a</em> <tt>-</tt> <em>a</em></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">* / %</p></td>
+<td align="left" valign="top"><p class="table"><tt>*</tt> <tt>/</tt> <tt>%</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">+ -</p></td>
+<td align="left" valign="top"><p class="table"><tt>+</tt> <tt>-</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">&lt;&lt; &gt;&gt;</p></td>
+<td align="left" valign="top"><p class="table"><tt>&lt;&lt;</tt> <tt>&gt;&gt;</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">&lt; &#8656; &gt;=</p></td>
+<td align="left" valign="top"><p class="table"><tt>&lt;</tt> <tt>&#8656;</tt> <tt>&gt;=</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">== !=</p></td>
+<td align="left" valign="top"><p class="table"><tt>==</tt> <tt>!=</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">&amp;</p></td>
+<td align="left" valign="top"><p class="table"><tt>&amp;</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">^</p></td>
+<td align="left" valign="top"><p class="table"><tt>^</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">|</p></td>
+<td align="left" valign="top"><p class="table"><tt>|</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">&amp;&amp;</p></td>
+<td align="left" valign="top"><p class="table"><tt>&amp;&amp;</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">!</p></td>
+<td align="left" valign="top"><p class="table"><tt>!</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">||</p></td>
+<td align="left" valign="top"><p class="table"><tt>||</tt></p></td>
 <td align="left" valign="top"><p class="table">слева направо</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table">= op=</p></td>
+<td align="left" valign="top"><p class="table"><tt>=</tt> <tt>op=</tt></p></td>
 <td align="left" valign="top"><p class="table">справа налево</p></td>
 </tr>
 </tbody>
@@ -1815,7 +1658,7 @@ func(a);</tt></pre>
 с помощью которой будет доступна перезагрузка содержания модуля.</p></div>
 <div class="sect2">
 <h3 id="_подключение">Подключение</h3>
-<div class="paragraph"><p>Модули подключаются с помощью ключевого слова import.
+<div class="paragraph"><p>Модули подключаются с помощью ключевого слова <strong>import</strong>.
 Если подключается модуль из стандартной библиотеки то
 имя модуля обрамляется символами <em>&lt;</em> и <em>&gt;</em>.
 Пример:</p></div>
@@ -1833,35 +1676,30 @@ func(a);</tt></pre>
 </div></div>
 <div class="paragraph"><p>Стандартные пути расположения модулей</p></div>
 </div>
-<div class="sect2">
-<h3 id="_стандартная_библиотека">Стандартная библиотека.</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_стандартная_библиотека">Стандартная библиотека</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Описание модулей</p></div>
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-crypto
-</p>
-</li>
-</ol></div>
+<div class="sect2">
+<h3 id="_1_crypto">1. crypto</h3>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[res] mod_inv(num, modulo)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Находит обратное num число по модулю modulo.</p></div>
+<div class="paragraph"><p>Находит обратное <em>num</em> число по модулю <em>modulo</em>.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[res] mod_exp(n, exp, modulo)</tt></pre>
 </div></div>
 <div class="paragraph"><p>Вычисляет
-(n ** exp) % modulo</p></div>
+<tt>(<em>n</em> ** <em>exp</em>) % <em>modulo</em></tt></p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[res] rand_prime(len)</tt></pre>
 </div></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>Генерирует случайное число длиннной len байт.</tt></pre>
-</div></div>
+<div class="paragraph"><p>Генерирует случайное число длиннной <em>len</em> байт.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[ctx] md5_ctx_new()
@@ -1901,13 +1739,8 @@ crypto
 <div class="sectionbody">
 <div class="paragraph"><p>rsa
 режимы шифрования</p></div>
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-stdio
-</p>
-</li>
-</ol></div>
+<div class="sect2">
+<h3 id="_2_stdio">2. stdio</h3>
 <div class="listingblock">
 <div class="content">
 <pre><tt>num_from_file()
@@ -1916,27 +1749,52 @@ fclose()
 fread()
 fwrite()</tt></pre>
 </div></div>
-<div class="paragraph"><p>3.random</p></div>
-<div class="paragraph"><p>4.string</p></div>
+</div>
+<div class="sect2">
+<h3 id="_3_random">3.random</h3>
+</div>
+<div class="sect2">
+<h3 id="_4_string">4.string</h3>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[string] new_string(len, filler)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Возвращает новую строку len байт длинны,
-каждый байт которой равен filler.</p></div>
+<div class="paragraph"><p>Возвращает новую строку <em>len</em> байт длинны,
+каждый байт которой равен <em>filler</em>.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[sub] subs(string, start, len)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Возвращает копию подстроки начиная с start,
-len байт длинной.</p></div>
+<div class="paragraph"><p>Возвращает копию подстроки начиная с <em>start</em>,
+<em>len</em> байт длинной.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_примеры">Примеры</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_hello_world">1. Hello, world</h3>
+<div class="paragraph"><p>def [] hello()
+{
+        print "hello world"</p></div>
+<div class="paragraph"><p>}</p></div>
+<div class="paragraph"><p>hello()</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Some
+</p>
+</li>
+</ol></div>
+</div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-04 22:42:19 MSK
+Last updated 2012-12-04 23:56:22 RUS
 </div>
 </div>
 </body>
