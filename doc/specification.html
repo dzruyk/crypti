@@ -3,27 +3,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.4" />
+<meta name="generator" content="AsciiDoc 8.6.7" />
 <title>Черновик документации по crypti.</title>
 <style type="text/css">
-/* Sans-serif font. */
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
 h1, h2, h3, h4, h5, h6,
 div.title, caption.title,
 thead, p.table.header,
-div#toctitle,
-span#author, span#revnumber, span#revdate, span#revremark,
-div#footer {
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
   font-family: Arial,Helvetica,sans-serif;
-}
-
-/* Serif font. */
-div.sectionbody {
-  font-family: Georgia,"Times New Roman",Times,serif;
-}
-
-/* Monospace font. */
-tt {
-  font-size: inherit;
 }
 
 body {
@@ -48,11 +45,6 @@ strong {
   color: #083194;
 }
 
-tt {
-  font-size: inherit;
-  color: navy;
-}
-
 h1, h2, h3, h4, h5, h6 {
   color: #527bbd;
   margin-top: 1.2em;
@@ -71,6 +63,9 @@ h3 {
 }
 h3 + * {
   clear: left;
+}
+h5 {
+  font-size: 1.0em;
 }
 
 div.sectionbody {
@@ -97,36 +92,36 @@ pre {
   margin: 0;
 }
 
-span#author {
+#author {
   color: #527bbd;
   font-weight: bold;
   font-size: 1.1em;
 }
-span#email {
+#email {
 }
-span#revnumber, span#revdate, span#revremark {
+#revnumber, #revdate, #revremark {
 }
 
-div#footer {
+#footer {
   font-size: small;
   border-top: 2px solid silver;
   padding-top: 0.5em;
   margin-top: 4.0em;
 }
-div#footer-text {
+#footer-text {
   float: left;
   padding-bottom: 0.5em;
 }
-div#footer-badges {
+#footer-badges {
   float: right;
   padding-bottom: 0.5em;
 }
 
-div#preamble {
+#preamble {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
-div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
   margin-top: 1.0em;
@@ -184,7 +179,7 @@ div.quoteblock, div.verseblock {
   margin-left: 1.0em;
   margin-right: 10%;
   border-left: 5px solid #f0f0f0;
-  color: #777777;
+  color: #888;
 }
 
 div.quoteblock > div.attribution {
@@ -267,35 +262,12 @@ div.compact div, div.compact div {
   margin-bottom: 0.1em;
 }
 
-div.tableblock > table {
-  border: 3px solid #527bbd;
-}
-thead, p.table.header {
-  font-weight: bold;
-  color: #527bbd;
-}
 tfoot {
   font-weight: bold;
 }
 td > div.verse {
   white-space: pre;
 }
-p.table {
-  margin-top: 0;
-}
-/* Because the table frame attribute is overriden by CSS in most browsers. */
-div.tableblock > table[frame="void"] {
-  border-style: none;
-}
-div.tableblock > table[frame="hsides"] {
-  border-left-style: none;
-  border-right-style: none;
-}
-div.tableblock > table[frame="vsides"] {
-  border-top-style: none;
-  border-bottom-style: none;
-}
-
 
 div.hdlist {
   margin-top: 0.8em;
@@ -362,14 +334,14 @@ div.colist td img {
 }
 
 @media print {
-  div#footer-badges { display: none; }
+  #footer-badges { display: none; }
 }
 
-div#toc {
+#toc {
   margin-bottom: 2.5em;
 }
 
-div#toctitle {
+#toctitle {
   color: #527bbd;
   font-size: 1.1em;
   font-weight: bold;
@@ -377,7 +349,7 @@ div#toctitle {
   margin-bottom: 0.1em;
 }
 
-div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -430,10 +402,146 @@ span.yellow-background { background: yellow; }
 
 span.big { font-size: 2em; }
 span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+tt {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+.monospaced {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -475,7 +583,7 @@ toc: function (toclevels) {
 
   function tocEntries(el, toclevels) {
     var result = new Array;
-    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
     // Function that scans the DOM tree for header elements (the DOM2
     // nodeIterator API would be a better technique but not supported by all
     // browsers).
@@ -495,6 +603,25 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -522,24 +649,44 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  var cont = document.getElementById("content");
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
   var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      // Use [\s\S] in place of . so multi-line matches work.
-      // Because JavaScript has no s (dotall) regex flag.
-      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
-      spans[i].innerHTML =
-        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -559,9 +706,32 @@ footnotes: function () {
       }
     }
   }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
 }
 
 }
+asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -570,65 +740,6 @@ footnotes: function () {
 <h1>Черновик документации по crypti.</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_notes">Notes</h2>
-<div class="sectionbody">
-<div class="paragraph"><p>Для удобства файл будет разбит на 2 части:</p></div>
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-TODO - список изменений которые возможно следует
-добавить в будущем (возможно что-то будет перекликаться с
-TODO файлом в ./doc папке)
-</p>
-</li>
-<li>
-<p>
-DOC - описание (пока не структурированное и не полное)
-языка, разбитое на логические дополнительные части
-</p>
-</li>
-</ol></div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_todo">TODO:</h2>
-<div class="sectionbody">
-<div class="ulist"><ul>
-<li>
-<p>
-const модификатор в функции.
-</p>
-</li>
-<li>
-<p>
-В переменной может храниться ссылка на функцию?
-</p>
-</li>
-<li>
-<p>
-Параметры передаются по в функцию по значению?
-</p>
-</li>
-<li>
-<p>
-Функции, которые должны изменить более одного аргумента?
-</p>
-</li>
-<li>
-<p>
-Элементы массивов могут быть разными типами?
-</p>
-</li>
-<li>
-<p>
-Так как функции принимают аргументы как копии нужно сделать
-    del ключевым словом а не функцией?
-</p>
-</li>
-</ul></div>
-</div>
-</div>
 <div class="sect1">
 <h2 id="_содержание">Содержание:</h2>
 <div class="sectionbody">
@@ -698,6 +809,11 @@ return
 <li>
 <p>
 import
+</p>
+</li>
+<li>
+<p>
+del
 </p>
 </li>
 <li>
@@ -813,52 +929,10 @@ builtin функции
 <p>
 crypto
 </p>
-<div class="ulist"><ul>
-<li>
-<p>
-mod_inv
-</p>
-</li>
-<li>
-<p>
-mod_exp
-</p>
-</li>
-<li>
-<p>
-rand_prime
-</p>
-</li>
-</ul></div>
 </li>
 <li>
 <p>
 stdio
-</p>
-<div class="ulist"><ul>
-<li>
-<p>
-num_from_file
-</p>
-</li>
-<li>
-<p>
-fopen
-</p>
-</li>
-<li>
-<p>
-fclose
-</p>
-</li>
-<li>
-<p>
-fread
-</p>
-</li>
-<li>
-<p>
-fwrite
 </p>
 </li>
 <li>
@@ -866,7 +940,10 @@ fwrite
 random
 </p>
 </li>
-</ul></div>
+<li>
+<p>
+string
+</p>
 </li>
 </ul></div>
 </li>
@@ -874,6 +951,18 @@ random
 <p>
 Примеры
 </p>
+<div class="ulist"><ul>
+<li>
+<p>
+Hello, World
+</p>
+</li>
+<li>
+<p>
+RSAEP
+</p>
+</li>
+</ul></div>
 </li>
 </ul></div>
 </div>
@@ -948,7 +1037,7 @@ b = a " universe"</tt></pre>
 </li>
 </ol></div>
 <div class="paragraph"><p>Запись производится в соответствии с регулярным выражением:
-[<tt>-]*[0-9]</tt></p></div>
+<tt><tt>[+-]*[0-9]+</tt></tt></p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
@@ -957,11 +1046,11 @@ b = a " universe"</tt></pre>
 </li>
 </ol></div>
 <div class="paragraph"><p>Число записывается с помощью регулярного выражения:
-[<tt>-]*0x[0-9A-F]</tt>
-Если перед числом указано больше одного знака,
-то результирующий знак определяется по следующему правилу:
--) Если количество минусов перед знаком нечётное
-+) В противном случае</p></div>
+<tt><tt>[+-]*0x[0-9A-F]+</tt></tt></p></div>
+<div class="paragraph"><p>Если перед числом указано больше одного знака,
+то результирующий знак определяется по следующему правилу:</p></div>
+<div class="paragraph"><p><tt>-</tt>) Если количество минусов перед знаком нечётное</p></div>
+<div class="paragraph"><p><tt>+</tt>) В противном случае</p></div>
 <div class="paragraph"><p>Примеры определения чисел:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1010,15 +1099,15 @@ b = a " universe"</tt></pre>
 <li>
 <p>
 Не все преобразования возвратны.
-        Тип Октетная строка не хранит знака числа. Преобразование отрицательного числа
-        в октетную строку выдаёт предупреждение на stderr о потере знака.
+Тип Октетная строка не хранит знака числа. Преобразование отрицательного числа
+в октетную строку выдаёт предупреждение на stderr о потере знака.
 </p>
 </li>
 <li>
 <p>
 Преобразование из печатной строки в число не всегда успешно.
-        Если печатная строка содержит символы, не являющиеся цифрами, она будет интерпретирована как 0
-        и на stderr будет выведено предупреждение.
+Если печатная строка содержит символы, не являющиеся цифрами, она будет интерпретирована как 0
+и на stderr будет выведено предупреждение.
 </p>
 </li>
 </ol></div>
@@ -1030,7 +1119,7 @@ b = a " universe"</tt></pre>
 <div class="sect2">
 <h3 id="_идентификаторы">Идентификаторы</h3>
 <div class="paragraph"><p>Идентификаторы можно задать в соответствии со следующим регулярным выражением.
-[a-zA-Z][a-zA-Z0-9]*</p></div>
+<tt><tt>[a-zA-Z][a-zA-Z0-9]*</tt></tt></p></div>
 </div>
 <div class="sect2">
 <h3 id="_ключевые_слова">Ключевые слова</h3>
@@ -1110,6 +1199,15 @@ import &lt;modname&gt;</tt></pre>
 <strong>import</strong> должен присутствовать в глобальной области видимости
 (внутри условий, циклов,
 вложенных областях видимости import не обрабатывается).</p></div>
+<div class="paragraph"><p><strong>del</strong></p></div>
+<div class="paragraph"><p>Синтаксис:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>del var</tt></pre>
+</div></div>
+<div class="paragraph"><p>Ключевое слово,
+позволяющее удалить переменную из ближайшей
+области видимости и освободить занимаемую ей память.</p></div>
 <div class="paragraph"><p><strong>def</strong></p></div>
 <div class="listingblock">
 <div class="content">
@@ -1590,12 +1688,6 @@ func(a);</tt></pre>
 Ниже в алфавитном порядке перечисленны сами функции.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>del(var)</tt></pre>
-</div></div>
-<div class="paragraph"><p>Удаляет переменную из ближайшей области видимости,
-и освобождает всю занимаемую ей память.</p></div>
-<div class="listingblock">
-<div class="content">
 <pre><tt>print(var, ...)</tt></pre>
 </div></div>
 <div class="paragraph"><p>выводит на stdout переданные аргументы.</p></div>
@@ -1697,33 +1789,32 @@ func(a);</tt></pre>
 <tt>(<em>n</em> ** <em>exp</em>) % <em>modulo</em></tt></p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[res] rand_prime(len)</tt></pre>
-</div></div>
-<div class="paragraph"><p>Генерирует случайное число длиннной <em>len</em> байт.</p></div>
-<div class="listingblock">
-<div class="content">
 <pre><tt>[ctx] md5_ctx_new()
 [] md5_ctx_update(ctx, msg)
 [digest] md5_ctx_final(ctx)</tt></pre>
 </div></div>
+<div class="paragraph"><p>Набор функций для получения md5 хеша.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[ctx] whirpool_ctx_new()
 [] whirpool_ctx_update(ctx, msg)
 [digest] whirpool_ctx_final(ctx)</tt></pre>
 </div></div>
+<div class="paragraph"><p>Набор функций для получения whirpool хеша.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[ctx] sha1_ctx_new()
 [] sha1_ctx_update(ctx, msg)
 [digest] sha1_ctx_final(ctx)</tt></pre>
 </div></div>
+<div class="paragraph"><p>Набор функций для получения sha1 хеша.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[ctx] sha256_ctx_new()
 [] sha256_ctx_update(ctx, msg)
 [digest] sha256_ctx_final(ctx)</tt></pre>
 </div></div>
+<div class="paragraph"><p>Набор функций для получения sha256 хеша.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[ctx] aes_ctx_new()
@@ -1731,27 +1822,79 @@ func(a);</tt></pre>
 [out] aes_encrypt(ctx, in)
 [out] aes_decrypt(ctx, in)</tt></pre>
 </div></div>
+<div class="paragraph"><p>Набор функций для шифрования и дешифрования с помощью алгоритма aes</p></div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_wip">WIP</h2>
-<div class="sectionbody">
-<div class="paragraph"><p>rsa
-режимы шифрования</p></div>
 <div class="sect2">
 <h3 id="_2_stdio">2. stdio</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>num_from_file()
-fopen()
-fclose()
-fread()
-fwrite()</tt></pre>
+<pre><tt>[fd] fopen(path, mode)
+[] fclose(fd)</tt></pre>
 </div></div>
+<div class="paragraph"><p><strong>fopen</strong>, <strong>fclose</strong> функции для открытия и закрытия файла.
+При успешном завершении fopen возвращает дескриптор файла,
+небольшое целое положительное число,
+которое должно быть использовано при вызове функций
+<strong>fread</strong>, <strong>fwrite</strong>, <strong>fseek</strong>, <strong>ftell</strong>.</p></div>
+<div class="paragraph"><p>аргумент <em>mode</em> - строка, которая может содержать одну из следующих последовательностей:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+"r" - открывает файл для чтения. Начальное смещение находится на начале файла;
+</p>
+</li>
+<li>
+<p>
+"r+" - открывает файл для чтения и записи. Начальное смещение находится на начале файла;
+</p>
+</li>
+<li>
+<p>
+"w" - Изменяет длину файла до нуля и открывает его для записи. Начальное смещение находится на начале файла;
+</p>
+</li>
+<li>
+<p>
+"w+" - открывает файл для чтения. Начальное смещение находится на начале файла;
+</p>
+</li>
+<li>
+<p>
+"a" - открывает файл для записи в конец. Начальное смещение находится на конце файла;
+</p>
+</li>
+<li>
+<p>
+"a+" - открывает файл для чтения и записи в конец. Начальное смещение находится на начале файла.
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>[oct_str] fread(fd, len)
+[nrbytes] fwrite(fd, octstr, len)</tt></pre>
+</div></div>
+<div class="paragraph"><p>Функция <strong>fread</strong> возвращает <em>len</em> байт из файла с дескриптором <em>fd</em>
+функция <strong>fwrite</strong> записывает в файл ассоциированный с дискриптором <em>fd</em> len байт из октетной строки <em>octstr</em></p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>[cur_offset] fseek(fd, offset, whence)
+[cur_offset] ftell(fd)</tt></pre>
+</div></div>
+<div class="paragraph"><p><strong>fseek</strong> изменяет смещение для чтения/записи на <em>offset</em> байт в соответствии с диррективой <em>whence</em>,
+принимающей одно из нескольких значений
+* SEEK_CUR смещение относительно текущей позиции
+* SEEK_START смещение относительно начала файла
+* SEEK_END смещение относительно конца файла</p></div>
+<div class="paragraph"><p><strong>ftell</strong> - возвращает текущее смещение в файле.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_3_random">3.random</h3>
+<div class="listingblock">
+<div class="content">
+<pre><tt>[res] rand_prime(len)</tt></pre>
+</div></div>
+<div class="paragraph"><p>Генерирует случайное число длиннной <em>len</em> байт.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_4_string">4.string</h3>
@@ -1774,19 +1917,38 @@ fwrite()</tt></pre>
 <h2 id="_примеры">Примеры</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_hello_world">1. Hello, world</h3>
-<div class="paragraph"><p>def [] hello()
+<h3 id="_1_hello_world">1. Hello, World</h3>
+<div class="paragraph"><p>Следующий фрагмент кода определяет функцию, печатающую
+"hello world" на стандартный вывод при вызове.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>def [] hello()
 {
-        print "hello world"</p></div>
-<div class="paragraph"><p>}</p></div>
-<div class="paragraph"><p>hello()</p></div>
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-Some
-</p>
-</li>
-</ol></div>
+        print "Hello, World"
+
+}
+
+hello()</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_2_rsaep">2. RSAEP</h3>
+<div class="paragraph"><p>Функция ниже - пример реализации шифрования по алгоритму RSA</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>def [c, error] RSAEP (n, e, m)
+{
+        if (m &lt; 0 || m &gt; n - 1) {
+                error = "message representative out of range"
+                c = 0
+                return
+        }
+
+        c = mod_exp(m, e, n)
+        error = ""
+        return;
+}</tt></pre>
+</div></div>
 </div>
 </div>
 </div>
@@ -1794,7 +1956,7 @@ Some
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-04 23:56:22 RUS
+Last updated 2012-12-07 00:59:09 MSK
 </div>
 </div>
 </body>
