@@ -19,3 +19,5 @@ List of current tasks.
 * mp_or mp_xor mp_and functions in lib/mp_bitwise.c
 * mp_exp func 
 * mp_mul need to ...
+* const keyword
+* del keyword
