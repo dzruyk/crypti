@@ -76,9 +76,8 @@ typedef enum {
 struct lex_item {
 	tok_t id;
 	union {
-		int num;
 		char *name;
-		char *str;
+		struct variable *var;
 	};
 };
 

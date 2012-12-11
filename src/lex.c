@@ -4,6 +4,11 @@
 
 #include "keyword.h"
 #include "lex.h"
+#include "macros.h"
+#include "mp.h"
+#include "octstr.h"
+#include "str.h"
+
 
 static char peek = ' ';
 
@@ -18,7 +23,7 @@ skip_comment()
 	while (peek != '\n');
 }
 
-tok_t
+static tok_t
 get_string()
 {	
 	char *s = NULL;
@@ -63,6 +68,43 @@ get_string()
 	return TOK_STRING;
 }
 
+static tok_t
+get_digit()
+{
+	/*
+	int num = 0;
+
+	do {
+		num = num * 10 + peek - '0';
+		peek = fgetc(input);
+	} while (isdigit(peek));
+	
+	lex_item.id = TOK_NUM;
+	lex_item.num = num;
+
+	return TOK_NUM;
+	*/
+
+	struct variable *var;
+	mp_int *mp;
+
+	var = xmalloc(sizeof(*var));
+	var_init(var);
+	
+	mp = var_bignum_ptr(var);
+
+
+	do {
+		
+		peek = fgetc(input);
+	} while (isdigit(peek));
+
+	lex_item.id = TOK_VAR;
+	lex_item.var = var;
+
+	return TOK_VAR;
+}
+
 tok_t
 get_next_token()
 {
@@ -72,17 +114,8 @@ begin:
 	for (; peek == ' ' || peek == '\t';)
 		peek = fgetc(input);
 	
-	if (isdigit(peek)) {
-		int num = 0;
-		do {
-			num = num * 10 + peek - '0';
-			peek = fgetc(input);
-		} while (isdigit(peek));
-		
-		lex_item.id = TOK_NUM;
-		lex_item.num = num;
-		return TOK_NUM;
-	}
+	if (isdigit(peek))
+		return get_digit();
 
 	if (isalpha(peek) || peek == '_') {
 		tok_t kword;
@@ -103,7 +136,7 @@ begin:
 
 		s[used++] = '\0';
 		if ((tmp = realloc(s, used)) == NULL)
-			print_warn_and_die("realloc_err");
+			error("realloc_err");
 		s = tmp;
 
 		if ((kword = keyword_table_lookup(s)) != TOK_UNKNOWN) {
@@ -117,6 +150,7 @@ begin:
 		
 		return TOK_ID;
 	}
+
 	if (peek == '\"')
 		return get_string();
 
