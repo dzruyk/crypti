@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "keyword.h"
@@ -8,6 +9,7 @@
 #include "mp.h"
 #include "octstr.h"
 #include "str.h"
+#include "variable.h"
 
 
 static char peek = ' ';
@@ -71,36 +73,41 @@ get_string()
 static tok_t
 get_digit()
 {
-	/*
-	int num = 0;
-
-	do {
-		num = num * 10 + peek - '0';
-		peek = fgetc(input);
-	} while (isdigit(peek));
-	
-	lex_item.id = TOK_NUM;
-	lex_item.num = num;
-
-	return TOK_NUM;
-	*/
-
 	struct variable *var;
-	mp_int *mp;
+	mp_int *mp, tmp, base;
+	int num;
 
 	var = xmalloc(sizeof(*var));
-	var_init(var);
+	var_initv(var, NULL);
+	mp_initv(&tmp, &base, NULL);
 	
 	mp = var_bignum_ptr(var);
 
-
+	mp_set_uint(mp, 0);
+	mp_set_uint(&base, STR_BASE);
 	do {
+		/* mp = mp * STR_BASE + peek - '0'; */
+		num = peek - '0';
+		mp_set_uint(&tmp, num);
+
+		mp_mul(mp, mp, &base); 
+		mp_add(mp, mp, &tmp);
 		
 		peek = fgetc(input);
 	} while (isdigit(peek));
 
 	lex_item.id = TOK_VAR;
 	lex_item.var = var;
+
+#if IS_DEBUG == 1
+#define MAX_NUM_SZ 200
+	char temp_dig[MAX_NUM_SZ];
+
+	rc = mp_to_str(mp, temp_dig, MAX_NUM_SZ, STR_BASE);
+	if (rc == MP_OK)
+		DEBUG(LOG_VERBOSE, "get_digit: %s\n", temp_dig);
+#endif
+	mp_clearv(&tmp, &base, NULL);
 
 	return TOK_VAR;
 }
@@ -136,7 +143,7 @@ begin:
 
 		s[used++] = '\0';
 		if ((tmp = realloc(s, used)) == NULL)
-			error("realloc_err");
+			error(1, "realloc_err");
 		s = tmp;
 
 		if ((kword = keyword_table_lookup(s)) != TOK_UNKNOWN) {

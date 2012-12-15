@@ -1,6 +1,9 @@
 #ifndef __VARIABLE_H_
 #define __VARIABLE_H_
 
+/* base of printable string */
+#define STR_BASE 16
+
 typedef enum {
 	VAR_BIGNUM = 0x1,
 	VAR_OCTSTRING = 0x2,

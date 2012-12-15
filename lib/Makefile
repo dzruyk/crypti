@@ -10,13 +10,13 @@ MP_OBJECTS = mp_util.o mp_copy.o mp_ensure.o mp_add.o \
 	     mp_sub.o mp_cmp.o mp_shift.o mp_bitwise.o mp_mul.o mp_exp.o mp_sqr.o \
 	     mp_reduce.o mp_div.o mp_random.o mp_primality.o \
 	     mp_gcd.o mp_mod_inv.o mp_mod_exp.o mp_init.o \
-	     mp_clear.o mp_set.o mp_uchar.o
+	     mp_clear.o mp_set.o mp_to.o mp_uchar.o
 
 MP_SOURCES = mp_util.c mp_copy.c mp_ensure.c mp_add.c \
 	     mp_sub.c mp_cmp.c mp_shift.c mp_bitwise.c mp_mul.c mp_exp.c mp_sqr.c \
 	     mp_reduce.c mp_div.c mp_random.c mp_primality.c \
 	     mp_gcd.c mp_mod_inv.c mp_mod_exp.c mp_init.c \
-	     mp_clear.c mp_set.c mp_uchar.c
+	     mp_clear.c mp_set.c mp_to.c mp_uchar.c
 
 MP_HEADERS = mp.h mp_common.h
 
@@ -101,6 +101,9 @@ mp_clear.o: mp_clear.c $(MP_HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 mp_set.o: mp_set.c $(MP_HEADERS)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+mp_to.o: mp_to.c $(MP_HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 mp_uchar.o: mp_uchar.c $(MP_HEADERS)

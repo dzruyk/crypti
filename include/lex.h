@@ -7,9 +7,8 @@
 
 typedef enum {
 	TOK_KEYWORD,
-	TOK_STRING,
 	TOK_ID,
-	TOK_NUM,
+	TOK_VAR,
 	
 	TOK_AS,
 	TOK_PLUS_AS,

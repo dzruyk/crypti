@@ -13,7 +13,6 @@
 #include "type_convertions.h"
 
 /* FIXME: Need to set as global variable. */
-#define STR_BASE 16
 
 static void *string_to_bignum(struct variable *to, const struct variable *from);
 static void *string_to_octstring(struct variable *to, const struct variable *from);

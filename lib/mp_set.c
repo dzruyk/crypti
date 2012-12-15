@@ -49,25 +49,6 @@ mp_set_uint(mp_int *a, unsigned long val)
 		*dp++ = 0;
 }
 
-int 
-mp_to_uint(mp_int *a, unsigned long *val)
-{
-	int nbits;
-
-	nbits = mp_nr_bits(a);
-
-	if (nbits > sizeof(int) * CHAR_BIT)
-		return MP_ERR;
-
-	*val = a->dig[0];
-	if (nbits > MP_INT_BITS) {
-		*val <<= MP_INT_BITS;
-		*val += a->dig[1];
-	}
-
-	return MP_OK;
-}
-
 int
 mp_set(mp_int *a, unsigned long *val, unsigned int nval, int sign)
 {
