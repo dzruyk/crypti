@@ -13,6 +13,13 @@
 #include "macros.h"
 #include "octstr.h"
 
+enum {
+	OCTSTR_OP_XOR,
+	OCTSTR_OP_OR,
+	OCTSTR_OP_AND,
+};
+
+
 /* FIXME:
  * Rly need to return char ptr?
  * Remember that octstring is not NULL terminated!
@@ -80,6 +87,85 @@ octstr_concat(octstr_t *dst, const octstr_t *a, const octstr_t *b)
 {
 	octstr_copy(dst, a);
 	octstr_append_octstr(dst, b);
+}
+
+static void
+octstr_bitwise(octstr_t *dst, const octstr_t *a, const octstr_t *b, int op)
+{
+	octstr_t copy;
+	unsigned char *ap, *bp;
+	int alen, blen, i;
+
+	assert(dst != NULL && a != NULL && b != NULL);
+
+	if (octstr_len(a) > octstr_len(b)) {
+		const octstr_t *tmp;
+		
+		tmp = a;
+		a = b;
+		b = tmp;
+	}
+
+	ap = octstr_ptr((octstr_t *)a);
+	bp = octstr_ptr((octstr_t *)b);
+	alen = octstr_len((octstr_t *)a);
+	blen = octstr_len((octstr_t *)b);
+
+	octstr_init(&copy);
+
+	switch (op) {
+	case OCTSTR_OP_AND:
+		for (i = 0; i < alen; i++)
+			octstr_putc(&copy, *ap++ & *bp++);
+
+		for (i = alen; i < blen; i++)
+			octstr_putc(&copy, 0);
+		break;
+	case OCTSTR_OP_OR:
+		for (i = 0; i < alen; i++)
+			octstr_putc(&copy, *ap++ | *bp++);
+
+		for (i = alen; i < blen; i++)
+			octstr_putc(&copy, *bp++);
+		break;
+	case OCTSTR_OP_XOR:
+		for (i = 0; i < alen; i++)
+			octstr_putc(&copy, *ap++ ^ *bp++);
+
+		for (i = alen; i < blen; i++)
+			octstr_putc(&copy, *bp++);
+		break;
+	default:
+		SHOULDNT_REACH();
+	}
+
+	octstr_copy(dst, &copy);
+	octstr_clear(&copy);
+}
+
+void
+octstr_or(octstr_t *dst, const octstr_t *a, const octstr_t *b)
+{
+	assert(dst != NULL && a != NULL && b != NULL);
+
+	octstr_bitwise(dst, a, b, OCTSTR_OP_OR);
+}
+
+void
+octstr_xor(octstr_t *dst, const octstr_t *a, const octstr_t *b)
+{
+	assert(dst != NULL && a != NULL && b != NULL);
+
+	octstr_bitwise(dst, a, b, OCTSTR_OP_XOR);
+}
+
+
+void
+octstr_and(octstr_t *dst, const octstr_t *a, const octstr_t *b)
+{
+	assert(dst != NULL && a != NULL && b != NULL);
+
+	octstr_bitwise(dst, a, b, OCTSTR_OP_AND);
 }
 
 char *
@@ -176,16 +262,17 @@ octstr_reset(octstr_t *octstr)
 }
 
 size_t
-octstr_len(octstr_t *octstr)
+octstr_len(const octstr_t *octstr)
 {
 	assert(octstr != NULL);
 
 	return buffer_size(octstr->buf);
 }
 
-char *
+unsigned char *
 octstr_ptr(octstr_t *octstr)
 {
 	return buffer_ptr(octstr->buf);
 }
+
 

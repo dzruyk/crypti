@@ -3,6 +3,9 @@ include ../Common.mk
 STR_OBJS = str_test.o $(patsubst %,../src/%, str.o buffer.o common.o)
 STR_TEST = str_test
 
+OCTSTR_OBJS = octstr_test.o $(patsubst %,../src/%, octstr.o buffer.o common.o)
+OCTSTR_TEST = octstr_test
+
 VAROP_OBJS = var_op_test.o
 VAROP_TEST = varop_test
 
@@ -18,12 +21,15 @@ LEX_OBJS = $(patsubst %,../src/%, lex.o id_table.o hash.o primes.o \
 	keyword.o common.o array.o str.o octstr.o buffer.o type_convertions.o variable.o var_op.o)
 
 
-all: $(STR_TEST) $(VAROP_TEST) $(MPLIB_TEST) $(TYPECONV_TEST)
+all: $(STR_TEST) $(OCTSTR_TEST) $(VAROP_TEST) $(MPLIB_TEST) $(TYPECONV_TEST)
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $^ -o $@
 
 $(STR_TEST): $(STR_OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+
+$(OCTSTR_TEST): $(OCTSTR_OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
 $(VAROP_TEST): $(VAROP_OBJS) $(LEX_OBJS) $(LIBS)

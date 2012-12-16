@@ -122,36 +122,54 @@ varop_gcd(struct variable *c, struct variable *a, struct variable *b)
 int
 varop_or(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
+	octstr_t *ap, *bp, *cp;
 
-	if (varop_bnum_op(c, a, b, mp_or) != 0) {
-		return 1;
-	}
+	assert(c != NULL && a != NULL && b != NULL);
 	
+	ap = var_cast_to_octstr(a);
+	bp = var_cast_to_octstr(b);
+	cp = var_octstr_ptr(c);
+
+	octstr_or(cp, ap, bp);
+
+	var_force_type(c, VAR_OCTSTRING);
+
 	return 0;
 }
 
 int
 varop_xor(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
+	octstr_t *ap, *bp, *cp;
 
-	if (varop_bnum_op(c, a, b, mp_xor) != 0) {
-		return 1;
-	}
+	assert(c != NULL && a != NULL && b != NULL);
 	
+	ap = var_cast_to_octstr(a);
+	bp = var_cast_to_octstr(b);
+	cp = var_octstr_ptr(c);
+
+	octstr_xor(cp, ap, bp);
+
+	var_force_type(c, VAR_OCTSTRING);
+
 	return 0;
 }
 
 int
 varop_and(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
+	octstr_t *ap, *bp, *cp;
 
-	if (varop_bnum_op(c, a, b, mp_and) != 0) {
-		return 1;
-	}
+	assert(c != NULL && a != NULL && b != NULL);
 	
+	ap = var_cast_to_octstr(a);
+	bp = var_cast_to_octstr(b);
+	cp = var_octstr_ptr(c);
+
+	octstr_and(cp, ap, bp);
+
+	var_force_type(c, VAR_OCTSTRING);
+
 	return 0;
 }
 

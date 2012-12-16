@@ -79,9 +79,6 @@ int mp_nr_bits(const mp_int *a);
 
 int mp_shr(mp_int *a, unsigned int nr);
 int mp_shl(mp_int *a, unsigned int nr);
-int mp_and(mp_int *c, const mp_int *a, const mp_int *b);
-int mp_or(mp_int *c, const mp_int *a, const mp_int *b);
-int mp_xor(mp_int *c, const mp_int *a, const mp_int *b);
 
 int mp_add(mp_int *c, const mp_int *a, const mp_int *b);
 int mp_sub(mp_int *c, const mp_int *a, const mp_int *b);

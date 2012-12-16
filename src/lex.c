@@ -139,7 +139,7 @@ begin:
 
 			s[used++] = peek;
 			peek = fgetc(input);
-		} while(isalnum(peek) || peek == '_');
+		} while (isalnum(peek) || peek == '_');
 
 		s[used++] = '\0';
 		if ((tmp = realloc(s, used)) == NULL)
