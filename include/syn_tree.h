@@ -31,7 +31,7 @@ typedef enum {
 } opcode_t;
 
 typedef enum {
-	AST_NODE_NUM,
+	AST_NODE_VAR,
 	AST_NODE_ID,
 	AST_NODE_ARR,
 	AST_NODE_ACCESS,
@@ -69,8 +69,8 @@ typedef struct ast_node {
 
 typedef struct {
 	ast_node_t tree;
-	int num;
-} ast_node_num_t;
+	struct variable *var;
+} ast_node_var_t;
 
 typedef struct {
 	ast_node_t tree;
@@ -188,7 +188,7 @@ typedef struct {
 ast_node_t *ast_node_new(ast_type_t type, int sz, 
     destructor_t destructor);
 
-ast_node_t *ast_node_num_new(int num);
+ast_node_t *ast_node_var_new(struct variable *var);
 
 ast_node_t *ast_node_id_new(char *name);
 

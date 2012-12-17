@@ -1,14 +1,16 @@
 #include <assert.h>
 
+#include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "log.h"
 #include "hash.h"
 #include "id_table.h"
 #include "lex.h"
+#include "log.h"
 #include "macros.h"
+#include "variable.h"
 
 #define INITIAL_SZ 32
 
@@ -49,8 +51,10 @@ id_item_default_release(id_item_t *item)
 {
 	switch (item->type) {
 	case ID_UNKNOWN:
-	case ID_NUM:
+	case ID_VAR:
 	case ID_ARR:
+		var_clear(item->var);
+		ufree(item->var);
 		break;
 	default:
 		print_warn_and_die("unknown id type\n");
@@ -78,12 +82,12 @@ id_item_set(id_item_t *item, id_type_t type, void *data)
 	item->type = type;
 
 	switch (type) {
-	case ID_NUM:
+	case ID_VAR:
 		//FIXME: something ubnormal
-		item->value = *((int *)data);
+		item->var = (struct variable *)data;
 		break;
 	case ID_ARR:
-		item->arr = (arr_t *) data;
+		item->arr = (arr_t *)data;
 		break;
 	default:
 		//now we cant set to item functions

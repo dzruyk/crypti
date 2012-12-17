@@ -6,7 +6,7 @@
 #include "str.h"
 
 typedef enum {
-	ID_NUM,
+	ID_VAR,
 	ID_ARR,
 	ID_UNKNOWN,
 } id_type_t;
@@ -19,8 +19,7 @@ typedef struct id_item {
 	id_type_t type;
 	char *name;
 	union {
-		int value;
-		str_t *str;
+		struct variable *var;
 		arr_t *arr;
 	};
 

@@ -44,16 +44,16 @@ res_type_t traverse_body(ast_node_t *tree);
 static int nerrors = 0;
 
 static void
-traverse_num(ast_node_t *tree)
+traverse_var(ast_node_t *tree)
 {
 	eval_t *ev;
-	int val;
+	struct variable *var;
 
 	assert(tree != NULL);
 	
-	val = ((ast_node_num_t *)tree)->num;
+	var = ((ast_node_var_t *)tree)->var;
 	
-	ev = eval_num_new(val);
+	ev = eval_var_new(var);
 
 	stack_push(ev);
 }
@@ -1164,7 +1164,7 @@ struct {
 	ast_type_t node;
 	traverse_cb callback;
 } node_type [] = {
-	{AST_NODE_NUM, traverse_num},
+	{AST_NODE_VAR, traverse_var},
 	{AST_NODE_ID, traverse_id},
 	{AST_NODE_ARR, traverse_arr},
 	{AST_NODE_ACCESS, traverse_access},

@@ -71,12 +71,12 @@ get_string()
 
 	str_append(str, s);
 
-	lex_item.id = TOK_VAR;
-	lex_item.var = var;
-
 	peek = ' ';
 
 	free(s);
+
+	lex_item.id = TOK_VAR;
+	lex_item.var = var;
 
 	return TOK_VAR;
 }

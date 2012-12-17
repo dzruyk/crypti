@@ -6,7 +6,7 @@
 #include "syn_tree.h"
 
 typedef enum {
-	EVAL_NUM,
+	EVAL_VAR,
 	EVAL_ARR,
 } eval_type_t;
 
@@ -14,7 +14,7 @@ typedef enum {
 typedef struct {
 	eval_type_t type;
 	union {
-		int value;
+		struct variable *var;
 		arr_t *arr;
 	};
 } eval_t;
@@ -22,7 +22,7 @@ typedef struct {
 /*
  * Create new num eval.
  */
-eval_t *eval_num_new();
+eval_t *eval_var_new();
 
 /*
  * Create new array eval.

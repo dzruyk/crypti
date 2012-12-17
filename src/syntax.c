@@ -1,16 +1,19 @@
 #include <assert.h>
 #include <errno.h>
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "common.h"
+#include "lex.h"
+#include "list.h"
 #include "log.h"
 #include "keyword.h"
 #include "macros.h"
 #include "syntax.h"
-#include "lex.h"
-#include "list.h"
+#include "variable.h"
+
 
 /*******SYNTAX_CTX***********/
 
@@ -122,11 +125,9 @@ update_token(struct lex_item *dst, const struct lex_item *src)
 	case TOK_ID:
 		dst->name = src->name;
 		break;
-	case TOK_NUM:
-		dst->num = src->num;
+	case TOK_VAR:
+		dst->var = src->var;
 		break;
-	case TOK_STRING:
-		dst->str = src->str;
 	default:
 		break;
 	}
@@ -202,9 +203,10 @@ sync_stream()
 			ufree(lex_item.name);
 			lex_item.name = NULL;
 			break;
-		case TOK_STRING:
-			ufree(lex_item.str);
-			lex_item.name = NULL;
+		case TOK_VAR:
+			var_clear(lex_item.var);
+			free(lex_item.var);
+			lex_item.var = NULL;
 		default:
 			break;
 		}
@@ -500,7 +502,7 @@ assign(ast_node_t *lvalue)
 		return ast_node_as_new(lvalue, right);
 	}
 
-	//to number
+	//to variable
 	right = expr();
 	if (right == NULL) {
 		print_warn("uncomplited as expression\n");
@@ -947,9 +949,9 @@ factor()
 		
 		return identifier();
 	
-	} else if (match(TOK_NUM)) {
+	} else if (match(TOK_VAR)) {
 
-		return ast_node_num_new(lex_item_prev.num);
+		return ast_node_var_new(lex_item_prev.var);
 
 	} else {
 		nerrors++;
@@ -1278,10 +1280,22 @@ err:
 char *
 get_module_name()
 {
-	if (match(TOK_STRING))
-		return lex_item_prev.name;
-	else
+	struct variable *var;
+	str_t *str;
+	char *modname;
+
+	if (!match(TOK_VAR))
 		return NULL;
+
+	var = lex_item_prev.var;
+	str = var_str_ptr(var);
+	
+	modname =  strdup_or_die(str_ptr(str));
+
+	var_clear(var);
+	ufree(var);
+
+	return modname;
 }
 
 static ast_node_t *

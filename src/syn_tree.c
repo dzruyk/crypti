@@ -26,7 +26,8 @@ ast_node_free(ast_node_t *tree)
 	return_if_fail(tree != NULL);
 	
 	switch (tree->type) {
-	case AST_NODE_NUM:
+	case AST_NODE_VAR:
+		//Note: payload must be freed manualy
 		break;
 	case AST_NODE_ID:
 		id = (ast_node_id_t *)tree;
@@ -193,12 +194,12 @@ ast_node_copy(ast_node_t *node)
 		name = strdup_or_die(id->name);
 		return ast_node_id_new(name);
 	}
-	case AST_NODE_NUM: {
-		ast_node_num_t *num;
+	case AST_NODE_VAR: {
+		ast_node_var_t *var;
 
-		num = (ast_node_num_t *) node;
+		var = (ast_node_var_t *) node;
 
-		return ast_node_num_new(num->num);
+		return ast_node_var_new(var->var);
 	}
 	case AST_NODE_ACCESS: {
 		ast_node_access_t *acc;
@@ -287,14 +288,14 @@ ast_node_copy(ast_node_t *node)
 */
 
 ast_node_t *
-ast_node_num_new(int num)
+ast_node_var_new(struct variable *var)
 {
-	ast_node_num_t *res;
+	ast_node_var_t *res;
 	
-	res = (ast_node_num_t *) 
-	    ast_node_new(AST_NODE_NUM, sizeof(*res), ast_node_free);
+	res = (ast_node_var_t *) 
+	    ast_node_new(AST_NODE_VAR, sizeof(*res), ast_node_free);
 
-	res->num = num;
+	res->var = var;
 	
 	return AST_NODE(res);
 }
