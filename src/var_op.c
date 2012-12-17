@@ -236,7 +236,7 @@ int
 varop_shl(struct variable *c, struct variable *a, struct variable *b)
 {
 	int n, ret;
-	unsigned int shift;
+	unsigned long shift;
 	mp_int *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
@@ -257,13 +257,19 @@ varop_shl(struct variable *c, struct variable *a, struct variable *b)
 		return 1;
 	}
 
-	ret = mp_to_uint(bp, shift);
+	ret = mp_to_uint(bp, &shift);
 	if (ret != MP_OK) {
 		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
 		return 1;
 	}
+	
+	ret = mp_copy(cp, ap);
+	if (ret != MP_OK) {
+		DEBUG(LOG_DEFAULT, "can't copy bnum\n");
+		return 1;
+	}
 
-	ret = mp_shl(ap, shift);
+	ret = mp_shl(cp, shift);
 	if (ret != MP_OK) {
 		DEBUG(LOG_DEFAULT, "can't shift left\n");
 		return 1;
@@ -277,7 +283,7 @@ int
 varop_shr(struct variable *c, struct variable *a, struct variable *b)
 {
 	int n, ret;
-	unsigned int shift;
+	unsigned long shift;
 	mp_int *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
@@ -298,19 +304,26 @@ varop_shr(struct variable *c, struct variable *a, struct variable *b)
 		return 1;
 	}
 
-	ret = mp_to_uint(bp, shift);
+	ret = mp_to_uint(bp, &shift);
 	if (ret != MP_OK) {
 		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
 		return 1;
 	}
 
-	ret = mp_shr(ap, shift);
+	ret = mp_copy(cp, ap);
+	if (ret != MP_OK) {
+		DEBUG(LOG_DEFAULT, "can't copy bnum\n");
+		return 1;
+	}
+
+	ret = mp_shr(cp, shift);
 	if (ret != MP_OK) {
 		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
 		return 1;
 	}
 
 	var_force_type(c, VAR_BIGNUM);
+
 	return 0;
 }
 

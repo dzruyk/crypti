@@ -27,10 +27,17 @@ skip_comment()
 
 static tok_t
 get_string()
-{	
+{
+	str_t *str;
+	struct variable *var;
 	char *s = NULL;
 	char *tmp;
 	int len, used;
+
+	var = xmalloc(sizeof(*var));
+	var_init(var);
+
+	str = var_str_ptr(var);
 
 	used = 0;
 	len = 64;
@@ -62,12 +69,16 @@ get_string()
 		print_warn_and_die("realloc_err");
 	s = tmp;
 
-	lex_item.id = TOK_STRING;
-	lex_item.str = s;
+	str_append(str, s);
+
+	lex_item.id = TOK_VAR;
+	lex_item.var = var;
 
 	peek = ' ';
 
-	return TOK_STRING;
+	free(s);
+
+	return TOK_VAR;
 }
 
 static tok_t

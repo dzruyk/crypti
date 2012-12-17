@@ -147,7 +147,7 @@ octstring_to_bignum(struct variable *to, const struct variable *from)
 {
 	mp_int *bnum;
 	octstr_t *octstr;
-	char *src;
+	unsigned char *src;
 	int rc, sz;
 
 	DEBUG(LOG_VERBOSE, "oct_string to bignum\n");
@@ -194,7 +194,7 @@ octstring_to_string(struct variable *to, const struct variable *from)
 {
 	octstr_t *octstr;
 	str_t *str;
-	char *src;
+	unsigned char *src;
 	int i, len;
 
 	DEBUG(LOG_VERBOSE, "oct_string to string\n");
