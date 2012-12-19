@@ -10,15 +10,16 @@
 #include "log.h"
 #include "macros.h"
 #include "variable.h"
+#include "var_op.h"
 
 eval_t *
-eval_var_new(int value)
+eval_var_new(void *var)
 {
 	eval_t *res;
 	
 	res = xmalloc(sizeof(*res));
 	res->type = EVAL_VAR;
-	res->var = value;
+	res->var = var;
 
 	return res;
 }
@@ -81,32 +82,45 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 	assert(ev != NULL);
 
 	eval_t *res;
-	int val;
+	struct variable *var;
+	int ret;
 
 	if (ev->type != EVAL_VAR)
 		return NULL;
 
-	val = ev->var;
+	var = ev->var;
 
 	switch (opcode) {
 	case OP_PLUS:
 		break;
 	case OP_MINUS:
-		val = -val;
+		ret = varop_neg(var, var);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_NOT:
-		val = !val;
+		ret = varop_not(var, var);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_NOTNOT:
-		val = !!val;
+		ret = varop_not(var, var);
+		if (ret != 0)
+			goto error;
+		ret = varop_not(var, var);
+		if (ret != 0)
+			goto error;
 		break;
 	default:
 		SHOULDNT_REACH();
 	}
 
-	res = eval_num_new(val);
+	res = eval_var_new(var);
 
 	return res;
+
+error:
+	print_warn_and_die("WIP");
 }
 
 // FIXME: without error checks
@@ -133,20 +147,28 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 
 	switch(opcode) {
 	case OP_MUL:
-		varop_mul(res, a, b);
+		ret = varop_mul(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_DIV:
 		if (b == 0) {
 			print_warn("divide by zero\n");
 			return NULL;
 		}
-		varop_div(res, a, b);
+		ret = varop_div(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_PLUS:
-		varop_add(res, a, b);
+		ret = varop_add(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_MINUS:
-		varop_sub(res, a, b);
+		ret = varop_sub(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_EQ:
 		res = (a == b);
@@ -173,19 +195,29 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 		res = (a || b);
 		break;
 	case OP_B_OR:
-		varop_or(res, a, b);
+		ret = varop_or(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_B_XOR:
-		varop_xor(res, a, b);
+		ret = varop_xor(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_B_AND:
-		varop_and(res, a, b);
+		ret = varop_and(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_SHL:
-		varop_shl(res, a, b);
+		ret = varop_shl(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	case OP_SHR:
-		varop_shr(res, a, b);
+		ret = varop_shr(res, a, b);
+		if (ret != 0)
+			goto error;
 		break;
 	default:
 		SHOULDNT_REACH();
@@ -194,6 +226,9 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	ev = eval_var_new(res);
 
 	return ev;
+
+error:
+	print_warn_and_die("WIP!\n");
 }
 
 
@@ -211,7 +246,8 @@ eval_print_val(eval_t *eval)
 		printf("%d\n", value);
 		break;
 	case EVAL_ARR:
-		arr_print(eval->arr);	
+		//FIXME: stupid stub
+		arr_print(eval->arr, NULL);	
 		break;
 	default:
 		print_warn_and_die("INTERNAL ERROR: cant get value\n");

@@ -22,7 +22,7 @@ typedef struct {
 /*
  * Create new num eval.
  */
-eval_t *eval_var_new();
+eval_t *eval_var_new(void *var);
 
 /*
  * Create new array eval.

@@ -17,11 +17,11 @@ libcall_print(id_item_t **args, int *rettype, void **retval)
 	current = args[0];
 	
 	switch (current->type) {
-	case ID_NUM:
-		printf("%d\n", current->value);
+	case ID_VAR:
+		printf("%d\n", current->var);
 		break;
 	case ID_ARR:
-		arr_print(current->arr);
+		arr_print(current->arr, NULL);
 		break;
 	default:
 		print_warn_and_die("something wrong\n");
@@ -58,8 +58,8 @@ libcall_type(id_item_t **args, int *rettype, void **retval)
 	current = args[0];
 
 	switch (current->type) {
-	case ID_NUM:
-		printf("<type num>\n");
+	case ID_VAR:
+		printf("<type var>\n");
 		break;
 	case ID_ARR:
 		printf("<type arr>\n");
@@ -96,13 +96,6 @@ libcall_del(id_item_t **args, int *rettype, void **retval)
 	
 	if (tmp == NULL)
 		SHOULDNT_REACH();
-
-	switch (tmp->type) {
-	case ID_ARR:
-		arr_free(tmp->arr);
-	default:
-		break;
-	}
 
 	ret = id_table_remove(current->name);
 	if (ret != ret_ok) {

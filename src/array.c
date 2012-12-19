@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -8,6 +9,8 @@ arr_t *
 arr_new(int dims, int *len, int sz, int item_sz)
 {
 	arr_t *arr;
+
+	assert(dims > 0 && len != NULL && item_sz > 0);
 
 	arr = xmalloc(sizeof(*arr));
 
@@ -28,21 +31,22 @@ arr_new(int dims, int *len, int sz, int item_sz)
 }
 
 arr_t *
-arr_copy(arr_t *arr)
+arr_copy(arr_t *arr, arr_item_copy_t f)
 {
 	arr_t *copy;
-	int *parr, *pcopy;
+	void **parr, **pcopy;
 	int i;
+
+	assert(arr != NULL && f != NULL);
 
 	copy = arr_new(arr->dims, arr->len, arr->sz, arr->item_sz);
 
 	for (i = 0; i < copy->sz; i++) {
 		//FIXME: Be care when you will work with
 		//large numbers
-		parr = (int *)(arr->ptr + arr->item_sz * i);
-		pcopy = (int *)(copy->ptr + copy->item_sz * i);
-		*pcopy = *parr;
-
+		parr = arr->ptr + arr->item_sz * i;
+		pcopy = copy->ptr + copy->item_sz * i;
+		f(pcopy, parr);
 	}
 
 	return copy;
@@ -50,10 +54,12 @@ arr_copy(arr_t *arr)
 
 //FIXME: be care when will introduce large numbers
 ret_t
-arr_set_item(arr_t *arr, int *ind, int value)
+arr_set_item(arr_t *arr, int *ind, void *var)
 {
-	int *p;
+	void **p;
 	int i, mult, n;
+
+	assert(arr != NULL && ind != NULL && var != NULL);
 
 	mult = 1;
 	n = 0;
@@ -68,16 +74,19 @@ arr_set_item(arr_t *arr, int *ind, int value)
 	
 	p = arr->ptr + arr->item_sz * n;
 
-	*p = value;
+	*p = var;
 
 	return ret_ok;
 }
 
 ret_t
-arr_get_item(arr_t *arr, int *ind, int *value)
+arr_get_item(arr_t *arr, int *ind, void **pvar)
 {
-	int *p;
+	void **p;
 	int i, mult, n;
+
+	assert(arr != NULL && ind != NULL && pvar != NULL
+	    && *pvar != NULL);
 
 	mult = 1;
 	n = 0;
@@ -90,27 +99,26 @@ arr_get_item(arr_t *arr, int *ind, int *value)
 		mult *= arr->len[i];
 	}
 	
-	p = (int *)(arr->ptr + arr->item_sz * n);
-	*value = *p;
+	p = arr->ptr + arr->item_sz * n;
+	*pvar = *p;
 
 	return ret_ok;
 }
 
 void
-arr_print(arr_t *arr)
+arr_print(arr_t *arr, arr_item_print_t fprint)
 {
-	int i, n, val;
+	int i, n;
+	void *var;
 	int *index;
+
+	assert(arr != NULL);
 
 #if IS_DEBUG == 1
 	
 	DEBUG(LOG_DEFAULT, "%d dims\n", arr->dims);
  	for (i = 0; i < arr->dims; i++)
 		DEBUG(LOG_DEFAULT, "%d) len = %d\n", i, arr->len[i]);
-#endif
-		
-	
-#if IS_DEBUG == 1
 	n = 1;
 	for (i = 0; i < arr->dims; i++)
 		n *= arr->len[i];
@@ -129,8 +137,8 @@ arr_print(arr_t *arr)
 		int is_end = 0;
 		//print values at most depth
 		while (index[arr->dims - 1] < arr->len[arr->dims - 1]) {
-			arr_get_item(arr, index, &val);
-			printf("%d", val);
+			arr_get_item(arr, index, &var);
+			fprint(var);
 			index[arr->dims - 1]++;
 			if (index[arr->dims - 1] != arr->len[arr->dims - 1])
 				printf(",");
@@ -168,12 +176,15 @@ arr_print(arr_t *arr)
 
 
 void
-arr_free(arr_t *arr)
+arr_free(arr_t *arr, arr_item_destructor_t f)
 {
-	/*
-	for (i = 0; i < arr->n; i++)
+	int i;
+
+	for (i = 0; i < arr->sz; i++) {
+		f(arr->ptr[i]);
 		ufree(arr->ptr[i]);
-	*/
+	}
+	
 	ufree(arr->len);
 	ufree(arr->ptr);
 	ufree(arr);

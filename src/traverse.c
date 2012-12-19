@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdint.h>
 
 #include <string.h>
 
@@ -12,8 +13,8 @@
 #include "list.h"
 #include "macros.h"
 #include "stack.h"
-
 #include "traverse.h"
+#include "variable.h"
 
 static void traverse(ast_node_t *tree);
 void set_value_id(id_item_t *item, eval_t *ev);
@@ -77,8 +78,8 @@ traverse_id(ast_node_t *tree)
 	}
 	
 	switch (item->type) {
-	case ID_NUM:
-		ev = eval_num_new(item->value);
+	case ID_VAR:
+		ev = eval_var_new(item->var);
 		break;
 	case ID_ARR:
 		ev = eval_arr_new(item->arr);
@@ -117,10 +118,11 @@ get_next_index(int *index, int dims, int *len)
 static void
 traverse_arr(ast_node_t *tree)
 {
+	struct variable *res;
 	arr_t *arr;
 	eval_t *ev;
 	ast_node_t **synarr;
-	int i, dims, res, sz;
+	int i, dims, sz;
 	int *len;
 	int *index;
 	
@@ -142,10 +144,10 @@ traverse_arr(ast_node_t *tree)
 		if ((ev = stack_pop()) == NULL)
 			print_warn_and_die("unexpected error\n");
 		
-		if (ev->type != EVAL_NUM)
+		if (ev->type != EVAL_VAR)
 			print_warn_and_die("cant set item\n");
 		
-		res = ev->value;
+		res = ev->var;
 
 		if (arr_set_item(arr, index, res) != ret_ok)
 			print_warn_and_die("cant set item\n");
@@ -163,10 +165,12 @@ traverse_arr(ast_node_t *tree)
 static void
 traverse_access(ast_node_t *tree)
 {
+	struct variable *num;
+	ast_node_access_t *acc;
 	eval_t *evnum, *resev;
 	id_item_t *item;
-	ast_node_access_t *acc;
-	int i, num;
+	mp_int *bnum;
+	int i;
 	int *ind;
 	char *name;
 
@@ -200,6 +204,9 @@ traverse_access(ast_node_t *tree)
 	ind = xmalloc(acc->dims * sizeof(*ind));
 
 	for (i = 0; i < acc->dims; i++) {
+		unsigned long idx = 0;
+
+		struct variable *var;
 		traverse(acc->ind[i]);
 
 		if (nerrors != 0)
@@ -213,8 +220,14 @@ traverse_access(ast_node_t *tree)
 		}
 		
 		switch (evnum->type) {
-		case EVAL_NUM:
-			ind[i] = evnum->value;
+		case EVAL_VAR:
+			var = evnum->var;
+			bnum = var_cast_to_bignum(var);
+			
+			//FIXME: check me for negative numbers
+			//and errors
+			mp_to_uint(bnum, &idx);
+			ind[i] = idx;
 			break;
 		default:
 			print_warn_and_die("INTERNAL_ERROR: cant traverse access\n");
@@ -224,13 +237,13 @@ traverse_access(ast_node_t *tree)
 	}
 
 
-	if (arr_get_item(item->arr, ind, &num) != ret_ok) {
+	if (arr_get_item(item->arr, ind, (void *)&num) != ret_ok) {
 		print_warn("out of range\n");
 		nerrors++;
 		goto error;
 	}
 
-	resev = eval_num_new(num);
+	resev = eval_var_new(num);
 	stack_push(resev);
 	
 	ufree(ind);
@@ -795,8 +808,8 @@ set_value_id(id_item_t *item, eval_t *ev)
 {
 	
 	switch (ev->type) {
-	case EVAL_NUM:
-		id_item_set(item, ID_NUM, &(ev->value));
+	case EVAL_VAR:
+		id_item_set(item, ID_VAR, &(ev->var));
 		break;
 	case EVAL_ARR:
 		id_item_set(item, ID_ARR, ev->arr);
@@ -820,7 +833,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 	ev = NULL;
 	ind = NULL;
 
-	if (newval->type != EVAL_NUM) {
+	if (newval->type != EVAL_VAR) {
 		print_warn("try assign to arr not number\n");
 		goto err;
 	}
@@ -839,6 +852,10 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 	ind = xmalloc(node->dims * sizeof(*ind));
 
 	for (i = 0; i < node->dims; i++) {
+		struct variable *var;
+		mp_int *bnum;
+		unsigned long idx;
+
 		traverse(node->ind[i]);
 
 		if (nerrors != 0)
@@ -849,16 +866,22 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 			print_warn("can't get index\n");
 			goto err;
 		}
-		if (ev->type != EVAL_NUM) {
+		if (ev->type != EVAL_VAR) {
 			print_warn("index must be number\n");
 			goto err;
 		}
-		ind[i] = ev->value;
+		var = ev->var;
+		bnum = var_cast_to_bignum(var);
+
+		//FIXME: check me for negative numbers
+		//and errors
+		mp_to_uint(bnum, &idx);
+		ind[i] = idx;
 
 		eval_free(ev);
 	}
 
-	if (arr_set_item(item->arr, ind, newval->value) != ret_ok) {
+	if (arr_set_item(item->arr, ind, newval->var) != ret_ok) {
 		print_warn("out of range\n");
 		goto err;
 	}
@@ -871,7 +894,6 @@ err:
 
 	eval_free(ev);
 	ufree(ind);
-
 }
 
 static void
