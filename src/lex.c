@@ -81,36 +81,83 @@ get_string()
 	return TOK_VAR;
 }
 
-static tok_t
-get_digit()
+/*
+ * returns:
+ * 0 if convertion success
+ * -1 otherwise
+ */
+
+int
+convert_to_digit_base(unsigned char ch, int *num, int base)
 {
-	struct variable *var;
-	mp_int *mp, tmp, base;
+	int tmp;
+
+	if (ch >= '0' && ch <= '9')
+		tmp = ch - '0';
+	else
+		tmp = tolower(ch) - 'a' + 10;
+
+	if (tmp >= base || tmp < 0)
+		return 1;
+	else
+		*num = tmp;
+
+	return 0;
+}
+
+static void
+get_digit_base(mp_int *mp, int base)
+{
+	mp_int tmp, mpbase;
 	int num;
 
-	var = xmalloc(sizeof(*var));
-	var_initv(var, NULL);
-	mp_initv(&tmp, &base, NULL);
-	
-	mp = var_bignum_ptr(var);
+	mp_initv(&tmp, &mpbase, NULL);
 
 	mp_set_uint(mp, 0);
-	mp_set_uint(&base, STR_BASE);
-	do {
+
+	mp_set_uint(&mpbase, base);
+
+	while (convert_to_digit_base(peek, &num, base) == 0) {
 		/* mp = mp * STR_BASE + peek - '0'; */
-		num = peek - '0';
 		mp_set_uint(&tmp, num);
 
-		mp_mul(mp, mp, &base); 
+		mp_mul(mp, mp, &mpbase); 
 		mp_add(mp, mp, &tmp);
 		
 		peek = fgetc(input);
-	} while (isdigit(peek));
+	};
+
+	mp_clearv(&tmp, &mpbase, NULL);
+}
+
+static tok_t
+get_digit()
+{
+	mp_int *mp;
+	struct variable *var;
+
+	var = xmalloc(sizeof(*var));
+	var_initv(var, NULL);
+	
+	mp = var_bignum_ptr(var);
+
+	if (peek == '0') {
+		peek = fgetc(input);
+		if (tolower(peek) == 'x') {
+			peek = fgetc(input);
+			get_digit_base(mp, 16);
+		} else {
+			get_digit_base(mp, 8);
+		 }
+	} else {
+		get_digit_base(mp, STR_BASE);
+	}
 
 	lex_item.id = TOK_VAR;
 	lex_item.var = var;
+	var_force_type(var, VAR_BIGNUM);
 
-#if IS_DEBUG == 1
+#if IS_DEBUG == 1 && LOG_LEVEL == LOG_VERBOSE
 #define MAX_NUM_SZ 200
 	char temp_dig[MAX_NUM_SZ];
 
@@ -118,7 +165,6 @@ get_digit()
 	if (rc == MP_OK)
 		DEBUG(LOG_VERBOSE, "get_digit: %s\n", temp_dig);
 #endif
-	mp_clearv(&tmp, &base, NULL);
 
 	return TOK_VAR;
 }

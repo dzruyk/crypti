@@ -2,7 +2,7 @@
 #define __VARIABLE_H_
 
 /* base of printable string */
-#define STR_BASE 16
+#define STR_BASE 10
 
 #include "mp.h"
 #include "octstr.h"

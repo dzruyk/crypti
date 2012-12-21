@@ -235,15 +235,18 @@ error:
 ret_t
 eval_print_val(eval_t *eval)
 {
-	int value;
+	struct variable *var;
+	mp_int *mp;
+	str_t *str;
 
 	if (eval == NULL)
 		return ret_err;	
 
 	switch(eval->type) {
 	case EVAL_VAR:
-		value = eval->var;
-		printf("%d\n", value);
+		var = eval->var;
+		str = var_cast_to_str(var);
+		printf("%s\n", str_ptr(str));
 		break;
 	case EVAL_ARR:
 		//FIXME: stupid stub
