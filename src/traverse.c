@@ -63,8 +63,10 @@ static void
 traverse_id(ast_node_t *tree)
 {
 	eval_t *ev;
-	char *name;
 	id_item_t *item;
+	struct variable *var;
+	arr_t *arr;
+	char *name;
 
 	assert(tree != NULL);
 
@@ -77,12 +79,17 @@ traverse_id(ast_node_t *tree)
 		return;
 	}
 	
+	//FIXME: need to get copy of variable
 	switch (item->type) {
 	case ID_VAR:
-		ev = eval_var_new(item->var);
+		var = xmalloc(sizeof(*var));
+		var_init(var);
+		var_copy(var, item->var);
+		ev = eval_var_new(var);
 		break;
 	case ID_ARR:
 		ev = eval_arr_new(item->arr);
+		print_warn_and_die("need to write code for copy array");
 		break;
 	default:
 		print_warn_and_die("WIP\n");
@@ -806,13 +813,18 @@ finalize:
 void
 set_value_id(id_item_t *item, eval_t *ev)
 {
-	
+	struct variable *var;
 	switch (ev->type) {
 	case EVAL_VAR:
-		id_item_set(item, ID_VAR, &(ev->var));
+		var = xmalloc(sizeof(*var));
+		var_init(var);
+		var_copy(var, ev->var);
+
+		id_item_set(item, ID_VAR, var);
 		break;
 	case EVAL_ARR:
 		id_item_set(item, ID_ARR, ev->arr);
+		print_warn_and_die("WIP\n");
 		break;
 	default:
 		print_warn_and_die("WIP\n");
@@ -957,6 +969,9 @@ traverse_as_rest(ast_node_t *tree)
 		return;
 	}
 
+	//FIXME: simple workaround var
+	//double free problem
+	
 	set_value_node(ltree, right);
 
 	if (nerrors != 0)

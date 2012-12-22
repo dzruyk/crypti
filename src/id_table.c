@@ -50,7 +50,6 @@ void
 id_item_default_release(id_item_t *item)
 {
 	switch (item->type) {
-	case ID_UNKNOWN:
 	case ID_VAR:
 		var_clear(item->var);
 		ufree(item->var);
@@ -58,6 +57,7 @@ id_item_default_release(id_item_t *item)
 	case ID_ARR:
 		arr_free(item->arr, (arr_item_destructor_t )var_clear);
 		break;
+	case ID_UNKNOWN:
 	default:
 		print_warn_and_die("unknown id type\n");
 		break;

@@ -82,8 +82,10 @@ string_to_bignum(struct variable *to, const struct variable *from)
 
 	src = str_ptr(str);
 	rc = mp_set_str(bnum, src, STR_BASE);
-	if (rc != MP_OK)
-		error(1, "mp_set_str error");
+	if (rc == MP_NOMEM)
+		error(1, "mp_set_str error (nomem)");
+	else if (rc != MP_OK)
+		DEBUG(LOG_DEFAULT, "covertion error, set to zero\n");
 	
 	return bnum;
 }

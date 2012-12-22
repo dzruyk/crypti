@@ -36,6 +36,32 @@ eval_arr_new(arr_t *arr)
 	return res;
 }
 
+/*
+eval_t *
+eval_dup(eval_t *src)
+{
+	eval_t *dst;
+
+	dst = xmalloc(sizeof(*dst));
+	
+	switch(src->type) {
+	case EVAL_VAR:
+		dst->type = EVAL_VAR;
+		dst->var = xmalloc(sizeof(*dst->var));
+		var_init(dst->var);
+		var_copy(dst->var, src->var);
+		break;
+	case EVAL_ARR:
+		dst->type = EVAL_ARR;
+		print_warn_and_die("WIP, I do something in next commit, promise\n");
+	default:
+		SHOULDNT_REACH();
+	}
+
+	return dst;
+}
+*/
+
 void
 eval_free(eval_t *eval)
 {
@@ -44,14 +70,16 @@ eval_free(eval_t *eval)
 	
 	switch(eval->type) {
 	case EVAL_VAR:
-		free(eval);
+		var_clear(eval->var);
+		ufree(eval->var);
+		ufree(eval);
 		break;
 	//warning, may be memory leak
 	case EVAL_ARR:
-		free(eval);
+		ufree(eval);
 		break;
 	default:
-		print_warn_and_die("WIP\n");
+		SHOULDNT_REACH();
 	}
 }
 
@@ -236,7 +264,6 @@ ret_t
 eval_print_val(eval_t *eval)
 {
 	struct variable *var;
-	mp_int *mp;
 	str_t *str;
 
 	if (eval == NULL)

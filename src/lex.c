@@ -58,7 +58,7 @@ get_string()
 
 	if (peek != '"') {
 		print_warn("uncomplited string");
-		free(s);
+		ufree(s);
 		peek = ' ';
 		return TOK_UNKNOWN;
 	}
@@ -73,10 +73,11 @@ get_string()
 
 	peek = ' ';
 
-	free(s);
+	ufree(s);
 
 	lex_item.id = TOK_VAR;
 	lex_item.var = var;
+	var_force_type(var, VAR_STRING);
 
 	return TOK_VAR;
 }

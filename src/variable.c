@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "common.h"
+#include "log.h"
 #include "macros.h"
 #include "mp.h"
 #include "octstr.h"
@@ -82,11 +83,11 @@ var_copy(struct variable *dst, struct variable *src)
 	for (i = 0; i < ARRSZ(types); i++) {
 		if ((src->type & types[i]) == 0)
 			continue;
-
 		convert_value(dst, types[i], src, types[i]);
 
 		dst->type |= types[i];
 	}
+	DEBUG(LOG_VERBOSE, "after copy dst types %.4x\n", dst->type);
 }
 
 void

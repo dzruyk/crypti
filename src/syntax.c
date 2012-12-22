@@ -46,7 +46,7 @@ syn_ctx_new()
 void
 syn_ctx_free(struct syn_ctx *ctx)
 {
-	free(ctx);
+	ufree(ctx);
 }
 
 /*******SYNTAX_CTX***********/
@@ -205,7 +205,7 @@ sync_stream()
 			break;
 		case TOK_VAR:
 			var_clear(lex_item.var);
-			free(lex_item.var);
+			ufree(lex_item.var);
 			lex_item.var = NULL;
 		default:
 			break;
