@@ -199,22 +199,47 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 			goto error;
 		break;
 	case OP_EQ:
-		res = (a == b);
+		ret = varop_cmp(a, b);
+		if (ret == 0)
+			var_set_one(res);
+		else
+			var_set_zero(res);
+
 		break;
 	case OP_NEQ:
-		res = (a != b);
+		ret = varop_cmp(a, b);
+		if (ret == 0)
+			var_set_zero(res);
+		else
+			var_set_one(res);
 		break;
 	case OP_GR:
-		res = (a > b);
+		ret = varop_cmp(a, b);
+		if (ret == 1)
+			var_set_one(res);
+		else
+			var_set_zero(res);
 		break;
 	case OP_LO:
-		res = (a < b);
+		ret = varop_cmp(a, b);
+		if (ret == -1)
+			var_set_one(res);
+		else
+			var_set_zero(res);
 		break;
 	case OP_GE:
-		res = (a >= b);
+		ret = varop_cmp(a, b);
+		if (ret == 1 || ret == 0)
+			var_set_one(res);
+		else
+			var_set_zero(res);
 		break;
 	case OP_LE:
-		res = (a <= b);
+		ret = varop_cmp(a, b);
+		if (ret == -1 || ret == 0)
+			var_set_one(res);
+		else
+			var_set_zero(res);
 		break;
 	case OP_L_AND:
 		res = (a && b);

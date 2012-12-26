@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "log.h"
+#include "macros.h"
 #include "mp.h"
 #include "octstr.h"
 #include "str.h"
@@ -174,30 +175,6 @@ varop_and(struct variable *c, struct variable *a, struct variable *b)
 }
 
 int
-varop_cmp(struct variable *dst, struct variable *a, struct variable *b)
-{
-	mp_int *ap, *bp, *cp;
-	int res;
-
-	assert(dst != NULL && a != NULL && b != NULL);
-
-	ap = var_cast_to_bignum(a);
-	bp = var_cast_to_bignum(b);
-	cp = var_bignum_ptr(dst);
-
-	res = mp_cmp(ap, bp);
-	if (res == MP_CMP_EQ) {
-		mp_zero(cp);
-	} else if (res == MP_CMP_GT) {
-		mp_set_one(cp);
-	} else if (res == MP_CMP_LT) {
-		mp_set_one(cp);
-		cp->sign = MP_SIGN_NEG;
-	}
-	return 0;
-}
-
-int
 varop_not(struct variable *dst, struct variable *src)
 {
 	mp_int *ap, *bp;
@@ -252,7 +229,7 @@ varop_shl(struct variable *c, struct variable *a, struct variable *b)
 
 	n = mp_nr_bits(bp);
 
-	if (n < sizeof(int) * CHAR_BIT) {
+	if (n > sizeof(int) * CHAR_BIT) {
 		DEBUG(LOG_DEFAULT, "can't convert to int, overflow\n");
 		return 1;
 	}
@@ -299,7 +276,7 @@ varop_shr(struct variable *c, struct variable *a, struct variable *b)
 
 	n = mp_nr_bits(bp);
 
-	if (n < sizeof(int) * CHAR_BIT) {
+	if (n > sizeof(int) * CHAR_BIT) {
 		DEBUG(LOG_DEFAULT, "can't convert to int, overflow\n");
 		return 1;
 	}
@@ -363,5 +340,36 @@ varop_oct_concat(struct variable*c, struct variable *a, struct variable *b)
 	var_force_type(c, VAR_OCTSTRING);
 
 	return 0;
+}
+
+/* Rel operations.
+ * return:
+ * 1 if a > b
+ * -1 if b < a
+ *  0 if a == b
+ */
+int
+varop_cmp(struct variable *a, struct variable *b)
+{
+	mp_int *ap, *bp;
+	int res;
+	
+	assert(a != NULL && b != NULL);
+
+	ap = var_cast_to_bignum(a);
+	bp = var_cast_to_bignum(b);
+
+	res = mp_cmp(ap, bp);
+	
+	switch (res) {
+	case MP_CMP_EQ:
+		return 0;
+	case MP_CMP_GT:
+		return 1;
+	case MP_CMP_LT:
+		return -1;
+	default:
+		SHOULDNT_REACH();
+	}
 }
 

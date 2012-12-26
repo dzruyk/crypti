@@ -129,6 +129,25 @@ var_set_bignum(struct variable *var, mp_int *bnum)
 }
 
 void
+var_set_one(struct variable *var)
+{
+	assert(var != NULL);
+
+	var->type = VAR_BIGNUM;
+	mp_set_one(&var->bnum);
+}
+
+void
+var_set_zero(struct variable *var)
+{
+	assert(var != NULL);
+
+	var->type = VAR_BIGNUM;
+	mp_zero(&var->bnum);
+
+}
+
+void
 var_force_type(struct variable *var, var_type_t type)
 {
 	var->type = type;

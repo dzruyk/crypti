@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -6,6 +7,7 @@
 #include "eval.h"
 #include "libcall.h"
 #include "macros.h"
+#include "variable.h"
 
 int
 libcall_print(id_item_t **args, int *rettype, void **retval)
@@ -13,12 +15,17 @@ libcall_print(id_item_t **args, int *rettype, void **retval)
 	assert(args != NULL && args[0] != NULL);
 
 	id_item_t *current;
+	str_t *str;
+	struct variable *var;
 
 	current = args[0];
 	
 	switch (current->type) {
 	case ID_VAR:
-		printf("%d\n", current->var);
+		var = current->var;
+		str = var_cast_to_str(var);
+
+		printf("%s\n", str_ptr(str));
 		break;
 	case ID_ARR:
 		arr_print(current->arr, NULL);

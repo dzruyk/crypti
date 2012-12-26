@@ -35,6 +35,10 @@ void var_set_str(struct variable *var, char *str);
 void var_set_octstr(struct variable *var, octstr_t *octstr);
 void var_set_bignum(struct variable *var, mp_int *bnum);
 
+/* some setters here */
+void var_set_one(struct variable *var);
+void var_set_zero(struct variable *var);
+
 void var_force_type(struct variable *var, var_type_t type);
 
 str_t *var_cast_to_str(struct variable *var);

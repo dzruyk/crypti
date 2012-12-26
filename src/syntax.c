@@ -1548,7 +1548,7 @@ function_call()
 
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != TOK_RPAR) {
-			print_warn("comma expected");
+			print_warn("comma expected\n");
 			goto err;
 		}
 	}

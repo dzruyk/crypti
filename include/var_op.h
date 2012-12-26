@@ -15,7 +15,6 @@ int varop_or(struct variable *c, struct variable *a, struct variable *b);
 int varop_xor(struct variable *c, struct variable *a, struct variable *b);
 int varop_and(struct variable *c, struct variable *a, struct variable *b);
 
-int varop_cmp(struct variable *dst, struct variable *a, struct variable *b);
 int varop_not(struct variable *dst, struct variable *src);
 int varop_neg(struct variable *res, struct variable *var);
 
@@ -27,5 +26,13 @@ int varop_str_concat(struct variable *c, struct variable *a, struct variable *b)
 
 /* Octstring operations: */
 int varop_oct_concat(struct variable *c, struct variable *a, struct variable *b);
+
+/* Rel operations.
+ * return:
+ * 1 if a > b
+ * -1 if b < a
+ *  0 if a == b
+ */
+int varop_cmp(struct variable *a, struct variable *b);
 
 #endif
