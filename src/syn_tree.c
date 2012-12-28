@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,7 @@
 #include "common.h"
 #include "macros.h"
 #include "syn_tree.h"
+#include "variable.h"
 
 
 static void
@@ -12,6 +14,7 @@ ast_node_free(ast_node_t *tree)
 {
 	ast_node_access_t *acc;
 	ast_node_arr_t *arr;
+	ast_node_var_t *var;
 	ast_node_id_t *id;
 	ast_node_if_t *ifnode;
 	ast_node_for_t *fornode;
@@ -27,6 +30,9 @@ ast_node_free(ast_node_t *tree)
 	
 	switch (tree->type) {
 	case AST_NODE_VAR:
+		var = (ast_node_var_t *)tree;
+		var_clear(var->var);
+		ufree(var->var);
 		//Note: payload must be freed manualy
 		break;
 	case AST_NODE_ID:

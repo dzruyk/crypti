@@ -49,13 +49,21 @@ id_hash_cb(const void *data)
 void
 id_item_default_release(id_item_t *item)
 {
+	assert(item != NULL);
+
 	switch (item->type) {
 	case ID_VAR:
-		var_clear(item->var);
-		ufree(item->var);
+		if (item->var != NULL) {
+			var_clear(item->var);
+			ufree(item->var);
+			item->var = NULL;
+		}
 		break;
 	case ID_ARR:
-		arr_free(item->arr, (arr_item_destructor_t )var_clear);
+		if (item->arr != NULL) {
+			arr_free(item->arr, (arr_item_destructor_t )var_clear);
+			item->arr = NULL;
+		}
 		break;
 	case ID_UNKNOWN:
 	default:
@@ -71,6 +79,7 @@ id_item_new(char *name)
 	id_item_t * item;
 
 	item = xmalloc(sizeof(*item));
+	memset(item, 0, sizeof(*item));
 	item->name = strdup_or_die(name);
 	item->type = ID_UNKNOWN;
 	item->destructor = id_item_default_release;
@@ -82,6 +91,9 @@ void
 id_item_set(id_item_t *item, id_type_t type, void *data)
 {
 	item->type = type;
+
+	//free previos variables
+	item->destructor(item);
 
 	switch (type) {
 	case ID_VAR:

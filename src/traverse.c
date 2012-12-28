@@ -48,13 +48,17 @@ static void
 traverse_var(ast_node_t *tree)
 {
 	eval_t *ev;
-	struct variable *var;
+	struct variable *var, *copy;
 
 	assert(tree != NULL);
 	
 	var = ((ast_node_var_t *)tree)->var;
+
+	copy = xmalloc(sizeof(*copy));
+	var_init(copy);
+	var_copy(copy, var);
 	
-	ev = eval_var_new(var);
+	ev = eval_var_new(copy);
 
 	stack_push(ev);
 }

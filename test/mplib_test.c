@@ -41,6 +41,10 @@ exp_test()
 	mp_to_str(&res, buf, sizeof(buf), 10);
 	printf("2 ^ 1024 = 0x%s\n", buf);
 
+
+	mp_set_uint(&a, 0);
+	printf("mp_set_unt(&a, 0);\nmp_iszero(a) == %s\n", mp_iszero(&a) == 1 ? "TRUE" : "FALSE");
+
 	mp_clearv(&a, &b, &c, &d, &res, NULL);
 }
 

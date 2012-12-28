@@ -34,5 +34,6 @@ int varop_oct_concat(struct variable *c, struct variable *a, struct variable *b)
  *  0 if a == b
  */
 int varop_cmp(struct variable *a, struct variable *b);
+int varop_is_true(struct variable *a);
 
 #endif

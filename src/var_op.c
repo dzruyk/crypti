@@ -373,3 +373,18 @@ varop_cmp(struct variable *a, struct variable *b)
 	}
 }
 
+int
+varop_is_true(struct variable *a)
+{
+	mp_int *ap;
+
+	assert(a != NULL);
+
+	ap = var_cast_to_bignum(a);
+
+	if (mp_iszero(ap))
+		return 0;
+	else
+		return 1;
+}
+

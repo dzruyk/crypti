@@ -74,7 +74,7 @@ eval_free(eval_t *eval)
 		ufree(eval->var);
 		ufree(eval);
 		break;
-	//warning, may be memory leak
+	//TODO:warning, may be memory leak
 	case EVAL_ARR:
 		ufree(eval);
 		break;
@@ -242,10 +242,16 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 			var_set_zero(res);
 		break;
 	case OP_L_AND:
-		res = (a && b);
+		if (varop_is_true(a) && varop_is_true(b))
+			var_set_one(res);
+		else
+			var_set_zero(res);
 		break;
 	case OP_L_OR:
-		res = (a || b);
+		if (varop_is_true(a) || varop_is_true(b))
+			var_set_one(res);
+		else
+			var_set_zero(res);
 		break;
 	case OP_B_OR:
 		ret = varop_or(res, a, b);
