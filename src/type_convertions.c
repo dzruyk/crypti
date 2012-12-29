@@ -81,11 +81,22 @@ string_to_bignum(struct variable *to, const struct variable *from)
 	bnum = var_bignum_ptr(to);
 
 	src = str_ptr(str);
-	rc = mp_set_str(bnum, src, STR_BASE);
-	if (rc == MP_NOMEM)
+
+	if (src[0] == '0') {
+		if (src[1] == 'x')
+			rc = mp_set_str(bnum, src + 2, 16);
+		else
+			rc = mp_set_str(bnum, src + 1, 8);
+	} else {
+		rc = mp_set_str(bnum, src, STR_BASE);
+	}
+
+	if (rc == MP_NOMEM) {
 		error(1, "mp_set_str error (nomem)");
-	else if (rc != MP_OK)
+	} else if (rc != MP_OK) {
 		DEBUG(LOG_DEFAULT, "covertion error, set to zero\n");
+		mp_zero(bnum);
+	}
 	
 	return bnum;
 }
@@ -108,19 +119,7 @@ string_to_octstring(struct variable *to, const struct variable *from)
 	len = str_len(str);
 	src = str_ptr(str);
 
-	for (i = 0; i < len; i++) {
-		char ch;
-		ch = src[i];
-		if (isprint(ch)) {
-			str_putc(str, ch);
-		} else {
-			char ccode[5];
-			
-			snprintf(ccode, sizeof(ccode), "\\x%.2X", ch);
-			str_append(str, ccode);
-		}
-	}
-
+	octstr_append(octstr, src);
 	return octstr;
 }
 
@@ -217,7 +216,7 @@ octstring_to_string(struct variable *to, const struct variable *from)
 		} else {
 			char ccode[5];
 			
-			snprintf(ccode, sizeof(ccode), "\\x%.2X", ch);
+			snprintf(ccode, sizeof(ccode), "\\x%2.2X", ch);
 			str_append(str, ccode);
 		}
 	}
