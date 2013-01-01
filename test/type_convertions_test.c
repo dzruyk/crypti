@@ -4,7 +4,7 @@
 
 #include "log.h"
 #include "macros.h"
-#include "mp.h"
+#include <mpl.h>
 #include "octstr.h"
 #include "str.h"
 #include "variable.h"
@@ -17,12 +17,12 @@
 int
 test_bnum_str(struct variable *var, int num, char *expected)
 {
-	mp_int *ap;
+	mpl_int *ap;
 	str_t *str;
 	
 	ap = var_bignum_ptr(var);
 
-	mp_set_sint(ap, num);
+	mpl_set_sint(ap, num);
 	var_force_type(var, VAR_BIGNUM);
 	str = var_cast_to_str(var);
 

@@ -2,14 +2,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "mp.h"
+#include <mpl.h>
 #include "str.h"
 #include "octstr.h"
 #include "variable.h"
 #include "var_op.h"
 
 char *
-mp_sprint(mp_int *a, char *s, int slen)
+mpl_sprint(mpl_int *a, char *s, int slen)
 {
 	char *sp;
 	int i;
@@ -34,7 +34,7 @@ int
 main()
 {
 	struct variable a, b, c, res;
-	mp_int *ap, *bp, *cp, *resp;
+	mpl_int *ap, *bp, *cp, *resp;
 	char bnum[TEST_LEN];
 
 	var_initv(&a, &b, &c, &res, NULL);
@@ -43,11 +43,11 @@ main()
 	bp = var_bignum_ptr(&b);
 	cp = var_bignum_ptr(&c);
 
-	mp_set_uint(ap, 42);
-	mp_set_uint(bp, 12);
-	mp_set_uint(cp, 6);
+	mpl_set_uint(ap, 42);
+	mpl_set_uint(bp, 12);
+	mpl_set_uint(cp, 6);
 
-	printf("cp = 6 and mp_sprintf shows %s\n", mp_sprint(cp, bnum, TEST_LEN));
+	printf("cp = 6 and mpl_sprintf shows %s\n", mpl_sprint(cp, bnum, TEST_LEN));
 
 	var_force_type(&a, VAR_BIGNUM);
 	var_force_type(&b, VAR_BIGNUM);
@@ -57,7 +57,7 @@ main()
 
 	resp = var_bignum_ptr(&res);
 
-	printf("42 + 12 =  %s\n", mp_sprint(resp, bnum, TEST_LEN));
+	printf("42 + 12 =  %s\n", mpl_sprint(resp, bnum, TEST_LEN));
 
 	var_clearv(&a, &b, &c, &res, NULL);
 

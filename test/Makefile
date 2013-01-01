@@ -16,7 +16,7 @@ MPLIB_OBJS = mplib_test.o
 MPLIB_TEST = mplib_test
 
 INCLUDES= -I ../include -I ../lib
-LIBS= ../lib/libmp.a
+LIBS= -lmpl
 LEX_OBJS = $(patsubst %,../src/%, lex.o id_table.o hash.o primes.o \
 	keyword.o common.o array.o str.o octstr.o buffer.o type_convertions.o variable.o var_op.o)
 

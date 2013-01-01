@@ -114,7 +114,7 @@ get_digit_base(mpl_int *mp, int base)
 
 	mpl_initv(&tmp, &mpbase, NULL);
 
-	mpl_set_uint(mp, 0);
+	mpl_zero(mp);
 
 	mpl_set_uint(&mpbase, base);
 

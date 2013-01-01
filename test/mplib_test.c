@@ -3,49 +3,49 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "mp.h"
+#include <mpl.h>
 
 #define BUF_SZ 256
 
 void
 exp_test()
 {
-	mp_int a, b, c, d, res;
+	mpl_int a, b, c, d, res;
 	char buf[BUF_SZ];
 
-	mp_initv(&a, &b, &c, &d, &res, NULL);
+	mpl_initv(&a, &b, &c, &d, &res, NULL);
 
-	mp_set_one(&a);
-	mp_set_uint(&b, 2);
-	mp_set_uint(&c, 2);
+	mpl_set_one(&a);
+	mpl_set_uint(&b, 2);
+	mpl_set_uint(&c, 2);
 
-	mp_to_str(&a, buf, sizeof(buf), 10);
+	mpl_to_str(&a, buf, sizeof(buf), 10);
 	printf("1 = %s\n", buf);
 
-	mp_exp(&res, &a, &b);
-	mp_to_str(&res, buf, sizeof(buf), 10);
+	mpl_exp(&res, &a, &b);
+	mpl_to_str(&res, buf, sizeof(buf), 10);
 	printf("1 ^ 2 = %s\n", buf);
 
-	mp_exp(&res, &b, &c);
-	mp_to_str(&res, buf, sizeof(buf), 10);
+	mpl_exp(&res, &b, &c);
+	mpl_to_str(&res, buf, sizeof(buf), 10);
 	printf("2 ^ 2 = %s\n", buf);
 
-	mp_set_uint(&res, 3);
-	mp_exp(&res, &res, &res);
-	mp_to_str(&res, buf, sizeof(buf), 10);
+	mpl_set_uint(&res, 3);
+	mpl_exp(&res, &res, &res);
+	mpl_to_str(&res, buf, sizeof(buf), 10);
 	printf("3 ^ 3 = %s\n", buf);
 
-	mp_set_uint(&res, 2);
-	mp_set_uint(&b, 428);
-	mp_exp(&res, &res, &b);
-	mp_to_str(&res, buf, sizeof(buf), 10);
+	mpl_set_uint(&res, 2);
+	mpl_set_uint(&b, 428);
+	mpl_exp(&res, &res, &b);
+	mpl_to_str(&res, buf, sizeof(buf), 10);
 	printf("2 ^ 1024 = 0x%s\n", buf);
 
 
-	mp_set_uint(&a, 0);
-	printf("mp_set_unt(&a, 0);\nmp_iszero(a) == %s\n", mp_iszero(&a) == 1 ? "TRUE" : "FALSE");
+	mpl_set_uint(&a, 0);
+	printf("mpl_set_unt(&a, 0);\nmpl_iszero(a) == %s\n", mpl_iszero(&a) == 1 ? "TRUE" : "FALSE");
 
-	mp_clearv(&a, &b, &c, &d, &res, NULL);
+	mpl_clearv(&a, &b, &c, &d, &res, NULL);
 }
 
 int
