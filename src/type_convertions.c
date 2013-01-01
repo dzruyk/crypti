@@ -6,7 +6,7 @@
 #include "common.h"
 #include "log.h"
 #include "macros.h"
-#include "mp.h"
+#include <mpl.h>
 #include "str.h"
 #include "octstr.h"
 #include "variable.h"
@@ -70,7 +70,7 @@ void *convert_value(struct variable *dst_var, int to_type, struct variable *src_
 static void *
 string_to_bignum(struct variable *to, const struct variable *from)
 {
-	mp_int *bnum;
+	mpl_int *bnum;
 	str_t *str;
 	char *src;
 	int rc;
@@ -84,18 +84,18 @@ string_to_bignum(struct variable *to, const struct variable *from)
 
 	if (src[0] == '0') {
 		if (src[1] == 'x')
-			rc = mp_set_str(bnum, src + 2, 16);
+			rc = mpl_set_str(bnum, src + 2, 16);
 		else
-			rc = mp_set_str(bnum, src + 1, 8);
+			rc = mpl_set_str(bnum, src + 1, 8);
 	} else {
-		rc = mp_set_str(bnum, src, STR_BASE);
+		rc = mpl_set_str(bnum, src, STR_BASE);
 	}
 
-	if (rc == MP_NOMEM) {
-		error(1, "mp_set_str error (nomem)");
-	} else if (rc != MP_OK) {
+	if (rc == MPL_NOMEM) {
+		error(1, "mpl_set_str error (nomem)");
+	} else if (rc != MPL_OK) {
 		DEBUG(LOG_DEFAULT, "covertion error, set to zero\n");
-		mp_zero(bnum);
+		mpl_zero(bnum);
 	}
 	
 	return bnum;
@@ -107,7 +107,6 @@ string_to_octstring(struct variable *to, const struct variable *from)
 	str_t *str;
 	octstr_t *octstr;
 	char *src;
-	int i, len;
 
 	DEBUG(LOG_VERBOSE, "string to oct_string\n");
 	
@@ -116,7 +115,6 @@ string_to_octstring(struct variable *to, const struct variable *from)
 
 	octstr_reset(octstr);
 
-	len = str_len(str);
 	src = str_ptr(str);
 
 	octstr_append(octstr, src);
@@ -146,7 +144,7 @@ string_to_string(struct variable *to, const struct variable *from)
 static void *
 octstring_to_bignum(struct variable *to, const struct variable *from)
 {
-	mp_int *bnum;
+	mpl_int *bnum;
 	octstr_t *octstr;
 	unsigned char *src;
 	int rc, sz;
@@ -159,9 +157,9 @@ octstring_to_bignum(struct variable *to, const struct variable *from)
 	src = octstr_ptr(octstr);
 	sz = octstr_len(octstr);
 
-	rc = mp_set_uchar(bnum, (const unsigned char *)src, sz);
-	if (rc != MP_OK)
-		error(1, "mp_set_uchar error\n");
+	rc = mpl_set_uchar(bnum, (const unsigned char *)src, sz);
+	if (rc != MPL_OK)
+		error(1, "mpl_set_uchar error\n");
 
 	return bnum;
 }
@@ -227,7 +225,7 @@ octstring_to_string(struct variable *to, const struct variable *from)
 static void *
 bignum_to_bignum(struct variable *to, const struct variable *from)
 {
-	mp_int *dst, *src;
+	mpl_int *dst, *src;
 	int rc;
 
 	DEBUG(LOG_VERBOSE, "bignum to bignum\n");
@@ -240,8 +238,8 @@ bignum_to_bignum(struct variable *to, const struct variable *from)
 	src = var_bignum_ptr((struct variable *)from);
 	dst = var_bignum_ptr(to);
 
-	rc = mp_copy(dst, src);
-	if (rc != MP_OK)
+	rc = mpl_copy(dst, src);
+	if (rc != MPL_OK)
 		goto err;
 
 	return dst;
@@ -257,8 +255,8 @@ err:
 static void *
 bignum_to_octstring(struct variable *to, const struct variable *from)
 {
-	mp_int *bnum;
-	_mp_int_t *dig;
+	mpl_int *bnum;
+	_mpl_int_t *dig;
 	octstr_t *octstr;
 	int bytes, n;
 
@@ -268,15 +266,15 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 	octstr = var_octstr_ptr(to);
 	octstr_reset(octstr);
 
-	if (mp_isneg(bnum))
+	if (mpl_isneg(bnum))
 		warning("neg bnum to str convertion: sign mismatch\n");
 	
-	if (mp_iszero(bnum)) {
+	if (mpl_iszero(bnum)) {
 		octstr_putc(octstr, '\x00');
 		return octstr;
 	}
 
-	n = mp_nr_bits(bnum);
+	n = mpl_nr_bits(bnum);
 
 	//get byte size of used space
 	bytes = n / CHAR_BIT;
@@ -293,8 +291,8 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 static void *
 bignum_to_string(struct variable *to, const struct variable *from)
 {
-	mp_int a, b, r;
-	mp_int *bnum;
+	mpl_int a, b, r;
+	mpl_int *bnum;
 	str_t *str;
 	int rc;
 	char ch;
@@ -307,23 +305,23 @@ bignum_to_string(struct variable *to, const struct variable *from)
 	str = var_str_ptr(to);
 	str_reset(str);
 
-	if (mp_iszero(bnum)) {
+	if (mpl_iszero(bnum)) {
 		str_putc(str, '0');
 		return str;
 	}
 
-	mp_initv(&a, &b, &r, NULL);
+	mpl_initv(&a, &b, &r, NULL);
 
-	rc = mp_copy(&a, bnum);
-	if (rc != MP_OK)
+	rc = mpl_copy(&a, bnum);
+	if (rc != MPL_OK)
 		goto err;
 
-	mp_set_uint(&b, STR_BASE);
+	mpl_set_uint(&b, STR_BASE);
 
-	while (mp_iszero(&a) == 0) {
+	while (mpl_iszero(&a) == 0) {
 
-		rc = mp_div(&a, &r, &a, &b);
-		if (rc != MP_OK)
+		rc = mpl_div(&a, &r, &a, &b);
+		if (rc != MPL_OK)
 			goto err;
 		
 		ch = r.dig[0];
@@ -333,13 +331,13 @@ bignum_to_string(struct variable *to, const struct variable *from)
 			str_putc(str, ch - 10 + 'A');
 	}
 
-	if (mp_isneg(bnum)) {
+	if (mpl_isneg(bnum)) {
 		str_putc(str, '-');
 	}
 
 	str_reverse(str);
 
-	mp_clearv(&a, &b, &r, NULL);
+	mpl_clearv(&a, &b, &r, NULL);
 
 	return str;
 err:

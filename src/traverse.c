@@ -180,7 +180,7 @@ traverse_access(ast_node_t *tree)
 	ast_node_access_t *acc;
 	eval_t *evnum, *resev;
 	id_item_t *item;
-	mp_int *bnum;
+	mpl_int *bnum;
 	int i;
 	int *ind;
 	char *name;
@@ -237,7 +237,7 @@ traverse_access(ast_node_t *tree)
 			
 			//FIXME: check me for negative numbers
 			//and errors
-			mp_to_uint(bnum, &idx);
+			mpl_to_uint(bnum, &idx);
 			ind[i] = idx;
 			break;
 		default:
@@ -869,7 +869,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 
 	for (i = 0; i < node->dims; i++) {
 		struct variable *var;
-		mp_int *bnum;
+		mpl_int *bnum;
 		unsigned long idx;
 
 		traverse(node->ind[i]);
@@ -891,7 +891,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 
 		//FIXME: check me for negative numbers
 		//and errors
-		mp_to_uint(bnum, &idx);
+		mpl_to_uint(bnum, &idx);
 		ind[i] = idx;
 
 		eval_free(ev);

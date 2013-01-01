@@ -4,7 +4,7 @@
 /* base of printable string */
 #define STR_BASE 10
 
-#include "mp.h"
+#include <mpl.h>
 #include "octstr.h"
 #include "str.h"
 
@@ -16,7 +16,7 @@ typedef enum {
 
 struct variable {
 	var_type_t type;
-	mp_int bnum;
+	mpl_int bnum;
 	octstr_t octstr;
 	str_t str;
 };
@@ -33,7 +33,7 @@ void var_copy(struct variable *dst, struct variable *src);
 void var_set_string(struct variable *var, str_t *str);
 void var_set_str(struct variable *var, char *str);
 void var_set_octstr(struct variable *var, octstr_t *octstr);
-void var_set_bignum(struct variable *var, mp_int *bnum);
+void var_set_bignum(struct variable *var, mpl_int *bnum);
 
 /* some setters here */
 void var_set_one(struct variable *var);
@@ -43,10 +43,10 @@ void var_force_type(struct variable *var, var_type_t type);
 
 str_t *var_cast_to_str(struct variable *var);
 octstr_t *var_cast_to_octstr(struct variable *var);
-mp_int *var_cast_to_bignum(struct variable *var);
+mpl_int *var_cast_to_bignum(struct variable *var);
 
 str_t *var_str_ptr(struct variable *var);
 octstr_t *var_octstr_ptr(struct variable *var);
-mp_int *var_bignum_ptr(struct variable *var);
+mpl_int *var_bignum_ptr(struct variable *var);
 
 #endif

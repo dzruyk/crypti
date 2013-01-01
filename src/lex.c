@@ -6,7 +6,7 @@
 #include "keyword.h"
 #include "lex.h"
 #include "macros.h"
-#include "mp.h"
+#include <mpl.h>
 #include "octstr.h"
 #include "str.h"
 #include "variable.h"
@@ -107,34 +107,34 @@ convert_to_digit_base(unsigned char ch, int *num, int base)
 }
 
 static void
-get_digit_base(mp_int *mp, int base)
+get_digit_base(mpl_int *mp, int base)
 {
-	mp_int tmp, mpbase;
+	mpl_int tmp, mpbase;
 	int num;
 
-	mp_initv(&tmp, &mpbase, NULL);
+	mpl_initv(&tmp, &mpbase, NULL);
 
-	mp_set_uint(mp, 0);
+	mpl_set_uint(mp, 0);
 
-	mp_set_uint(&mpbase, base);
+	mpl_set_uint(&mpbase, base);
 
 	while (convert_to_digit_base(peek, &num, base) == 0) {
 		/* mp = mp * STR_BASE + peek - '0'; */
-		mp_set_uint(&tmp, num);
+		mpl_set_uint(&tmp, num);
 
-		mp_mul(mp, mp, &mpbase); 
-		mp_add(mp, mp, &tmp);
+		mpl_mul(mp, mp, &mpbase); 
+		mpl_add(mp, mp, &tmp);
 		
 		peek = fgetc(input);
 	};
 
-	mp_clearv(&tmp, &mpbase, NULL);
+	mpl_clearv(&tmp, &mpbase, NULL);
 }
 
 static tok_t
 get_digit()
 {
-	mp_int *mp;
+	mpl_int *mp;
 	struct variable *var;
 
 	var = xmalloc(sizeof(*var));
@@ -160,11 +160,11 @@ get_digit()
 
 #if IS_DEBUG == 1 && LOG_LEVEL == LOG_VERBOSE
 #define MAX_NUM_SZ 200
-	char temp_dig[MAX_NUM_SZ];
+	char templ_dig[MAX_NUM_SZ];
 
-	rc = mp_to_str(mp, temp_dig, MAX_NUM_SZ, STR_BASE);
-	if (rc == MP_OK)
-		DEBUG(LOG_VERBOSE, "get_digit: %s\n", temp_dig);
+	rc = mpl_to_str(mp, templ_dig, MAX_NUM_SZ, STR_BASE);
+	if (rc == MPL_OK)
+		DEBUG(LOG_VERBOSE, "get_digit: %s\n", templ_dig);
 #endif
 
 	return TOK_VAR;

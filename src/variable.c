@@ -7,7 +7,7 @@
 #include "common.h"
 #include "log.h"
 #include "macros.h"
-#include "mp.h"
+#include <mpl.h>
 #include "octstr.h"
 #include "str.h"
 #include "variable.h"
@@ -23,7 +23,7 @@ var_init(struct variable *var)
 	var->type = 0;
 
 	//FIXME: need to check ret status
-	mp_init(&var->bnum);
+	mpl_init(&var->bnum);
 	octstr_init(&var->octstr);
 	str_init(&var->str);
 }
@@ -49,7 +49,7 @@ var_clear(struct variable *var)
 {
 	assert(var != NULL);
 
-	mp_clear(&var->bnum);
+	mpl_clear(&var->bnum);
 	str_clear(&var->str);
 	octstr_clear(&var->octstr);
 }
@@ -120,12 +120,12 @@ var_set_octstr(struct variable *var, octstr_t *octstr)
 }
 
 void
-var_set_bignum(struct variable *var, mp_int *bnum)
+var_set_bignum(struct variable *var, mpl_int *bnum)
 {
 	assert(var != NULL && bnum != NULL);
 
 	var->type = VAR_BIGNUM;
-	mp_copy(&var->bnum, bnum);
+	mpl_copy(&var->bnum, bnum);
 }
 
 void
@@ -134,7 +134,7 @@ var_set_one(struct variable *var)
 	assert(var != NULL);
 
 	var->type = VAR_BIGNUM;
-	mp_set_one(&var->bnum);
+	mpl_set_one(&var->bnum);
 }
 
 void
@@ -143,7 +143,7 @@ var_set_zero(struct variable *var)
 	assert(var != NULL);
 
 	var->type = VAR_BIGNUM;
-	mp_zero(&var->bnum);
+	mpl_zero(&var->bnum);
 
 }
 
@@ -201,12 +201,12 @@ var_cast_to_octstr(struct variable *var)
 	return (octstr_t *)var_convert_type(var, VAR_OCTSTRING);
 }
 
-mp_int *
+mpl_int *
 var_cast_to_bignum(struct variable *var)
 {
 	assert(var != NULL);
 
-	return (mp_int *)var_convert_type(var, VAR_BIGNUM);
+	return (mpl_int *)var_convert_type(var, VAR_BIGNUM);
 }
 
 
@@ -226,7 +226,7 @@ var_octstr_ptr(struct variable *var)
 	return &var->octstr;
 }
 
-mp_int *
+mpl_int *
 var_bignum_ptr(struct variable *var)
 {
 	assert(var != NULL);

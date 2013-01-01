@@ -20,7 +20,7 @@ struct hash_table {
 	struct hash_bucket *arr;
 	size_t		size;
 	hash_callback_t	hash_cb;
-	hash_compare_t	cmp_cb;
+	hash_compare_t	cmpl_cb;
 	size_t		count;
 	size_t		collision;
 };
@@ -44,7 +44,7 @@ default_hash_cb(const void *ptr)
 }
 
 static int
-default_key_cmp_cb(const void *a, const void *b)
+default_key_cmpl_cb(const void *a, const void *b)
 {
 	if (a > b)
 		return 1;
@@ -69,7 +69,7 @@ hash_table_new(size_t hint_size, hash_callback_t hash, hash_compare_t key_cmp)
 
 	table->size = (hint_size == 0) ? HASH_SIZE : prime_nearest(hint_size);
 	table->hash_cb = (hash == NULL) ? default_hash_cb : hash;
-	table->cmp_cb = (key_cmp == NULL) ? default_key_cmp_cb : key_cmp;
+	table->cmpl_cb = (key_cmp == NULL) ? default_key_cmpl_cb : key_cmp;
 	table->collision = 0;
 	table->count = 0;
 
@@ -213,7 +213,7 @@ hash_table_insert_unique(struct hash_table *table, void *key, void *data)
 
 	if (table->arr[idx].key != NULL) {
 		for (nb = &table->arr[idx]; nb != NULL; nb = nb->next) {
-			if (table->cmp_cb(nb->key, key) == 0)
+			if (table->cmpl_cb(nb->key, key) == 0)
 				return ret_entry_exists;
 		}
 	}
@@ -235,7 +235,7 @@ hash_table_remove(struct hash_table *table, void *key)
 	if (table->arr[idx].key == NULL)
 		return FALSE;
 
-	if (table->cmp_cb(table->arr[idx].key, key) == 0) {
+	if (table->cmpl_cb(table->arr[idx].key, key) == 0) {
 
 		if (table->arr[idx].next != NULL) {
 			nb = table->arr[idx].next;
@@ -257,7 +257,7 @@ hash_table_remove(struct hash_table *table, void *key)
 		struct hash_bucket *prev = NULL;
 
 		for (nb = table->arr[idx].next; nb != NULL; nb = nb->next) {
-			if (table->cmp_cb(nb->key, key) == 0) {
+			if (table->cmpl_cb(nb->key, key) == 0) {
 
 				if (prev != NULL)
 					prev->next = nb->next;
@@ -318,7 +318,7 @@ hash_table_replace(struct hash_table *table, void *key, void *data)
 		return FALSE;
 
 	for (nb = &table->arr[idx]; nb != NULL; nb = nb->next) {
-		if (table->cmp_cb(nb->key, key) == 0) {
+		if (table->cmpl_cb(nb->key, key) == 0) {
 			nb->data = data;
 			return TRUE;
 		}
@@ -342,7 +342,7 @@ hash_table_lookup(struct hash_table *table, void *key, void **res_data)
 		return ret_not_found;
 
 	for (nb = &table->arr[idx]; nb != NULL; nb = nb->next) {
-		if (table->cmp_cb(nb->key, key) == 0) {
+		if (table->cmpl_cb(nb->key, key) == 0) {
 			if (res_data != NULL)
 				*res_data = nb->data;
 			return ret_ok;

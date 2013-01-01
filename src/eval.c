@@ -88,7 +88,7 @@ boolean_t
 eval_is_zero(eval_t *eval)
 {
 	struct variable *var;
-	mp_int *mp;
+	mpl_int *mp;
 
 	assert(eval != NULL);
 
@@ -98,7 +98,7 @@ eval_is_zero(eval_t *eval)
 	//FIXME: WIP, may be some errors
 	if (eval->type != EVAL_VAR)
 		return FALSE;
-	else if (mp_iszero(mp))
+	else if (mpl_iszero(mp))
 		return TRUE;
 	else
 		return FALSE;

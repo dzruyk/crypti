@@ -1,5 +1,10 @@
 Crypti is simple language for crypto researchers, that I write from scratch.
+
+NOTE:
+For run crypti needs libmpl fork (it avaiable at https://github.com/dzruyk/libmp)
+
 Now bignum library and string type not integrated in project and documentation available only on russian.
+
 
 
 Short syntax description.
