@@ -27,6 +27,7 @@ typedef enum {
 	OP_MINUS,
 	OP_MUL,
 	OP_DIV,
+	OP_POW,
 
 } opcode_t;
 

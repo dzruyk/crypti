@@ -394,6 +394,16 @@ begin:
 			peek = ' ';
 			lex_item.id = TOK_MUL_AS;
 			return TOK_MUL_AS;
+		} else if (peek == '*') {
+			peek = fgetc(input);
+			if (peek == '=') {
+				peek = ' ';
+				lex_item.id = TOK_POW_AS;
+				return TOK_POW_AS;
+			}
+
+			lex_item.id = TOK_POW;
+			return TOK_POW;
 		}
 		lex_item.id = TOK_MUL;
 		

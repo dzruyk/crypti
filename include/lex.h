@@ -15,6 +15,7 @@ typedef enum {
 	TOK_MINUS_AS,
 	TOK_MUL_AS,
 	TOK_DIV_AS,
+	TOK_POW_AS,
 	TOK_B_AND_AS,
 	TOK_B_XOR_AS,
 	TOK_B_OR_AS,
@@ -51,6 +52,7 @@ typedef enum {
 	TOK_MINUS,
 	TOK_MUL,
 	TOK_DIV,
+	TOK_POW,	// **
 	
 	TOK_EOL,
 

@@ -77,6 +77,7 @@ static ast_node_t *mul_expr_rest();
 static ast_node_t *term();
 static ast_node_t *unary_not();
 static ast_node_t *unary_plus();
+static ast_node_t *power();
 static ast_node_t *factor();
 static ast_node_t *identifier();
 
@@ -400,6 +401,7 @@ expr()
 	case TOK_MINUS_AS:
 	case TOK_MUL_AS:
 	case TOK_DIV_AS:
+	case TOK_POW_AS:
 	case TOK_B_AND_AS:
 	case TOK_B_XOR_AS:
 	case TOK_B_OR_AS:
@@ -442,6 +444,9 @@ op_with_assign(ast_node_t *lvalue)
 		break;
 	case TOK_DIV_AS:
 		op = OP_DIV;
+		break;
+	case TOK_POW_AS:
+		op = OP_POW;
 		break;
 	case TOK_B_AND_AS:
 		op = OP_B_AND;
@@ -879,7 +884,7 @@ term()
 		return unary_not();
 	} else {
 
-		return factor();
+		return power();
 	}
 }
 
@@ -897,7 +902,7 @@ unary_not()
 
 	} while (match(TOK_NOT) == TRUE);
 
-	node = factor();
+	node = power();
 	
 	if (not)
 		return ast_node_unary_new(node, OP_NOT);
@@ -919,12 +924,46 @@ unary_plus()
 
 	} while (match(TOK_PLUS) == TRUE || match(TOK_MINUS) == TRUE);
 
-	node = factor();
+	node = power();
 
 	if (minus)
 		return ast_node_unary_new(node, OP_MINUS);
 	else
 		return ast_node_unary_new(node, OP_PLUS);
+}
+
+static ast_node_t *
+power()
+{
+	ast_node_t *right, *result;
+	int op;
+
+	DEBUG(LOG_VERBOSE, "\n");
+	
+	result = factor();
+
+	if (result == NULL)
+		return NULL;
+
+	while (TRUE) {
+		switch (current_tok) {
+		case TOK_POW:
+			op = OP_POW;
+			break;
+		default:
+			return result;
+		}
+		tok_next();
+
+		right = factor();
+
+		if (right == NULL) {
+			nerrors++;
+			print_warn("uncomplited shift expression\n");
+			right = ast_node_stub_new();
+		}
+		result = ast_node_op_new(result, right, op);
+	}
 }
 
 // May be need to return ast_node_stub_t when RBRACKET or RPAR missed?

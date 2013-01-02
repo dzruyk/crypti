@@ -174,6 +174,11 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	b = right->var;
 
 	switch(opcode) {
+	case OP_POW:
+		ret = varop_pow(res, a, b);
+		if (ret != 0)
+			goto error;
+		break;
 	case OP_MUL:
 		ret = varop_mul(res, a, b);
 		if (ret != 0)
