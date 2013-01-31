@@ -22,7 +22,7 @@ static struct {
 } builtin [] = {
 	{"print", 1, libcall_print},
 	{"sum", -1, libcall_sum},
-	{"del", 1, libcall_del},
+	/*{"del", 1, libcall_del},*/
 	{"type", 1, libcall_type},
 };
 
@@ -85,14 +85,14 @@ void
 function_table_init()
 {
 	if (func_table != NULL)
-		print_warn_and_die("function already initialisated!");
+		error(1, "function already initialisated!");
 	
 	func_table = hash_table_new(INITIAL_SZ, 
 	    (hash_callback_t )function_hash_cb,
 	    (hash_compare_t )function_compare);
 	
 	if (func_table == NULL)
-		print_warn_and_die("error at table table creation\n");
+		error(1, "error at table table creation\n");
 	
 	function_table_fill();
 }
@@ -106,7 +106,7 @@ function_table_fill()
 	func_t *tmp;
 
 	if (func_table == NULL)
-		print_warn_and_die("func_table uninit\n");
+		error(1, "func_table uninit\n");
 	
 	for (i = 0; i < ARRSZ(builtin); i++) {
 		tmp = xmalloc(sizeof(*tmp));
@@ -129,9 +129,9 @@ function_table_insert(func_t *item)
 	
 	res = hash_table_insert_unique(func_table, item->name, item);
 	if (res == ret_out_of_memory)
-		print_warn_and_die("error at func table insertion\n");
+		error(1, "error at func table insertion\n");
 	else if (res == ret_entry_exists)
-		print_warn_and_die("internal error, entry exists\n");
+		error(1, "internal error, entry exists\n");
 
 	return ret_ok;
 }

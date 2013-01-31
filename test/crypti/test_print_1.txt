@@ -1,10 +1,10 @@
 #test print 1 dims array
 a = {1,2,3,4}
 a
-del(a)
+del a
 
 #test print 3dims array
 a = {{{1,2},{3,4}},{{5,6},{7,8}}}
 a
-del(a)
+del a
 

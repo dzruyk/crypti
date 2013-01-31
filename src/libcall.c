@@ -31,7 +31,7 @@ libcall_print(id_item_t **args, int *rettype, void **retval)
 		arr_print(current->arr, NULL);
 		break;
 	default:
-		print_warn_and_die("something wrong\n");
+		error(1, "something wrong\n");
 	}
 
 	*rettype = ID_UNKNOWN;
@@ -82,6 +82,7 @@ libcall_type(id_item_t **args, int *rettype, void **retval)
 	return 0;
 }
 
+/*
 int
 libcall_del(id_item_t **args, int *rettype, void **retval)
 {
@@ -117,4 +118,4 @@ libcall_del(id_item_t **args, int *rettype, void **retval)
 
 	return 0;
 }
-
+*/

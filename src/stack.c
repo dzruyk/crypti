@@ -4,6 +4,7 @@
 
 #include "stack.h"
 #include "common.h"
+#include "macros.h"
 
 
 struct stack {
@@ -52,10 +53,10 @@ stack_push(void *data)
 	    stack->sz > stack->cur + 1);
 
 	if (data == NULL)
-		print_warn_and_die("INTERNAL_ERROR: try to push NULL in stack\n");
+		error(1, "INTERNAL_ERROR: try to push NULL in stack\n");
 
 	if (stack->cur + 1 == stack->sz)
-		print_warn_and_die("INTERNAL_ERR: stack overflow\n");
+		error(1, "INTERNAL_ERR: stack overflow\n");
 
 	stack->arr[stack->cur++] = data;
 }

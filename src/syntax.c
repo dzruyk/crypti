@@ -87,6 +87,7 @@ static ast_node_t *process_do(struct syn_ctx *ctx);
 static ast_node_t *process_while(struct syn_ctx *ctx);
 static ast_node_t *process_break(struct syn_ctx *ctx);
 static ast_node_t *process_continue(struct syn_ctx *ctx);
+static ast_node_t *process_del(struct syn_ctx *ctx);
 
 static ast_node_t *process_return(struct syn_ctx *ctx);
 
@@ -376,6 +377,9 @@ statesment(struct syn_ctx *ctx)
 
 	else if (match(TOK_DO))
 		return process_do(ctx);
+	
+	else if (match(TOK_DEL))
+		return process_del(ctx);
 
 	else
 		return expr();
@@ -464,7 +468,7 @@ op_with_assign(ast_node_t *lvalue)
 		op = OP_SHR;
 		break;
 	default:
-		print_warn_and_die("ERROR!\n");
+		error(1, "ERROR!\n");
 	}
 	tok_next();
 	
@@ -1246,6 +1250,34 @@ err:
 }
 
 static ast_node_t *
+process_del(struct syn_ctx *ctx)
+{
+	ast_node_t *node = NULL;
+
+	DEBUG(LOG_VERBOSE, "\n");
+
+	//FIXME: programmer must delete multiple identifiers with one statesment.
+	if (match(TOK_ID) == FALSE)
+		goto err;
+
+	node = identifier();
+	
+	if (node->type != AST_NODE_ID)
+		goto err;
+
+	return ast_node_del_new(node);
+
+err:
+	sync_stream();
+
+	print_warn("can't delete not identifier\n");
+	nerrors++;
+	ast_node_unref(node);
+
+	return ast_node_stub_new();
+}
+
+static ast_node_t *
 process_break(struct syn_ctx *ctx)
 {
 	DEBUG(LOG_VERBOSE, "\n");
@@ -1672,7 +1704,7 @@ array_init()
 		ndim++;
 	
 	if (ndim == 0)
-		print_warn_and_die("this is should not happened\n");
+		error(1, "this is should not happened\n");
 
 	dimlen = xmalloc(sizeof(dimlen) * ndim);
 	memset(dimlen, 0, sizeof(dimlen) * ndim);

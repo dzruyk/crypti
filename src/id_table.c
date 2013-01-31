@@ -67,7 +67,7 @@ id_item_default_release(id_item_t *item)
 		break;
 	case ID_UNKNOWN:
 	default:
-		print_warn_and_die("unknown id type\n");
+		error(1, "unknown id type\n");
 		break;
 	}
 }
@@ -105,7 +105,7 @@ id_item_set(id_item_t *item, id_type_t type, void *data)
 		break;
 	default:
 		//now we cant set to item functions
-		print_warn_and_die("unsupported type tryed to assing\n");
+		error(1, "unsupported type tryed to assing\n");
 		break;
 	}
 
@@ -126,7 +126,7 @@ void
 id_table_init()
 {
 	if (scopes != NULL)
-		print_warn_and_die("double id table initialisation\n");
+		error(1, "double id table initialisation\n");
 	scopes = xmalloc(sizeof(*scopes));
 	memset(scopes, 0, sizeof(*scopes));
 
@@ -146,7 +146,7 @@ id_table_create()
 	    (hash_compare_t)id_compare);
 	
 	if (table == NULL)
-		print_warn_and_die("error at table table creation\n");
+		error(1, "error at table table creation\n");
 	
 	return table;
 }
@@ -195,11 +195,11 @@ id_table_insert_to(struct hash_table *table, id_item_t *item)
 	
 	res = hash_table_insert_unique(table, item->name, item);
 	if (res == ret_out_of_memory)
-		print_warn_and_die("error at id table insertion\n");
+		error(1, "error at id table insertion\n");
 	else if (res == ret_entry_exists)
-		print_warn_and_die("internal error, entry exists\n");
+		error(1, "internal error, entry exists\n");
 	else if (res != ret_ok)
-		print_warn_and_die("internal error, should not happen\n");
+		error(1, "internal error, should not happen\n");
 
 	return ret_ok;
 }

@@ -46,6 +46,7 @@ typedef enum {
 	AST_NODE_FOR,
 	AST_NODE_WHILE,
 	AST_NODE_DO,
+	AST_NODE_DEL,
 	AST_NODE_BREAK,
 	AST_NODE_CONTINUE,
 	AST_NODE_RETURN,
@@ -157,6 +158,11 @@ typedef struct {
 
 typedef struct {
 	ast_node_t tree;
+	ast_node_t *id;
+} ast_node_del_t;
+
+typedef struct {
+	ast_node_t tree;
 } ast_node_break_t;
 
 typedef struct {
@@ -228,6 +234,8 @@ ast_node_t *ast_node_for_new(ast_node_t *expr1, ast_node_t *expr2,
 ast_node_t *ast_node_while_new(ast_node_t *cond, ast_node_t *body);
 
 ast_node_t *ast_node_do_new(ast_node_t *cond, ast_node_t *body);
+
+ast_node_t *ast_node_del_new(ast_node_t *id);
 
 ast_node_t *ast_node_break_new();
 

@@ -1,24 +1,24 @@
 a = {1,2,3}
 a
-del(a)
+del a
 b = a = {2,3,4}
 b
-del(a)
+del a
 
 a = {{1,2}, {3,4}, {5,6}}
 a
-del(a)
+del a
 
 
 #must be error
 a = {{1,2},2}
 a
-del(a)
+del a
 
 #3 dimention array
 a = {{{1,2,3},{4,5,6}},{{7,8,9}, {10,11,12,}}}
 a
-del(a)
+del a
 
 # assign with op test
 def func(){
@@ -30,4 +30,4 @@ arr = {1,2,3}
 arr[func()] += 2
 arr
 
-del(arr);
+del arr;

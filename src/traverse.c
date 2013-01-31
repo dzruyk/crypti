@@ -93,10 +93,10 @@ traverse_id(ast_node_t *tree)
 		break;
 	case ID_ARR:
 		ev = eval_arr_new(item->arr);
-		print_warn_and_die("need to write code for copy array");
+		error(1, "need to write code for copy array");
 		break;
 	default:
-		print_warn_and_die("WIP\n");
+		error(1, "WIP\n");
 	}
 
 	stack_push(ev);
@@ -153,15 +153,15 @@ traverse_arr(ast_node_t *tree)
 		traverse(synarr[i]);
 		//error handle?
 		if ((ev = stack_pop()) == NULL)
-			print_warn_and_die("unexpected error\n");
+			error(1, "unexpected error\n");
 		
 		if (ev->type != EVAL_VAR)
-			print_warn_and_die("cant set item\n");
+			error(1, "cant set item\n");
 		
 		res = ev->var;
 
 		if (arr_set_item(arr, index, res) != ret_ok)
-			print_warn_and_die("cant set item\n");
+			error(1, "cant set item\n");
 
 		get_next_index(index, dims, len);
 
@@ -241,7 +241,7 @@ traverse_access(ast_node_t *tree)
 			ind[i] = idx;
 			break;
 		default:
-			print_warn_and_die("INTERNAL_ERROR: cant traverse access\n");
+			error(1, "INTERNAL_ERROR: cant traverse access\n");
 		}
 		
 		eval_free(evnum);
@@ -286,7 +286,7 @@ traverse_func_def(ast_node_t *tree)
 		
 		ret = func_table_delete(func);
 		if (ret != ret_ok)
-			print_warn_and_die("cant delete from func table");
+			error(1, "cant delete from func table");
 	}
 
 	func = func_new(synfunc->name);
@@ -369,7 +369,7 @@ get_next_argue(ast_node_t *argnode, char *hint)
 	}
 	
 	if (hint == NULL)
-		print_warn_and_die("hint is NULL\n");
+		error(1, "hint is NULL\n");
 	
 	item = id_item_new(hint);
 	
@@ -453,7 +453,7 @@ add_args_to_scope(func_t *func, ast_node_func_call_t *call,
 	for (i = 0; i < func->nargs; i++) {
 		name = func->args[i];
 		if (name == NULL)
-			print_warn_and_die("NULL name ptr\n");
+			error(1, "NULL name ptr\n");
 
 		item = get_next_argue(call->args[i], name);
 
@@ -815,6 +815,41 @@ finalize:
 }
 
 void
+traverse_del(ast_node_t *tree)
+{
+	ast_node_del_t *delnode;
+	ast_node_id_t *idnode;
+	id_item_t *id;
+	int ret;
+
+	assert(tree != NULL);
+
+	delnode = (ast_node_del_t *)tree;
+
+	if (delnode->id->type != AST_NODE_ID)
+		SHOULDNT_REACH();
+
+	idnode = (ast_node_id_t *)delnode->id;
+
+	id = id_table_lookup_all(idnode->name);
+
+	if (id == NULL) {
+		print_warn("name %s is not defined\n", idnode->name);
+		nerrors++;
+		return;
+	}
+
+	ret = id_table_remove(idnode->name);
+	if (ret != ret_ok) {
+		print_warn("remove %s error\n", idnode->name);
+		nerrors++;
+		return;
+	}
+
+	return;
+}
+
+void
 set_value_id(id_item_t *item, eval_t *ev)
 {
 	struct variable *var;
@@ -828,10 +863,10 @@ set_value_id(id_item_t *item, eval_t *ev)
 		break;
 	case EVAL_ARR:
 		id_item_set(item, ID_ARR, ev->arr);
-		print_warn_and_die("WIP\n");
+		error(1, "WIP\n");
 		break;
 	default:
-		print_warn_and_die("WIP\n");
+		error(1, "WIP\n");
 	}
 }
 
@@ -1152,7 +1187,7 @@ traverse_return(ast_node_t *tree)
 	}
 	
 	helper.is_return++;
-	print_warn_and_die("return node traverse WIP!\n");
+	error(1, "return node traverse WIP!\n");
 }
 
 static void
@@ -1219,6 +1254,7 @@ struct {
 	{AST_NODE_FOR, traverse_for},
 	{AST_NODE_WHILE, traverse_while},
 	{AST_NODE_DO, traverse_do},
+	{AST_NODE_DEL, traverse_del},
 	{AST_NODE_BREAK, traverse_break},
 	{AST_NODE_CONTINUE, traverse_continue},
 	{AST_NODE_RETURN, traverse_return},

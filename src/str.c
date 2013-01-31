@@ -56,8 +56,9 @@ void
 str_clearv(str_t *str, ...)
 {
 	str_t *p;
-
 	va_list ap;
+
+	assert(str != NULL);
 
 	va_start(ap, str);
 
@@ -80,6 +81,8 @@ str_copy(str_t *dst, const str_t *src)
 void
 str_concat(str_t *dst, const str_t *a, const str_t *b)
 {
+	assert(dst != NULL && a != NULL && b != NULL);
+
 	str_copy(dst, a);
 	str_append_str(dst, b);
 }
@@ -90,6 +93,8 @@ str_reverse(str_t *str)
 	char *start, *end;
 	char tmp;
 	
+	assert(str != NULL);
+
 	start = buffer_ptr(str->buf);
 	end = start + buffer_size(str->buf) - 1;
 
@@ -103,7 +108,7 @@ str_reverse(str_t *str)
 char *
 str_append(str_t *str, const char *ptr)
 {
-	assert(str != NULL);
+	assert(str != NULL && ptr != NULL);
 
 	buffer_put(str->buf, ptr, strlen(ptr));
 	buffer_zero(str->buf);
@@ -113,9 +118,9 @@ str_append(str_t *str, const char *ptr)
 char *
 str_append_n(str_t *str, const char *ptr, size_t n)
 {
-	assert(str != NULL);
-
 	size_t len;
+
+	assert(str != NULL);
 
 	len = strnlen(ptr, n);
 	buffer_put(str->buf, ptr, len);
@@ -149,7 +154,7 @@ str_putc(str_t *str, char c)
 char *
 str_snprintf(str_t *str, char *fmt, ...)
 {
-	assert(str != NULL);
+	assert(str != NULL && fmt != NULL);
 
 	size_t res, new_res;
 	va_list ap, ap_copy;

@@ -50,7 +50,8 @@ struct type_conv func_table[] = {
 	{ VAR_STRING, VAR_STRING, string_to_string },
 };
 
-void *convert_value(struct variable *dst_var, int to_type, struct variable *src_var, int from_type)
+void *
+convert_value(struct variable *dst_var, int to_type, struct variable *src_var, int from_type)
 {
 	struct type_conv conv, *res;
 
@@ -62,7 +63,7 @@ void *convert_value(struct variable *dst_var, int to_type, struct variable *src_
 	res = bsearch(&conv, func_table, ARRSZ(func_table), sizeof(func_table[0]), type_conv_cmp);
 
 	if (res == NULL)
-		print_warn_and_die("can't force type, programmer mistake (from %d to %d)\n", from_type, to_type);
+		error(1, "can't force type, programmer mistake (from %d to %d)\n", from_type, to_type);
 
 	return res->func(dst_var, src_var);
 }
@@ -342,7 +343,7 @@ bignum_to_string(struct variable *to, const struct variable *from)
 	return str;
 err:
 	// FIXME: stub
-	print_warn_and_die("WIP!\n");
+	error(1, "WIP!\n");
 	return str;
 }
 

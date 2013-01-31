@@ -66,7 +66,7 @@ get_string()
 	s[used++] = '\0';
 
 	if ((tmp = realloc(s, used)) == NULL)
-		print_warn_and_die("realloc_err");
+		error(1, "realloc_err");
 	s = tmp;
 
 	str_append(str, s);

@@ -25,7 +25,7 @@ for (i = 0; i < arr_len; i = i + 1) {
 	print(arr[i])
 }
 
-del(arr)
+del arr
 
 
 #
@@ -51,6 +51,6 @@ for (i = 0; i < arr_len; i = i + 1) {
 	print(arr[i])
 }
 
-del(arr)
+del arr
 
 

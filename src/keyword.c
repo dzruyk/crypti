@@ -27,6 +27,7 @@ keyword_table_item_t keywords[] =  {
 	{TOK_BREAK, "break"},
 	{TOK_RETURN, "return"},
 	{TOK_IMPORT, "import"},
+	{TOK_DEL, "del"}
 };
 
 
@@ -65,14 +66,14 @@ void
 keyword_table_init()
 {
 	if (key_table != NULL)
-		print_warn_and_die("keyword already initialisated!");
+		error(1, "keyword already initialisated!");
 	
 	key_table = hash_table_new(INITIAL_SZ, 
 	    (hash_callback_t )keyword_hash_cb,
 	    (hash_compare_t )keyword_compare);
 	
 	if (key_table == NULL)
-		print_warn_and_die("error at table table creation\n");
+		error(1, "error at table table creation\n");
 	
 	keyword_table_fill();
 
@@ -86,7 +87,7 @@ keyword_table_fill()
 	keyword_table_item_t *tmp;
 
 	if (key_table == NULL)
-		print_warn_and_die("key_table uninit\n");
+		error(1, "key_table uninit\n");
 	
 	for (i = 0; i < ARRSZ(keywords); i++) {
 		tmp = xmalloc(sizeof(*tmp));
@@ -105,9 +106,9 @@ keyword_table_insert(keyword_table_item_t *item)
 	
 	res = hash_table_insert_unique(key_table, item->name, item);
 	if (res == ret_out_of_memory)
-		print_warn_and_die("error at key table insertion\n");
+		error(1, "error at key table insertion\n");
 	else if (res == ret_entry_exists)
-		print_warn_and_die("internal error, entry exists\n");
+		error(1, "internal error, entry exists\n");
 
 	return ret_ok;
 }

@@ -53,7 +53,7 @@ eval_dup(eval_t *src)
 		break;
 	case EVAL_ARR:
 		dst->type = EVAL_ARR;
-		print_warn_and_die("WIP, I do something in next commit, promise\n");
+		error(1, "WIP, I do something in next commit, promise\n");
 	default:
 		SHOULDNT_REACH();
 	}
@@ -148,7 +148,7 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 	return res;
 
 error:
-	print_warn_and_die("WIP");
+	error(1, "WIP");
 }
 
 // FIXME: without error checks
@@ -292,7 +292,7 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	return ev;
 
 error:
-	print_warn_and_die("WIP!\n");
+	error(1, "WIP!\n");
 }
 
 
@@ -316,7 +316,7 @@ eval_print_val(eval_t *eval)
 		arr_print(eval->arr, NULL);	
 		break;
 	default:
-		print_warn_and_die("INTERNAL ERROR: cant get value\n");
+		error(1, "INTERNAL ERROR: cant get value\n");
 	}
 
 	return ret_ok; 

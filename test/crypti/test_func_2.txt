@@ -2,7 +2,7 @@
 
 def a(i) {
 	print (i);
-	del(i);
+	del i;
 	a(i + 1);
 }
 

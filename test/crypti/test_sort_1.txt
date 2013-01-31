@@ -23,7 +23,7 @@ for (i = 0; i < arr_len; i = i + 1) {
 
 arr
 
-del(arr)
+del arr
 
 
 #
@@ -47,6 +47,6 @@ while (1) {
 
 arr
 
-del(arr)
+del arr
 
 

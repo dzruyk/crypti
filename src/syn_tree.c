@@ -20,6 +20,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_for_t *fornode;
 	ast_node_while_t *whilenode;
 	ast_node_do_t *donode;
+	ast_node_del_t *delnode;
 	ast_node_unary_t *unary;
 	ast_node_import_t *import;
 	ast_node_return_t *ret;
@@ -75,13 +76,16 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(donode->cond);
 		ast_node_unref(donode->body);
 		break;
-
 	case AST_NODE_FOR:
 		fornode = (ast_node_for_t *)tree;
 		ast_node_unref(fornode->expr1);
 		ast_node_unref(fornode->expr2);
 		ast_node_unref(fornode->expr3);
 		ast_node_unref(fornode->body);
+		break;
+	case AST_NODE_DEL:
+		delnode = (ast_node_del_t *)tree;
+		ast_node_unref(delnode->id);
 		break;
 	case AST_NODE_UNARY:
 		unary = (ast_node_unary_t *) tree;
@@ -105,7 +109,7 @@ ast_node_free(ast_node_t *tree)
 		ast_node_unref(tree->right);
 		break;
 	default:
-		print_warn_and_die("Something wrong, no such type\n");
+		error(1, "Something wrong, no such type\n");
 	}
 
 	ast_node_unref(tree->child);
@@ -145,7 +149,7 @@ ast_node_func_free(ast_node_t *tree)
 
 		break;
 	default:
-		print_warn_and_die("something wrong, no such type\n");
+		error(1, "something wrong, no such type\n");
 	}
 	ast_node_unref(tree->child);
 
@@ -217,7 +221,7 @@ ast_node_copy(ast_node_t *node)
 		for (i = 0; i < acc->dims; i++)
 			ind[i] = ast_node_copy(acc->ind[i]);
 		
-		//print_warn_and_die("WIP!\n");
+		//error(1, "WIP!\n");
 		return ast_node_access_new(name, acc->dims, ind);
 	}
 	case AST_NODE_ARR: {
@@ -252,7 +256,7 @@ ast_node_copy(ast_node_t *node)
 	
 	case AST_NODE_DEF: {
 	
-		print_warn_and_die("WIP! write me\n");
+		error(1, "WIP! write me\n");
 	}
 	
 	case AST_NODE_CALL: {
@@ -287,7 +291,7 @@ ast_node_copy(ast_node_t *node)
 		return res;
 	}
 	default:
-		print_warn_and_die("Internal error!\n");
+		error(1, "Internal error!\n");
 	}
 	return ast_node_stub_new();
 }
@@ -512,6 +516,19 @@ ast_node_do_new(ast_node_t *cond, ast_node_t *body)
 
 	res->body = body;
 	
+	return AST_NODE(res);
+}
+
+ast_node_t *
+ast_node_del_new(ast_node_t *id)
+{
+	ast_node_del_t *res;
+
+	res = (ast_node_del_t *)
+	    ast_node_new(AST_NODE_DEL, sizeof(*res), ast_node_free);
+	
+	res->id = id;
+
 	return AST_NODE(res);
 }
 

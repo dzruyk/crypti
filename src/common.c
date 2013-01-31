@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "common.h"
+#include "macros.h"
 
 inline void
 print_usage(char *pname)
@@ -13,7 +14,7 @@ xmalloc(size_t sz)
 {	
 	void *tmp;
 	if ((tmp = malloc(sz)) == NULL)
-		print_warn_and_die("malloc_err");
+		error(1, "malloc_err");
 	return tmp;
 }
 
@@ -22,7 +23,7 @@ xrealloc(void *ptr, size_t sz)
 {
 	void *tmp;
 	if ((tmp = realloc(ptr, sz)) == NULL)
-		print_warn_and_die("malloc_err");
+		error(1, "malloc_err");
 	return tmp;
 }
 
@@ -33,7 +34,7 @@ strdup_or_die(char *str)
 
 	dup = strdup(str);
 	if (dup == NULL)
-		print_warn_and_die("malloc_err");
+		error(1, "malloc_err");
 	
 	return dup;
 }
