@@ -129,6 +129,15 @@ var_set_bignum(struct variable *var, mpl_int *bnum)
 }
 
 void
+var_set_int(struct variable *var, int num)
+{
+	assert(var != NULL);
+
+	var->type = VAR_BIGNUM;
+	mpl_set_sint(&var->bnum, num);
+}
+
+void
 var_set_one(struct variable *var)
 {
 	assert(var != NULL);

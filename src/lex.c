@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <mpl.h>
 
 #include "keyword.h"
 #include "lex.h"
 #include "macros.h"
-#include <mpl.h>
 #include "octstr.h"
 #include "str.h"
 #include "variable.h"
@@ -85,18 +85,23 @@ get_string()
 /*
  * returns:
  * 0 if convertion success
- * -1 otherwise
+ * 1 otherwise
  */
 
 int
-convert_to_digit_base(unsigned char ch, int *num, int base)
+convert_to_digit_base(char ch, int *num, int base)
 {
 	int tmp;
+	int lc;
+	
+	lc = tolower(ch);
 
-	if (ch >= '0' && ch <= '9')
-		tmp = ch - '0';
-	else
+	if (lc >= '0' && lc <= '9')
+		tmp = lc - '0';
+	else if(lc >= 'a' && lc <= 'z')
 		tmp = tolower(ch) - 'a' + 10;
+	else
+		return 1;
 
 	if (tmp >= base || tmp < 0)
 		return 1;

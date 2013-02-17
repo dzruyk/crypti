@@ -1,0 +1,79 @@
+/*
+ * Crypti RSAES-OAEP encryption examples
+ * AMP lab, 2012
+ * http://amplab.syktsu.ru
+ */
+
+func [mask, error] MGF(Z, l)
+{
+	mask = 0
+	if (l > 2 ** 32 * hLen) {
+		error = "mask too long"
+		return
+	}
+	count = l / hLen + (l % hLen ? 1 : 0)
+	/* count = divceil(1, hLen) */
+	for (i = 0; i < count; i++) {
+		C = zeropad(i, 4)
+		T = T # sha1(Z#C)
+	}
+	mask = substr(T, 0, l)
+	error = ""
+	return
+}
+
+func [EM, error] EME_OAEP_encode (M, P, emLen)
+{
+	hLen = sha1.size
+	if (M.length > emLen - 2 * hLen - 1) {
+		error = "message too long"
+		EM = 0
+		return
+	}
+	PS = zerostr(emLen - mLen - 2 * hLen - 1)
+	pHash = sha1(P)
+	DB = pHash # PS # 0x01 # M
+	seed = randstr(hLen)
+	dbMask = MGF(seed, emLen - hLen)
+	maskedDB = DB ^ dbMask
+	seedMask = MGF(maskedDB, hLen)
+	maskedSeed = seed ^ seedMask
+	EM = maskedSeed # maskedDB
+	error = ""
+}
+
+func [c, error] RSAEP(n, e, m)
+{
+	if (m < 0 || m > n - 1) {
+		error = "message representative out of range"
+		c = 0
+		return
+	}
+	c = modexp(m, e, n)
+	error = ""
+	return
+}
+
+func [C, error] RSAES_OAEP_encrypt(n, e, M, P)
+{
+	C = 0;
+	k = n.length
+
+	if (M.length > k - 2 - 2 * sha1.size) {
+		error = "message too long"
+		return
+	}
+	[EM, error] = EME_OAEP_encode(M, Pm k - 1)
+	if (error) {
+		error = "eme_oaep_encode " error
+		return
+	}
+	[C, error] = RSAEP(n, e, EM)
+	if (error) {
+		error = "RSAEP " error
+		return
+	}
+	error = ""
+	return
+}
+

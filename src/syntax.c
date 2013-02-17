@@ -1660,22 +1660,22 @@ array_access()
 			ind = xrealloc(ind, sz * sizeof(*ind));
 		}
 		
-		if (match(TOK_RBRACKET) == FALSE) {
-			print_warn("unsupported expression\n");
-			goto error;
-		}
-
 		ind[dim++] = item;
 
-	} while (match(TOK_LBRACKET));
+	} while (match(TOK_COMMA));
 
-	//FIXME: now arrays only one-dimention
-	
+	if (!match(TOK_RBRACKET)) {
+		print_warn("']' expected\n");
+		goto error;
+	}
+
 	return ast_node_access_new(name, dim, ind);
 
 error:
 	for (i = 0; i < dim; i++)
 		ast_node_unref(ind[i]);
+
+	ufree(ind);
 
 	nerrors++;
 	return ast_node_stub_new();
@@ -1686,104 +1686,42 @@ error:
  * print warn and return NULL if some error occured
  * return ast_node_arr_t otherwise
  */
- //FIXME: splitme(mb need to add aditional func get_next_arr_item)
 static ast_node_t *
 array_init()
 {
 	ast_node_t *item, **arr;
 
-	int i, total, arrsz, ndim, depth;
-	int *dimlen, *cnt;
+	int i, total, arrsz;
 	
 	arr = NULL;
-	ndim = 0;
 	total = arrsz = 0;
 
-	//try to get most depth construction
-	while (match(TOK_LBRACE))
-		ndim++;
-	
-	if (ndim == 0)
-		error(1, "this is should not happened\n");
-
-	dimlen = xmalloc(sizeof(dimlen) * ndim);
-	memset(dimlen, 0, sizeof(dimlen) * ndim);
-
-	cnt = xmalloc(sizeof(dimlen) * ndim);
-	memset(cnt, 0, sizeof(dimlen) * ndim);
-
-	//all except cnt[ndim - 1] must be 1
-	for (i = 0; i < ndim - 1; i++)
-		cnt[i] = 1;
-
-	depth = ndim;
-
 	do {
-		if (match(TOK_RBRACE)) {
-			if (cnt[depth - 1] == 0) {
-				print_warn("empty scalar initilaizer\n");
-				goto error;
-			} else if (dimlen[depth - 1] == 0) {
-				dimlen[depth - 1] = cnt[depth - 1];
-			} else if (dimlen[depth - 1] != cnt[depth - 1]) {
-				print_warn("not expected len\n");
-				goto error;
-			}
-
-			cnt[depth - 1] = 0;
-
-			depth--;
-			if (depth == 0)
-				break;
-
-			match(TOK_COMMA);
-			continue;
-		}
-
-		if (match(TOK_LBRACE)) {
-			cnt[depth - 1]++;
-			depth++;
-
-			if (depth > ndim) {
-				print_warn("unexpected depth\n");
-				goto error;
-			}
-			continue;
-		}
-		//NOTE: values must be on most depth lvl
-		if (depth != ndim) {
-			print_warn("not expected len\n");
-			goto error;
-		}
-		
 		item = logic_or();
 		if (item == NULL) {
 			print_warn("uncomplited tuple\n");
 			goto error;
 		}
-
 		if (total >= arrsz) {
 			arrsz += 4;
 			arr = xrealloc(arr, arrsz * sizeof (*arr));
 		}
 
-		cnt[depth - 1]++;
 		arr[total++] = item;
 
-		if (match(TOK_COMMA) == FALSE && 
-		    current_tok != TOK_RBRACE) {
-			print_warn("unexpected symbol at arr initialisation\n");
-			goto error;
-		}
-	} while (1);
+	} while (match(TOK_COMMA));
+
+	if (!match(TOK_RBRACE)) {
+		print_warn("'}' expected\n");
+		goto error;
+	}
 
 	if (total == 0) {
 		print_warn("empty scalar initializer\n");
 		goto error;
 	}
 
-	ufree(cnt);
-	return ast_node_arr_new(arr, ndim, dimlen, total);
+	return ast_node_arr_new(arr, total);
 
 error:
 	sync_stream();
@@ -1791,8 +1729,6 @@ error:
 	for (i = 0; i < total; i++)
 		ast_node_unref(arr[i]);
 	
-	ufree(dimlen);
-	ufree(cnt);
 	ufree(arr);
 	return NULL;
 }

@@ -313,7 +313,7 @@ eval_print_val(eval_t *eval)
 		break;
 	case EVAL_ARR:
 		//FIXME: stupid stub
-		arr_print(eval->arr, NULL);	
+		arr_print(eval->arr);	
 		break;
 	default:
 		error(1, "INTERNAL ERROR: cant get value\n");

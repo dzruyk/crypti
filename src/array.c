@@ -1,174 +1,181 @@
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "array.h"
 #include "log.h"
+#include "hash.h"
+#include "macros.h"
+#include "variable.h"
+
+static int initial_size = 32;
+
+char *arr_sep = "\034";
+
+static unsigned long
+arr_hash_cb(const void *data)
+{
+	int i, mult, res;
+	char *s;
+	
+	mult = 31;
+	res = 0;
+	s = (char*)data;
+
+	for (i = 0; i < strlen(data); i++)
+		res = res * mult + s[i];
+	
+	return res;
+}
+
+static int
+arr_cmp(const void *a, const void *b)
+{       
+	return strcmp((char*)a, (char*)b);
+}
+
+static arr_item_t *
+arr_item_new(char *key, struct variable *var)
+{
+	arr_item_t *item;
+	struct variable *tmp;
+
+	item = xmalloc(sizeof(*item));
+	memset(item, 0, sizeof(*item));
+	
+	tmp = xmalloc(sizeof(*tmp));
+	var_init(tmp);
+	var_copy(tmp, var);
+
+	item->key = strdup_or_die(key);
+	item->var = tmp;
+
+	return item;
+}
+
+static void
+arr_item_free(arr_item_t *item)
+{
+	ufree(item->key);
+	var_clear(item->var);
+	ufree(item->var);
+	ufree(item);
+}
 
 arr_t *
-arr_new(int dims, int *len, int sz, int item_sz)
+arr_new()
 {
 	arr_t *arr;
 
-	assert(dims > 0 && len != NULL && item_sz > 0);
-
 	arr = xmalloc(sizeof(*arr));
-
-	arr->dims = dims;
-
-	arr->len = xmalloc(sizeof(*len) * dims);
-	memcpy(arr->len, len, sizeof(*len) * dims);
-
-	arr->sz = sz;
 	
-	arr->item_sz = item_sz;
-	
-	arr->ptr = xmalloc(item_sz * sz);
-	
-	memset(arr->ptr, 0, item_sz * sz);
+	arr->hash = hash_table_new(initial_size, (hash_callback_t) arr_hash_cb,
+	    (hash_compare_t) arr_cmp);
 
 	return arr;
 }
 
 arr_t *
-arr_copy(arr_t *arr, arr_item_copy_t f)
+arr_copy(arr_t *arr)
 {
 	arr_t *copy;
-	void **parr, **pcopy;
-	int i;
+	struct hash_table_iter *iter;
+	arr_item_t *item;
+	char *key;
 
-	assert(arr != NULL && f != NULL);
+	assert(arr != NULL);
 
-	copy = arr_new(arr->dims, arr->len, arr->sz, arr->item_sz);
+	copy = arr_new();
 
-	for (i = 0; i < copy->sz; i++) {
-		//FIXME: Be care when you will work with
-		//large numbers
-		parr = arr->ptr + arr->item_sz * i;
-		pcopy = copy->ptr + copy->item_sz * i;
-		f(pcopy, parr);
+	iter = hash_table_iterate_init(arr->hash);
+	if (iter == NULL)
+		error(1, "hash_table_iterate_init fail\n");
+
+	while (hash_table_iterate(iter, (void **)&key, (void **)&item) != FALSE) {
+		arr_set_item(copy, key, item->var);
 	}
+
+	hash_table_iterate_deinit(&iter);
 
 	return copy;
 }
 
 //FIXME: be care when will introduce large numbers
-ret_t
-arr_set_item(arr_t *arr, int *ind, void *var)
+void
+arr_set_item(arr_t *arr, char *key, struct variable *var)
 {
-	void **p;
-	int i, mult, n;
+	arr_item_t *item;
+	int ret;
 
-	assert(arr != NULL && ind != NULL && var != NULL);
+	assert(arr != NULL && key != NULL && var != NULL);
 
-	mult = 1;
-	n = 0;
+	DEBUG(LOG_VERBOSE, "try to set item for key = %s\n", key);
 
-	//ERROR: INVALID
-	for (i = arr->dims - 1; i >= 0; i--) {
-		if (ind[i] >= arr->len[i] || ind[i] < 0)
-			return ret_invalid;
-		n += ind[i] * mult;
-		mult *= arr->len[i];
-	}
-	
-	p = arr->ptr + arr->item_sz * n;
+	if (arr_remove_item(arr, key) != ret_ok)
+		DEBUG(LOG_VERBOSE, "unsuccessfull item remove\n");
 
-	*p = var;
+	item = arr_item_new(key, var);
 
-	return ret_ok;
+	ret = hash_table_insert(arr->hash, item->key, item);
+	if (ret == ret_out_of_memory)
+		error(1, "error at array insertion\n");
+	else if (ret != ret_ok)
+		error(1, "internal error, should not happen\n");
+}
+
+struct variable *
+arr_get_item(arr_t *arr, char *key)
+{
+	arr_item_t *item;
+
+	assert(arr != NULL && key != NULL);
+
+	if (hash_table_lookup(arr->hash, key, (void **)&item) != ret_ok)
+		return NULL;
+
+	return item->var;
 }
 
 ret_t
-arr_get_item(arr_t *arr, int *ind, void **pvar)
+arr_remove_item(arr_t *arr, char *key)
 {
-	void **p;
-	int i, mult, n;
+	arr_item_t *old;
 
-	assert(arr != NULL && ind != NULL && pvar != NULL
-	    && *pvar != NULL);
+	if (hash_table_lookup(arr->hash, key, (void **)&old) != ret_ok)
+		return ret_err;
 
-	mult = 1;
-	n = 0;
+	if (hash_table_remove(arr->hash, key) == FALSE)
+		return ret_err;
 
-	for (i = arr->dims - 1; i >= 0; i--) {
-		if (ind[i] >= arr->len[i] || ind[i] < 0)
-			return ret_invalid;
-		
-		n += ind[i] * mult;
-		mult *= arr->len[i];
-	}
-	
-	p = arr->ptr + arr->item_sz * n;
-	*pvar = *p;
+	arr_item_free(old);
 
 	return ret_ok;
 }
 
 void
-arr_print(arr_t *arr, arr_item_print_t fprint)
+arr_print(arr_t *arr)
 {
-	int i, n;
-	void *var;
-	int *index;
+	struct hash_table_iter *iter;
+	struct variable *var;
+	arr_item_t *item;
+	str_t *str;
+	void *key;
 
 	assert(arr != NULL);
+	
+	printf("{");
 
-#if IS_DEBUG == 1
-	
-	DEBUG(LOG_DEFAULT, "%d dims\n", arr->dims);
- 	for (i = 0; i < arr->dims; i++)
-		DEBUG(LOG_DEFAULT, "%d) len = %d\n", i, arr->len[i]);
-	n = 1;
-	for (i = 0; i < arr->dims; i++)
-		n *= arr->len[i];
-	
-	DEBUG(LOG_DEFAULT, "n = %d\n", n);
-#endif
-	
-	index = xmalloc(sizeof(*index) * arr->dims);
-	memset(index, 0, sizeof(*index) * arr->dims);
-	
-	
-	for (i = 0; i < arr->dims; i++)
-		printf("{");
+	iter = hash_table_iterate_init(arr->hash);
+	if (iter == NULL)
+		error(1, "hash_table_iterate_init fail\n");
 
-	while (1) {
-		int is_end = 0;
-		//print values at most depth
-		while (index[arr->dims - 1] < arr->len[arr->dims - 1]) {
-			arr_get_item(arr, index, &var);
-			fprint(var);
-			index[arr->dims - 1]++;
-			if (index[arr->dims - 1] != arr->len[arr->dims - 1])
-				printf(",");
-
-		}
-
-		index[arr->dims - 1] = 0;
-	
-		i = arr->dims - 2;
-		n = 0;
-		while (i >= 0) {
-			n++;
-			index[i]++;
-			if (index[i] >= arr->len[i]) {
-				index[i] = index[i] % arr->len[i];
-				i--;
-			} else {
-				break;
-			}
-		}
-		if (i < 0)
-			is_end = 1;
-		for (i = 0; i < n; i++)
-			printf("}");
-		if (is_end)
-			break;
-		printf(",");
-		for (i = 0; i < n; i++)
-			printf("{");
+	while (hash_table_iterate(iter, &key, (void **)&item) != FALSE) {
+		var = item->var;
+		str = var_cast_to_str(var);
+		printf("%s, ", str_ptr(str));
 	}
+
 	printf("}\n");
 
 	ufree(index);
@@ -176,17 +183,22 @@ arr_print(arr_t *arr, arr_item_print_t fprint)
 
 
 void
-arr_free(arr_t *arr, arr_item_destructor_t f)
+arr_free(arr_t *arr)
 {
-	int i;
+	struct hash_table_iter *iter;
+	arr_item_t *item;
+	void *key;
 
-	for (i = 0; i < arr->sz; i++) {
-		f(arr->ptr[i]);
-		ufree(arr->ptr[i]);
+	iter = hash_table_iterate_init(arr->hash);
+	if (iter == NULL)
+		error(1, "hash_table_iterate_init fail\n");
+
+	while (hash_table_iterate(iter, &key, (void **)&item) != FALSE) {
+		arr_item_free(item);
 	}
-	
-	ufree(arr->len);
-	ufree(arr->ptr);
+
+	hash_table_iterate_deinit(&iter);
+	hash_table_destroy(&arr->hash);
 	ufree(arr);
 }
 

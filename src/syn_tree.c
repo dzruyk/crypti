@@ -46,7 +46,6 @@ ast_node_free(ast_node_t *tree)
 		n = arr->sz;
 		for (i = 0; i < n; i++)
 			ast_node_unref(arr->arr[i]);
-		ufree(arr->len);
 		ufree(arr->arr);
 		break;
 	case AST_NODE_ACCESS:
@@ -324,7 +323,7 @@ ast_node_id_new(char *name)
 }
 
 ast_node_t *
-ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz)
+ast_node_arr_new(ast_node_t **arr, int sz)
 {
 	ast_node_arr_t *res;
 
@@ -332,10 +331,7 @@ ast_node_arr_new(ast_node_t **arr, int dims, int *len, int sz)
 	    ast_node_new(AST_NODE_ARR, sizeof(*res), ast_node_free);
 
 	res->arr = arr;
-	res->dims = dims;
 	res->sz = sz;
-
-	res->len = len;
 
 	return AST_NODE(res);
 }

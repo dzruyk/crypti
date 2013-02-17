@@ -3,49 +3,60 @@
 
 #include "common.h"
 
-typedef void (*arr_item_destructor_t)(void *item);
-typedef void (*arr_item_copy_t)(void *dst, void *src);
-typedef void (*arr_item_print_t)(void *item);
+//array fields separator default is \034
+extern char *arr_sep;
 
 typedef struct {
-	int dims;
-	int *len;	//i'th dimention lenght
-	int sz;		//total value of items in all dimentions
-	int item_sz;
-	void **ptr;
+	struct hash_table *hash;
 } arr_t;
 
-/* 
- * Create new array with given size and item_sz, and return pointer to it 
- */
-arr_t *arr_new(int dims, int *len, int sz, int item_sz);
+typedef struct {
+	char *key;
+	struct variable *var;
+} arr_item_t;
+
 
 /* 
- * Sets value of arr[ind]
- * returns:
- * ret_ok if all ok
- * ret_invalid if ind out of range
+ * Create new empty array
  */
-ret_t arr_set_item(arr_t *arr, int *ind, void *var);
+arr_t *arr_new();
+
+/*
+ * Copy array with all elements
+ */
+arr_t *arr_copy(arr_t *arr);
 
 /* 
- * set value with content of arr[ind]
- * returns:
- * ret_ok if all ok
- * ret_invalid if ind out of range
+ * Sets value of arr[key]
  */
-ret_t arr_get_item(arr_t *arr, int *ind, void **pvar);
+void arr_set_item(arr_t *arr, char *key, struct variable *var);
+
+/* 
+ * set value with content of arr[key]
+ * returns:
+ * arr_item if all OK
+ * NULL if fails
+ */
+struct variable *arr_get_item(arr_t *arr, char *key);
+
+/*
+ * remove element by key from array.
+ * returns:
+ * ret_ok if suceeds
+ * ret_err if error occured
+ */
+ret_t arr_remove_item(arr_t *arr, char *key);
 
 /*
  * print passed array
  */
-void arr_print(arr_t *arr, arr_item_print_t fprint);
+void arr_print(arr_t *arr);
 
 /* 
  * Free memory allocated by arr and arr->ptr
  * WARN: dont set arr to NULL
  */
-void arr_free(arr_t *arr, arr_item_destructor_t f);
+void arr_free(arr_t *arr);
 
 #endif
 

@@ -28,7 +28,7 @@ libcall_print(id_item_t **args, int *rettype, void **retval)
 		printf("%s\n", str_ptr(str));
 		break;
 	case ID_ARR:
-		arr_print(current->arr, NULL);
+		arr_print(current->arr);
 		break;
 	default:
 		error(1, "something wrong\n");

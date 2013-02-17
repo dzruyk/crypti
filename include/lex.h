@@ -40,9 +40,9 @@ typedef enum {
 	TOK_LPAR,
 	TOK_RPAR,
 	TOK_LBRACE,	// {
-	TOK_RBRACE,
+	TOK_RBRACE,	// }
 	TOK_LBRACKET,	// [
-	TOK_RBRACKET,
+	TOK_RBRACKET,	// ]
 	TOK_COMMA,	// ,
 	TOK_SEMICOLON,	// ;
 	TOK_SHL,	// <<

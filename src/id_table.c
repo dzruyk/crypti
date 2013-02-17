@@ -26,7 +26,7 @@ struct hash_table *current;
 
 
 static int
-id_compare(void *a, void *b)
+id_compare(const void *a, const void *b)
 {	
 	return strcmp((char*)a, (char*)b);
 }
@@ -41,7 +41,7 @@ id_hash_cb(const void *data)
 	res = 0;
 	s = (char*)data;
 
-	for (i = 0; i < strlen(data); i++)
+	for (i = 0; i < strlen(s); i++)
 		res = res * mult + s[i];
 	return res;
 }
@@ -61,7 +61,7 @@ id_item_default_release(id_item_t *item)
 		break;
 	case ID_ARR:
 		if (item->arr != NULL) {
-			arr_free(item->arr, (arr_item_destructor_t )var_clear);
+			arr_free(item->arr);
 			item->arr = NULL;
 		}
 		break;

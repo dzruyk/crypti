@@ -34,6 +34,7 @@ void var_set_string(struct variable *var, str_t *str);
 void var_set_str(struct variable *var, char *str);
 void var_set_octstr(struct variable *var, octstr_t *octstr);
 void var_set_bignum(struct variable *var, mpl_int *bnum);
+void var_set_int(struct variable *var, int num);
 
 /* some setters here */
 void var_set_one(struct variable *var);
