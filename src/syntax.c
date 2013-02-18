@@ -503,7 +503,7 @@ assign(ast_node_t *lvalue)
 	}
 
 	//to array
-	if (current_tok == TOK_LBRACE) {
+	if (match(TOK_LBRACE)) {
 		right = array_init();
 		if (right == NULL)
 			goto err;

@@ -130,7 +130,7 @@ string_to_string(struct variable *to, const struct variable *from)
 	DEBUG(LOG_VERBOSE, "string to string\n");
 	
 	if (to == from) {
-		DEBUG(LOG_DEFAULT, "same octstring used in convertion\n");
+		DEBUG(LOG_DEFAULT, "same string used in convertion\n");
 		return (void *)&to->str;
 	}
 

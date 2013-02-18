@@ -24,7 +24,7 @@ arr_t *arr_new();
 /*
  * Copy array with all elements
  */
-arr_t *arr_copy(arr_t *arr);
+arr_t *arr_dup(arr_t *arr);
 
 /* 
  * Sets value of arr[key]

@@ -104,7 +104,7 @@ id_item_set(id_item_t *item, id_type_t type, void *data)
 		item->arr = (arr_t *)data;
 		break;
 	default:
-		//now we cant set to item functions
+		//now we can't set to item functions
 		error(1, "unsupported type tryed to assing\n");
 		break;
 	}
@@ -248,7 +248,6 @@ id_table_lookup_all(char *name)
 	
 	return NULL;
 }
-
 
 ret_t
 id_table_remove(char *name)

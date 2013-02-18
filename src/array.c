@@ -77,7 +77,7 @@ arr_new()
 }
 
 arr_t *
-arr_copy(arr_t *arr)
+arr_dup(arr_t *arr)
 {
 	arr_t *copy;
 	struct hash_table_iter *iter;
@@ -169,7 +169,7 @@ arr_print(arr_t *arr)
 	iter = hash_table_iterate_init(arr->hash);
 	if (iter == NULL)
 		error(1, "hash_table_iterate_init fail\n");
-
+	//FIXME: need to omit last comma
 	while (hash_table_iterate(iter, &key, (void **)&item) != FALSE) {
 		var = item->var;
 		str = var_cast_to_str(var);
@@ -177,8 +177,7 @@ arr_print(arr_t *arr)
 	}
 
 	printf("}\n");
-
-	ufree(index);
+	hash_table_iterate_deinit(&iter);
 }
 
 

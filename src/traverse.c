@@ -93,8 +93,8 @@ traverse_id(ast_node_t *tree)
 		ev = eval_var_new(var);
 		break;
 	case ID_ARR:
-		ev = eval_arr_new(item->arr);
-		error(1, "need to write code for copy array");
+		arr = arr_dup(item->arr);
+		ev = eval_arr_new(arr);
 		break;
 	default:
 		error(1, "WIP\n");
@@ -157,7 +157,7 @@ finalize:
 static void
 traverse_access(ast_node_t *tree)
 {
-	struct variable *num;
+	struct variable *num, *copy;
 	struct variable key, sep;
 	ast_node_access_t *acc;
 	eval_t *evnum, *resev;
@@ -171,6 +171,7 @@ traverse_access(ast_node_t *tree)
 		return;
 	
 	var_initv(&key, &sep, NULL);
+	var_set_str(&key, "");
 	var_set_str(&sep, arr_sep);
 
 	acc = (ast_node_access_t *)tree;
@@ -224,7 +225,13 @@ traverse_access(ast_node_t *tree)
 		goto error;
 	}
 
-	resev = eval_var_new(num);
+	var_clearv(&key, &sep, NULL);
+	
+	copy = xmalloc(sizeof(*copy));
+	var_init(copy);
+	var_copy(copy, num);
+
+	resev = eval_var_new(copy);
 	stack_push(resev);
 	
 	return;
@@ -823,6 +830,8 @@ void
 set_value_id(id_item_t *item, eval_t *ev)
 {
 	struct variable *var;
+	arr_t *arr;
+
 	switch (ev->type) {
 	case EVAL_VAR:
 		var = xmalloc(sizeof(*var));
@@ -832,8 +841,9 @@ set_value_id(id_item_t *item, eval_t *ev)
 		id_item_set(item, ID_VAR, var);
 		break;
 	case EVAL_ARR:
-		id_item_set(item, ID_ARR, ev->arr);
-		error(1, "WIP\n");
+		arr = arr_dup(ev->arr);
+
+		id_item_set(item, ID_ARR, arr);
 		break;
 	default:
 		error(1, "WIP\n");
@@ -856,6 +866,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 
 	ev = NULL;
 	var_initv(&keyval, &sep, NULL);
+	var_set_str(&keyval, "");
 	var_set_str(&sep, arr_sep);
 
 	if (newval->type != EVAL_VAR) {
@@ -865,11 +876,14 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 	
 	item = id_table_lookup_all(node->name);
 	if (item == NULL) {
+		item = id_item_new(node->name);
 		arr = arr_new();
+		id_item_set(item, ID_ARR, arr);
+		id_table_insert(item);
 	} else if (item->type == ID_ARR) {
 		arr = item->arr;
 	} else {
-		print_warn("%s is not array\n", item->name);
+		print_warn("%s isn't array\n", item->name);
 		goto err;
 	}
 
@@ -902,7 +916,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 	key = str_ptr(var_str_ptr((&keyval)));
 	arr_set_item(arr, key, newval->var);
 
-	var_clear(&keyval);
+	var_clearv(&keyval, &sep, NULL);
 
 	return;
 err:

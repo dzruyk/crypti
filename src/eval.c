@@ -74,8 +74,8 @@ eval_free(eval_t *eval)
 		ufree(eval->var);
 		ufree(eval);
 		break;
-	//TODO:warning, may be memory leak
 	case EVAL_ARR:
+		arr_free(eval->arr);
 		ufree(eval);
 		break;
 	default:
