@@ -1262,7 +1262,8 @@ process_del(struct syn_ctx *ctx)
 
 	node = identifier();
 	
-	if (node->type != AST_NODE_ID)
+	if (node->type != AST_NODE_ID &&
+	    node->type != AST_NODE_ACCESS)
 		goto err;
 
 	return ast_node_del_new(node);

@@ -154,26 +154,75 @@ finalize:
 	stack_push(ev);
 }
 
+/*
+ * returns allocated index string
+ * WARN: you must free it manually
+ */
+static char *
+create_index(ast_node_t **ind, int dims)
+{
+	struct variable keyval;
+	struct variable sep;
+	eval_t *ev;
+	char *key;
+	int i;
+
+	ev = NULL;
+	key = NULL;
+	var_initv(&keyval, &sep, NULL);
+	var_set_str(&keyval, "");
+	var_set_str(&sep, arr_sep);
+
+	for (i = 0; i < dims; i++) {
+		struct variable *var;
+
+		traverse(ind[i]);
+
+		if (nerrors != 0)
+			goto err;
+
+		ev = stack_pop();
+		if (ev == NULL) {
+			print_warn("can't get index\n");
+			goto err;
+		}
+		if (ev->type != EVAL_VAR) {
+			print_warn("index must be number\n");
+			goto err;
+		}
+		var = ev->var;
+
+		varop_str_concat(&keyval, &keyval, var);
+		if (i < dims - 1)
+			varop_str_concat(&keyval, &keyval, &sep);
+
+		eval_free(ev);
+	}
+	key = str_ptr(var_str_ptr((&keyval)));
+	key = strdup_or_die(key);
+
+err:
+	var_clearv(&keyval, &sep, NULL);
+	
+	return key;
+}
+
 static void
 traverse_access(ast_node_t *tree)
 {
 	struct variable *num, *copy;
-	struct variable key, sep;
 	ast_node_access_t *acc;
-	eval_t *evnum, *resev;
+	eval_t *resev;
 	id_item_t *item;
-	int i;
-	char *name, *s;
+	char *name, *key;
 
 	assert(tree != NULL);
+	
+	key = NULL;
 
 	if (nerrors != 0)
 		return;
 	
-	var_initv(&key, &sep, NULL);
-	var_set_str(&key, "");
-	var_set_str(&sep, arr_sep);
-
 	acc = (ast_node_access_t *)tree;
 
 	name = acc->name;
@@ -185,48 +234,17 @@ traverse_access(ast_node_t *tree)
 		goto error;
 	}
 
-	for (i = 0; i < acc->dims; i++) {
-		struct variable *var;
-		traverse(acc->ind[i]);
+	key = create_index(acc->ind, acc->dims);
 
-		if (nerrors != 0)
-			goto error;
-		
-		evnum = stack_pop();
-		if (evnum == NULL) {
-			print_warn("cant get operand\n");
-			nerrors++;
-			goto error;
-		}
-		
-		switch (evnum->type) {
-		case EVAL_VAR:
-			var = evnum->var;
-			
-			varop_str_concat(&key, &key, var);
-			if (i < acc->dims - 1)
-				varop_str_concat(&key, &key, &sep);
+	DEBUG(LOG_VERBOSE, "access to ind %s\n", key);
 
-			break;
-		default:
-			error(1, "INTERNAL_ERROR: cant traverse access\n");
-		}
-		
-		eval_free(evnum);
-	}
-
-	DEBUG(LOG_VERBOSE, "access to ind %s\n", str_ptr(var_str_ptr(&key)));
-
-	s = str_ptr(var_str_ptr(&key));
-
-	if ((num = arr_get_item(item->arr, s)) == NULL) {
+	if ((num = arr_get_item(item->arr, key)) == NULL) {
 		print_warn("can't get item\n");
 		nerrors++;
 		goto error;
 	}
+	ufree(key);
 
-	var_clearv(&key, &sep, NULL);
-	
 	copy = xmalloc(sizeof(*copy));
 	var_init(copy);
 	var_copy(copy, num);
@@ -236,7 +254,7 @@ traverse_access(ast_node_t *tree)
 	
 	return;
 error:
-	var_clearv(&key, &sep, NULL);
+	ufree(key);
 
 	nerrors++;
 }
@@ -796,31 +814,57 @@ traverse_del(ast_node_t *tree)
 {
 	ast_node_del_t *delnode;
 	ast_node_id_t *idnode;
+	ast_node_access_t *acc;
 	id_item_t *id;
+	char *key;
 	int ret;
 
 	assert(tree != NULL);
 
+	key = NULL;
 	delnode = (ast_node_del_t *)tree;
 
-	if (delnode->id->type != AST_NODE_ID)
+	switch (delnode->id->type) {
+	case AST_NODE_ID:
+		idnode = (ast_node_id_t *)delnode->id;
+
+		id = id_table_lookup_all(idnode->name);
+		if (id == NULL) {
+			print_warn("name %s is not defined\n", idnode->name);
+			nerrors++;
+			return;
+		}
+
+		ret = id_table_remove(idnode->name);
+		if (ret != ret_ok) {
+			print_warn("remove %s error\n", idnode->name);
+			nerrors++;
+			return;
+		}
+
+		break;
+	case AST_NODE_ACCESS:
+		acc = (ast_node_access_t *)delnode->id;
+
+		id = id_table_lookup_all(acc->name);
+		if (id == NULL) {
+			print_warn("name %s is not defined\n", acc->name);
+			nerrors++;
+			return;
+		}
+		key = create_index(acc->ind, acc->dims);
+		
+		if (arr_remove_item(id->arr, key) != ret_ok) {
+			print_warn("can't remove arr item\n");
+			nerrors++;
+			ufree(key);
+			return;
+		}
+		ufree(key);
+		
+		break;
+	default:
 		SHOULDNT_REACH();
-
-	idnode = (ast_node_id_t *)delnode->id;
-
-	id = id_table_lookup_all(idnode->name);
-
-	if (id == NULL) {
-		print_warn("name %s is not defined\n", idnode->name);
-		nerrors++;
-		return;
-	}
-
-	ret = id_table_remove(idnode->name);
-	if (ret != ret_ok) {
-		print_warn("remove %s error\n", idnode->name);
-		nerrors++;
-		return;
 	}
 
 	return;
@@ -854,8 +898,6 @@ set_value_id(id_item_t *item, eval_t *ev)
 static void
 set_value_node_access(ast_node_access_t *node, eval_t *newval)
 {
-	struct variable keyval;
-	struct variable sep;
 	arr_t *arr;
 	eval_t *ev;
 	id_item_t *item;
@@ -865,9 +907,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 	assert(newval != NULL);
 
 	ev = NULL;
-	var_initv(&keyval, &sep, NULL);
-	var_set_str(&keyval, "");
-	var_set_str(&sep, arr_sep);
+	key = NULL;
 
 	if (newval->type != EVAL_VAR) {
 		print_warn("try to assign not a number\n");
@@ -886,43 +926,18 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 		print_warn("%s isn't array\n", item->name);
 		goto err;
 	}
-
-	for (i = 0; i < node->dims; i++) {
-		struct variable *var;
-
-		traverse(node->ind[i]);
-
-		if (nerrors != 0)
-			goto err;
-
-		ev = stack_pop();
-		if (ev == NULL) {
-			print_warn("can't get index\n");
-			goto err;
-		}
-		if (ev->type != EVAL_VAR) {
-			print_warn("index must be number\n");
-			goto err;
-		}
-		var = ev->var;
-
-		varop_str_concat(&keyval, &keyval, var);
-		if (i < node->dims - 1)
-			varop_str_concat(&keyval, &keyval, &sep);
-
-		eval_free(ev);
-	}
 	
-	key = str_ptr(var_str_ptr((&keyval)));
+	key = create_index(node->ind, node->dims);
+	
 	arr_set_item(arr, key, newval->var);
 
-	var_clearv(&keyval, &sep, NULL);
+	ufree(key);
 
 	return;
 err:
 	nerrors++;
 
-	var_clear(&keyval);
+	ufree(key);
 	eval_free(ev);
 }
 
