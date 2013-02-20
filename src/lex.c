@@ -25,6 +25,21 @@ skip_comment()
 	while (peek != '\n');
 }
 
+static void
+skip_multiline_comment()
+{
+	while (TRUE) {
+		peek = fgetc(input);
+		if (peek != '*')
+			continue;
+		peek = fgetc(input);
+		if (peek != '/')
+			continue;
+		peek = ' ';
+		return;
+	}
+}
+
 static tok_t
 get_string()
 {
@@ -419,15 +434,21 @@ begin:
 			peek = ' ';
 			lex_item.id = TOK_DIV_AS;
 			return TOK_DIV_AS;
+		} else if (peek == '/') {
+			skip_comment();
+			goto begin;
+		} else if (peek == '*') {
+			skip_multiline_comment();
+			goto begin;
 		}
 		lex_item.id = TOK_DIV;
-		
+
 		return TOK_DIV;
 	case '#':
+		peek = ' ';
+		lex_item.id = TOK_HASH;
 
-		skip_comment();
-
-		goto begin;
+		return TOK_HASH;
 	case '\n':
 		peek = ' ';
 		lex_item.id = TOK_EOL;

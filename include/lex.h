@@ -53,6 +53,7 @@ typedef enum {
 	TOK_MUL,
 	TOK_DIV,
 	TOK_POW,	// **
+	TOK_HASH,	//#
 	
 	TOK_EOL,
 

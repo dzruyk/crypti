@@ -90,10 +90,11 @@ id_item_new(char *name)
 void 
 id_item_set(id_item_t *item, id_type_t type, void *data)
 {
-	item->type = type;
-
 	//free previos variables
-	item->destructor(item);
+	if (item->type != ID_UNKNOWN)
+		item->destructor(item);
+
+	item->type = type;
 
 	switch (type) {
 	case ID_VAR:

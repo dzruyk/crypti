@@ -78,6 +78,7 @@ static ast_node_t *term();
 static ast_node_t *unary_not();
 static ast_node_t *unary_plus();
 static ast_node_t *power();
+static ast_node_t *concatenation();
 static ast_node_t *factor();
 static ast_node_t *identifier();
 
@@ -944,7 +945,7 @@ power()
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
-	result = factor();
+	result = concatenation();
 
 	if (result == NULL)
 		return NULL;
@@ -959,7 +960,7 @@ power()
 		}
 		tok_next();
 
-		right = factor();
+		right = concatenation();
 
 		if (right == NULL) {
 			nerrors++;
@@ -969,6 +970,45 @@ power()
 		result = ast_node_op_new(result, right, op);
 	}
 }
+
+static ast_node_t *
+concatenation()
+{
+	ast_node_t *right, *result;
+	int op;
+
+	DEBUG(LOG_VERBOSE, "\n");
+	result = factor();
+
+	if (result == NULL)
+		return NULL;
+
+	while (TRUE) {
+		switch (current_tok) {
+		case TOK_LPAR:
+		case TOK_ID:
+		case TOK_VAR:
+			op = OP_STR_CONCAT;
+			break;
+		case TOK_HASH:
+			op = OP_OCTSTR_CONCAT;
+			tok_next();
+			break;
+		default:
+			return result;
+		}
+
+		right = factor();
+		if (right == NULL) {
+			nerrors++;
+			print_warn("uncomplited shift expression\n");
+			right = ast_node_stub_new();
+		}
+
+		result = ast_node_op_new(result, right, op);
+	}
+}
+
 
 // May be need to return ast_node_stub_t when RBRACKET or RPAR missed?
 static ast_node_t *

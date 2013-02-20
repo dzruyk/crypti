@@ -283,6 +283,16 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 		if (ret != 0)
 			goto error;
 		break;
+	case OP_STR_CONCAT:
+		ret = varop_str_concat(res, a, b);
+		if (ret != 0)
+			goto error;
+		break;
+	case OP_OCTSTR_CONCAT:
+		ret = varop_oct_concat(res, a, b);
+		if (ret != 0)
+			goto error;
+		break;
 	default:
 		SHOULDNT_REACH();
 	}
@@ -309,7 +319,7 @@ eval_print_val(eval_t *eval)
 	case EVAL_VAR:
 		var = eval->var;
 		str = var_cast_to_str(var);
-		printf("%s\n", str_ptr(str));
+		printf("\"%s\"\n", str_ptr(str));
 		break;
 	case EVAL_ARR:
 		//FIXME: stupid stub

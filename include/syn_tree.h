@@ -29,6 +29,9 @@ typedef enum {
 	OP_DIV,
 	OP_POW,
 
+	OP_STR_CONCAT,
+	OP_OCTSTR_CONCAT,
+
 } opcode_t;
 
 typedef enum {
