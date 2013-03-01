@@ -902,7 +902,6 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 	eval_t *ev;
 	id_item_t *item;
 	char *key;
-	int i;
 
 	assert(newval != NULL);
 

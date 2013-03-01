@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <mpl.h>
 
+#include "common.h"
 #include "keyword.h"
 #include "lex.h"
 #include "macros.h"
@@ -16,6 +17,8 @@ static char peek = ' ';
 
 /* current input file */
 FILE *input;
+
+boolean_t convert_to_digit_base(char ch, int *num, int base);
 
 static void
 skip_comment()
@@ -38,6 +41,115 @@ skip_multiline_comment()
 		peek = ' ';
 		return;
 	}
+}
+
+boolean_t
+get_hex_char(char *res)
+{
+	int a, b;
+
+	peek = fgetc(input);
+
+	if (!convert_to_digit_base(peek, &a, 16)) {
+		ungetc(peek, input);
+		return FALSE;
+	}
+	peek = fgetc(input);
+	if (!convert_to_digit_base(peek, &b, 16)) {
+		ungetc(peek, input);
+		return FALSE;
+	}
+
+	*res = (char)(a * 16 + b);
+	return TRUE;
+}
+
+boolean_t
+get_unescaped_char(char *res, char peek)
+{
+	if (peek == '\\') {
+		peek = fgetc(input);
+		switch (peek) {
+		case '\\':
+			*res = '\\';
+			break;
+		case '`':
+			*res = '`';
+			break;
+		case 'x':
+			if (!get_hex_char(res))
+				return FALSE;
+			break;
+		default:
+			*res = peek;
+			break;
+		}
+	} else {
+		*res = peek;
+	}
+
+	return TRUE;
+}
+
+static tok_t
+get_octstring()
+{
+	octstr_t *octstr;
+	struct variable *var;
+	char *s = NULL;
+	char *tmp;
+	int len, used;
+
+	var = xmalloc(sizeof(*var));
+	var_init(var);
+
+	octstr = var_octstr_ptr(var);
+
+	used = 0;
+	len = 64;
+	s = xmalloc(len);
+
+	peek = fgetc(input);
+
+	while (peek != EOF && peek != '`') {
+
+		if (used >= len - 1) {
+			len += 64;
+			s = xrealloc(s, len);
+		}
+
+		if (!get_unescaped_char(&s[used], peek)) {
+			print_warn("escape error\n");
+			goto err;
+		}
+		peek = fgetc(input);
+		used++;
+	}
+
+	if (peek != '`') {
+		print_warn("uncomplited octstring\n");
+		goto err;
+	}
+
+	if ((tmp = realloc(s, used)) == NULL)
+		error(1, "realloc_err");
+	s = tmp;
+
+	octstr_append_n(octstr, s, used);
+
+	peek = ' ';
+
+	ufree(s);
+
+	lex_item.id = TOK_VAR;
+	lex_item.var = var;
+	var_force_type(var, VAR_OCTSTRING);
+
+	return TOK_VAR;
+err:
+	ufree(s);
+	peek = ' ';
+	return TOK_UNKNOWN;
 }
 
 static tok_t
@@ -99,11 +211,10 @@ get_string()
 
 /*
  * returns:
- * 0 if convertion success
- * 1 otherwise
+ * true if convertion success
+ * false otherwise
  */
-
-int
+boolean_t
 convert_to_digit_base(char ch, int *num, int base)
 {
 	int tmp;
@@ -116,14 +227,14 @@ convert_to_digit_base(char ch, int *num, int base)
 	else if(lc >= 'a' && lc <= 'z')
 		tmp = tolower(ch) - 'a' + 10;
 	else
-		return 1;
+		return FALSE;
 
 	if (tmp >= base || tmp < 0)
-		return 1;
+		return FALSE;
 	else
 		*num = tmp;
 
-	return 0;
+	return TRUE;
 }
 
 static void
@@ -138,7 +249,7 @@ get_digit_base(mpl_int *mp, int base)
 
 	mpl_set_uint(&mpbase, base);
 
-	while (convert_to_digit_base(peek, &num, base) == 0) {
+	while (convert_to_digit_base(peek, &num, base)) {
 		/* mp = mp * STR_BASE + peek - '0'; */
 		mpl_set_uint(&tmp, num);
 
@@ -238,6 +349,8 @@ begin:
 
 	if (peek == '\"')
 		return get_string();
+	if (peek == '`')
+		return get_octstring();
 
 	switch (peek) {
 	case '=':
@@ -449,6 +562,11 @@ begin:
 		lex_item.id = TOK_HASH;
 
 		return TOK_HASH;
+	case '.':
+		peek = ' ';
+		lex_item.id = TOK_DOT;
+
+		return TOK_DOT;
 	case '\n':
 		peek = ' ';
 		lex_item.id = TOK_EOL;

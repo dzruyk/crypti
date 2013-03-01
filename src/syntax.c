@@ -950,25 +950,23 @@ power()
 	if (result == NULL)
 		return NULL;
 
-	while (TRUE) {
-		switch (current_tok) {
-		case TOK_POW:
-			op = OP_POW;
-			break;
-		default:
-			return result;
-		}
-		tok_next();
-
-		right = concatenation();
-
-		if (right == NULL) {
-			nerrors++;
-			print_warn("uncomplited shift expression\n");
-			right = ast_node_stub_new();
-		}
-		result = ast_node_op_new(result, right, op);
+	switch (current_tok) {
+	case TOK_POW:
+		op = OP_POW;
+		break;
+	default:
+		return result;
 	}
+	tok_next();
+
+	right = power();
+
+	if (right == NULL) {
+		nerrors++;
+		print_warn("uncomplited shift expression\n");
+		right = ast_node_stub_new();
+	}
+	result = ast_node_op_new(result, right, op);
 }
 
 static ast_node_t *
