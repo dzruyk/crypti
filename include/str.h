@@ -30,5 +30,4 @@ void str_reset(str_t *str);
 size_t str_len(str_t *str);
 char *str_ptr(str_t *str);
 
-
 #endif

@@ -172,6 +172,31 @@ octstr_and(octstr_t *dst, const octstr_t *a, const octstr_t *b)
 int
 octstr_substr(octstr_t *res, octstr_t *str, int first, int n)
 {
+	size_t len;
+	int i;
+
+	len = octstr_len(str);
+
+	if (first < 0)
+		first = 0;
+
+	if (first > len) {
+		octstr_reset(res);
+		return 0;
+	}
+	
+	if (n > len - first)
+		n = len - first;
+
+	octstr_reset(res);
+
+	for (i = 0; i < n; i++) {
+		char ch;
+		ch = buffer_get_u8_at(str->buf, first + i);
+		octstr_putc(res, ch);
+	}
+
+
 	return 0;
 }
 

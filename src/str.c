@@ -108,6 +108,30 @@ str_reverse(str_t *str)
 int
 str_substr(str_t *res, str_t *str, int first, int n)
 {
+	size_t len;
+	int i;
+
+	len = str_len(str);
+
+	if (first < 0)
+		first = 0;
+
+	if (first > len) {
+		str_reset(res);
+		return 0;
+	}
+	
+	if (n > len - first)
+		n = len - first;
+
+	str_reset(res);
+
+	for (i = 0; i < n; i++) {
+		char ch;
+		ch = buffer_get_u8_at(str->buf, first + i);
+		str_putc(res, ch);
+	}
+
 	return 0;
 }
 

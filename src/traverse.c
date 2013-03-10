@@ -383,6 +383,7 @@ get_next_argue(ast_node_t *argnode, char *hint)
 void
 exec_library_function(func_t *func, ast_node_func_call_t *call)
 {
+	eval_t *ev;
 	id_item_t **items;
 	int err, i, rtype;
 	void *rval;
@@ -411,8 +412,21 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	if (err != 0) {
 		print_warn("error when exec %s\n", func->name);
 		nerrors++;
+		goto finalize;
 	}
 	
+	switch (rtype) {
+	case ID_VAR:
+		ev = eval_var_new(rval);
+		stack_push(ev);
+		break;
+	case ID_ARR:
+		error(1, "WIP\n");
+		break;
+	default:
+		break;
+	}
+
 finalize:
 
 	//destruct args
@@ -422,6 +436,7 @@ finalize:
 		    strcmp(items[i]->name, "") == 0)
 			id_item_free(items[i]);
 	}
+
 	
 	ufree(items);
 	
