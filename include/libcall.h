@@ -9,6 +9,10 @@ int libcall_sum(id_item_t **args, int *rettype, void **retval);
 
 int libcall_type(id_item_t **args, int *rettype, void **retval);
 
+int libcall_subs(id_item_t **args, int *rettype, void **retval);
+
+int libcall_subocts(id_item_t **args, int *rettype, void **retval);
+
 //int libcall_del(id_item_t **args, int *rettype, void **retval);
 
 #endif

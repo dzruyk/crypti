@@ -322,7 +322,6 @@ exec_function(func_t *func)
 			continue;
 		}
 	}
-	
 }
 
 /*
@@ -977,10 +976,25 @@ set_value_node(ast_node_t *ltree, eval_t *ev)
 }
 
 static void
+set_value_node_n(ast_node_t **tree, eval_t **evs, int n)
+{
+	int i;
+
+	for (i = 0; i < n; i++) {
+		if (nerrors != 0)
+			break;
+		set_value_node(*tree++, *evs++);
+	}
+}
+
+
+int
 traverse_as_rest(ast_node_t *tree)
 {
 	ast_node_t *ltree;
-	eval_t *right;
+	ast_node_seq_t *seq;
+	eval_t **evs;
+	int i;
 
 	assert(tree != NULL);
 
@@ -992,24 +1006,39 @@ traverse_as_rest(ast_node_t *tree)
 		traverse(tree->right);
 
 	if (nerrors != 0)
-		return;
+		return -1;
 
-	right = stack_pop();
-	if (right == NULL) {
+	if (ltree->type != AST_NODE_SEQ) {
+		print_warn("lvalue not AST_NODE_SEQ, seems like crypti"
+		    " developer mistake");
 		nerrors++;
-		print_warn("cant get operand\n");
-		return;
+		return -1;
 	}
+	
+	seq = (ast_node_seq_t *)ltree;
+	evs = xmalloc(seq->n * sizeof(*evs));
+	stack_pop_n((void **)evs, seq->n);
+
+	for (i = 0; i < seq->n; i++) {
+		if (evs[i] == NULL) {
+			nerrors++;
+			print_warn("cant get operand\n");
+			ufree(evs);
+			return -1;
+		}
+	}
+	set_value_node_n(seq->node, evs, seq->n);
+
+	if (nerrors != 0)
+		goto finalize;
 
 	//FIXME: simple workaround var
 	//double free problem
-	
-	set_value_node(ltree, right);
+	stack_push_n((void **)evs, seq->n);
+finalize:
+	ufree(evs);
 
-	if (nerrors != 0)
-		return;
-
-	stack_push(right);
+	return seq->n;
 }
 
 //FIXME: now just simple fix problem
@@ -1018,23 +1047,28 @@ traverse_as_rest(ast_node_t *tree)
 static void
 traverse_as(ast_node_t *tree)
 {
-	eval_t *right;
+	int n;
 
 	assert(tree != NULL);
 
-	traverse_as_rest(tree);
+	n = traverse_as_rest(tree);
 
-	if (nerrors != 0)
+	if (nerrors != 0 || n < 0)
 		return;
+	
+	stack_remove_n(n);
+}
 
-	right = stack_pop();
-	if (right == NULL) {
-		nerrors++;
-		print_warn("can't get operand");
-		return;
-	}
+static void
+traverse_seq(ast_node_t *tree)
+{
+	ast_node_seq_t *seq;
+	int i;
+	
+	seq = (ast_node_seq_t *)tree;
 
-	eval_free(right);
+	for (i = seq->n - 1; i >= 0; i--)
+		traverse(seq->node[i]);
 }
 
 static void
@@ -1243,6 +1277,7 @@ struct {
 	{AST_NODE_OP, traverse_op},
 	{AST_NODE_OP_AS, traverse_op_as},
 	{AST_NODE_AS, traverse_as},
+	{AST_NODE_SEQ, traverse_seq},
 	{AST_NODE_IF, traverse_if},
 	{AST_NODE_FOR, traverse_for},
 	{AST_NODE_WHILE, traverse_while},

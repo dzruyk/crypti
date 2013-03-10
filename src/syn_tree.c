@@ -14,6 +14,7 @@ ast_node_free(ast_node_t *tree)
 {
 	ast_node_access_t *acc;
 	ast_node_arr_t *arr;
+	ast_node_seq_t *seq;
 	ast_node_var_t *var;
 	ast_node_id_t *id;
 	ast_node_if_t *ifnode;
@@ -97,9 +98,16 @@ ast_node_free(ast_node_t *tree)
 			ast_node_unref(import->nodes[i]);
 		ufree(import->nodes);
 		break;
+	case AST_NODE_SEQ:
+		seq = (ast_node_seq_t *) tree;
+
+		for (i = 0; i < seq->n; i++)
+			ast_node_unref(seq->node[i]);
+		ufree(seq->node);
+		break;
+	case AST_NODE_AS:
 	case AST_NODE_OP:
 	case AST_NODE_OP_AS:
-	case AST_NODE_AS:
 	case AST_NODE_SCOPE:
 	case AST_NODE_STUB:	
 	case AST_NODE_BREAK:
@@ -450,6 +458,28 @@ ast_node_as_new(ast_node_t *left, ast_node_t *right)
 	AST_NODE(res)->right = right;
 
 	return AST_NODE(res);
+}
+
+
+ast_node_t *
+ast_node_seq_new()
+{
+	ast_node_seq_t *res;
+
+	res = (ast_node_seq_t *) 
+	    ast_node_new(AST_NODE_SEQ, sizeof(*res), ast_node_free);
+
+	res->node = NULL;
+	res->n = 0;
+	
+	return AST_NODE(res);
+}
+
+void
+ast_node_seq_add(ast_node_seq_t *seq, ast_node_t *node)
+{
+	seq->node = xrealloc(seq->node, (seq->n + 1) * sizeof(*seq->node));
+	seq->node[seq->n++] = node;
 }
 
 ast_node_t *

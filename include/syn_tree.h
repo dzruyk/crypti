@@ -45,6 +45,7 @@ typedef enum {
 	AST_NODE_OP,
 	AST_NODE_OP_AS,
 	AST_NODE_AS,
+	AST_NODE_SEQ,
 	AST_NODE_IF,
 	AST_NODE_FOR,
 	AST_NODE_WHILE,
@@ -129,6 +130,12 @@ typedef struct {
 typedef struct {
 	ast_node_t tree;
 } ast_node_as_t;
+
+typedef struct {
+	ast_node_t tree;
+	ast_node_t **node;
+	int n;
+} ast_node_seq_t;
 
 typedef struct {
 	ast_node_t tree;
@@ -224,6 +231,9 @@ ast_node_t *ast_node_op_new(ast_node_t* left, ast_node_t *right, opcode_t opcode
 ast_node_t *ast_node_op_as_new(ast_node_t* left, ast_node_t *right, opcode_t opcode);
 
 ast_node_t *ast_node_as_new(ast_node_t *left, ast_node_t *right);
+
+ast_node_t *ast_node_seq_new();
+void ast_node_seq_add(ast_node_seq_t *seq, ast_node_t *node);
 
 ast_node_t *ast_node_if_new(ast_node_t *_if, ast_node_t *body, ast_node_t *_else);
 

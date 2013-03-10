@@ -49,7 +49,7 @@ def rsa_oaep_ep(n, e, M, L, c) {
 	mLen = len(M);
 
 	PS = new_str(k - mLen - 2 * hLen - 2, 0);
-	DB = lHash + PS + "\x01" + M
+	DB = lHash # PS # "\x01" # M
 
 	seed = rand_str(hLen);
 	dbMask = MGF(seed, k - hLen - 1)
@@ -57,7 +57,7 @@ def rsa_oaep_ep(n, e, M, L, c) {
 	seedMask = MGF(maskedDB, hLen)
 	maskedSeed = seed ^ seedMask
 
-	EM = "\x00" + maskedSeed + maskedDB
+	EM = "\x00" # maskedSeed # maskedDB
 
 	m = to_num(EM);
 

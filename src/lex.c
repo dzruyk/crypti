@@ -507,7 +507,13 @@ begin:
 			peek = ' ';
 			lex_item.id = TOK_PLUS_AS;
 			return TOK_PLUS_AS;
+		} /* Unsupported now
+		     else if (peek == '+') {
+			peek = ' ';
+			lex_item.id = TOK_INC;
+			return TOK_INC;
 		}
+		*/
 		lex_item.id = TOK_PLUS;
 		
 		return TOK_PLUS;
@@ -517,7 +523,13 @@ begin:
 			peek = ' ';
 			lex_item.id = TOK_MINUS_AS;
 			return TOK_MINUS_AS;
+		} /* Unsupported now
+		     else if (peek == '-') {
+			peek = ' ';
+			lex_item.id = TOK_DEC;
+			return TOK_DEC;
 		}
+		*/
 		lex_item.id = TOK_MINUS;
 		
 		return TOK_MINUS;

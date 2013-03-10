@@ -110,6 +110,7 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 	assert(ev != NULL);
 
 	eval_t *res;
+	struct variable *resvar;
 	struct variable *var;
 	int ret;
 
@@ -117,25 +118,29 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 		return NULL;
 
 	var = ev->var;
+	
+	resvar = xmalloc(sizeof(*resvar));
+	var_init(resvar);
 
 	switch (opcode) {
 	case OP_PLUS:
+		var_copy(resvar, var);
 		break;
 	case OP_MINUS:
-		ret = varop_neg(var, var);
+		ret = varop_neg(resvar, var);
 		if (ret != 0)
 			goto error;
 		break;
 	case OP_NOT:
-		ret = varop_not(var, var);
+		ret = varop_not(resvar, var);
 		if (ret != 0)
 			goto error;
 		break;
 	case OP_NOTNOT:
-		ret = varop_not(var, var);
+		ret = varop_not(resvar, var);
 		if (ret != 0)
 			goto error;
-		ret = varop_not(var, var);
+		ret = varop_not(resvar, var);
 		if (ret != 0)
 			goto error;
 		break;
@@ -143,7 +148,7 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 		SHOULDNT_REACH();
 	}
 
-	res = eval_var_new(var);
+	res = eval_var_new(resvar);
 
 	return res;
 

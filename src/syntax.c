@@ -58,7 +58,8 @@ static ast_node_t *block(struct syn_ctx *ctx);
 static ast_node_t *statesment(struct syn_ctx *ctx);
 static ast_node_t *expr();
 
-static ast_node_t *assign(ast_node_t *lvalue);
+static ast_node_t *assign(ast_node_t *first, int nesting);
+static ast_node_t *get_rval();
 static ast_node_t *op_with_assign(ast_node_t *lvalue);
 
 static ast_node_t *logic_or();
@@ -241,6 +242,16 @@ is_eof()
 		return FALSE;
 }
 
+boolean_t
+is_lvalue(ast_node_t *node)
+{
+	if (node->type != AST_NODE_ID &&
+	    node->type != AST_NODE_ACCESS)
+		return FALSE;
+
+	return TRUE;
+}
+
 ret_t
 program_start(ast_node_t **tree)
 {
@@ -398,10 +409,10 @@ expr()
 	if (result == NULL)
 		return NULL;
 
-	if (match(TOK_AS) == TRUE)
-		return assign(result);
-
 	switch (current_tok) {
+	case TOK_AS:
+	case TOK_COMMA:
+		return assign(result, 0);
 	case TOK_PLUS_AS:
 	case TOK_MINUS_AS:
 	case TOK_MUL_AS:
@@ -413,16 +424,15 @@ expr()
 	case TOK_SHL_AS:
 	case TOK_SHR_AS:
 		return op_with_assign(result);
-		break;
 	default:
 		return result;
 	}
 }
 
 static ast_node_t *
-op_with_assign(ast_node_t *lvalue)
+op_with_assign(ast_node_t *node)
 {
-	assert(lvalue != NULL);
+	assert(node != NULL);
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
@@ -431,8 +441,7 @@ op_with_assign(ast_node_t *lvalue)
 	
 	right = NULL;
 
-	if (lvalue->type != AST_NODE_ID &&
-	    lvalue->type != AST_NODE_ACCESS) {
+	if (!is_lvalue(node)) {
 		print_warn("assign to not variable\n");
 		goto err;
 	}
@@ -479,7 +488,7 @@ op_with_assign(ast_node_t *lvalue)
 		goto err;
 	}
 
-	return ast_node_op_as_new(lvalue, right, op);
+	return ast_node_op_as_new(node, right, op);
 
 err:
 	nerrors++;
@@ -490,41 +499,113 @@ err:
 }
 
 static ast_node_t *
-assign(ast_node_t *lvalue)
+get_rval()
 {
-	ast_node_t *right = NULL;
-	
-	DEBUG(LOG_VERBOSE, "\n");
-	
-	//FIXME: mb need to write special function at future?
-	if (lvalue->type != AST_NODE_ID &&
-	    lvalue->type != AST_NODE_ACCESS) {
-		print_warn("assign to not variable\n");
-		goto err;
-	}
+	ast_node_t *right;
 
 	//to array
 	if (match(TOK_LBRACE)) {
 		right = array_init();
 		if (right == NULL)
 			goto err;
-
-		return ast_node_as_new(lvalue, right);
+	} else {
+		//to variable
+		right = logic_or();
+		if (right == NULL) {
+			print_warn("uncomplited as expression\n");
+			goto err;
+		}
 	}
 
-	//to variable
-	right = expr();
-	if (right == NULL) {
-		print_warn("uncomplited as expression\n");
-		goto err;
-	}
-
-	return ast_node_as_new(lvalue, right);
-
+	return right;
 err:
 	nerrors++;
 	ast_node_unref(right);
-	ast_node_unref(lvalue);
+	return NULL;
+}
+
+//seq may include expressions or array initialisations
+ast_node_t *
+get_seq(ast_node_t *first)
+{
+	ast_node_seq_t *seq;
+	ast_node_t *node;
+
+	seq = (ast_node_seq_t *)ast_node_seq_new();
+	ast_node_seq_add(seq, first);
+
+	while (match(TOK_COMMA)) {
+		node = get_rval();
+		if (node == NULL || nerrors != 0) {
+			print_warn("expression expected\n");
+			goto err;
+		}
+		ast_node_seq_add(seq, node);
+	}
+	return AST_NODE(seq);
+err:
+	nerrors++;
+	ast_node_unref(node);
+	ast_node_unref((ast_node_t *)seq);
+	return NULL;
+}
+
+boolean_t
+is_lvalue_seq(ast_node_seq_t *seq)
+{
+	int i;
+
+	for (i = 0; i < seq->n; i++)
+		if (!is_lvalue(seq->node[i]))
+			return FALSE;
+	return TRUE;
+}
+
+// assign -> lval1 [, lval2 ...] = rval1 [, rval2 ...]
+/* NOTE: rsz may be no equeal lsz (for example when user assign
+ * function with multiple outputs
+ */
+//FIXME: может стоит переименовать 2 аргумент. подразумевал 'вложенность'
+static ast_node_t *
+assign(ast_node_t *node, int nesting)
+{
+	ast_node_t *lseq, *rseq;
+
+	lseq = rseq = NULL;
+
+	DEBUG(LOG_VERBOSE, "\n");
+
+	// Get left sequnce
+	lseq = get_seq(node);
+	if (lseq == NULL || nerrors != 0)
+		goto err;
+
+	if (!match(TOK_AS)) {
+		//was assign before?
+		if (nesting > 0)
+			return lseq;
+		print_warn("'=' expected\n");
+		goto err;
+	}
+
+	if (!is_lvalue_seq((ast_node_seq_t *)lseq)) {
+		print_warn("can't assign to not lvalue\n");
+		goto err;
+	}
+
+	node = get_rval();
+	if (node == NULL || nerrors != 0)
+		goto err;
+	rseq = assign(node, nesting + 1);
+	if (rseq == NULL || nerrors != 0)
+		goto err;
+
+	return ast_node_as_new(lseq, rseq);
+
+err:
+	ast_node_unref(lseq);
+	ast_node_unref(rseq);
+
 	return ast_node_stub_new();
 }
 
@@ -966,7 +1047,8 @@ power()
 		print_warn("uncomplited shift expression\n");
 		right = ast_node_stub_new();
 	}
-	result = ast_node_op_new(result, right, op);
+
+	return ast_node_op_new(result, right, op);
 }
 
 static ast_node_t *
@@ -1017,7 +1099,7 @@ factor()
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	if (match(TOK_LPAR)) {
-		stat = expr();
+		stat = logic_or();
 		
 		if (match(TOK_RPAR) == FALSE) {
 			print_warn("right parenthesis missed\n");
@@ -1300,8 +1382,7 @@ process_del(struct syn_ctx *ctx)
 
 	node = identifier();
 	
-	if (node->type != AST_NODE_ID &&
-	    node->type != AST_NODE_ACCESS)
+	if (!is_lvalue(node))
 		goto err;
 
 	return ast_node_del_new(node);
@@ -1353,7 +1434,7 @@ process_return(struct syn_ctx *ctx)
 		return ast_node_stub_new();
 	}
 
-	node = expr();
+	node = logic_or();
 
 	return ast_node_return_new(node);
 }
@@ -1648,7 +1729,7 @@ function_call()
 	while (match(TOK_RPAR) == FALSE) {
 		
 		//get next ast_node
-		node = expr();
+		node = logic_or();
 		if (node == NULL) {
 			print_warn("expected statesment");
 			goto err;

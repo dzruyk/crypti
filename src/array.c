@@ -169,11 +169,19 @@ arr_print(arr_t *arr)
 	iter = hash_table_iterate_init(arr->hash);
 	if (iter == NULL)
 		error(1, "hash_table_iterate_init fail\n");
-	//FIXME: need to omit last comma
-	while (hash_table_iterate(iter, &key, (void **)&item) != FALSE) {
+
+	if (hash_table_iterate(iter, &key, (void **)&item) == FALSE)
+		item = NULL;
+
+	while (item != NULL) {
 		var = item->var;
 		str = var_cast_to_str(var);
-		printf("%s, ", str_ptr(str));
+		printf("%s", str_ptr(str));
+		if (hash_table_iterate(iter, &key, (void **)&item) == FALSE)
+			item = NULL;
+		else
+			printf(", ");
+
 	}
 
 	printf("}\n");

@@ -24,6 +24,8 @@ static struct {
 	{"sum", -1, libcall_sum},
 	/*{"del", 1, libcall_del},*/
 	{"type", 1, libcall_type},
+	{"subs", 3, libcall_subs},
+	{"subocts", 3, libcall_subocts},
 };
 
 

@@ -175,20 +175,22 @@ varop_and(struct variable *c, struct variable *a, struct variable *b)
 }
 
 int
-varop_not(struct variable *dst, struct variable *src)
+varop_not(struct variable *res, struct variable *var)
 {
 	mpl_int *ap, *bp;
 
-	assert(dst != NULL && src != NULL);
+	assert(res != NULL && var != NULL);
 
-	ap = var_cast_to_bignum(src);
-	bp = var_bignum_ptr(dst);
+	ap = var_cast_to_bignum(var);
+	bp = var_bignum_ptr(res);
 
 	if (mpl_iszero(ap))
 		mpl_set_one(bp);
 	else
 		mpl_zero(bp);
 	
+	var_force_type(res, VAR_BIGNUM);
+
 	return 0;
 }
 
@@ -205,6 +207,8 @@ varop_neg(struct variable *res, struct variable *var)
 	mpl_copy(dst, src);
 
 	dst->sign = !src->sign;
+
+	var_force_type(res, VAR_BIGNUM);
 
 	return 0;
 }
@@ -323,9 +327,42 @@ varop_str_concat(struct variable*c, struct variable *a, struct variable *b)
 	return 0;
 }
 
+int
+varop_str_sub(struct variable *res, struct variable *s, struct variable *start, struct variable *len)
+{
+	str_t *str;
+	str_t *resstr;
+	mpl_int *a, *b;
+	long unsigned int first, n;
+	int ret;
+
+	str = var_cast_to_str(s);
+	a = var_cast_to_bignum(start);
+	b = var_cast_to_bignum(len);
+
+	ret = mpl_to_uint(a, &first);
+	if (ret != MPL_OK)
+		goto err;
+	ret = mpl_to_uint(b, &n);
+	if (ret != MPL_OK)
+		goto err;
+	
+	resstr = var_str_ptr(res);
+
+	ret = str_substr(resstr, str, first, n);
+	if (ret != 0)
+		goto err;
+	
+	var_force_type(res, VAR_STRING);
+
+	return 0;
+err:
+	return 1;
+}
+
 /* Octstring operations: */
 int
-varop_oct_concat(struct variable*c, struct variable *a, struct variable *b)
+varop_oct_concat(struct variable *c, struct variable *a, struct variable *b)
 {
 	octstr_t *ap, *bp, *cp;
 
@@ -340,6 +377,44 @@ varop_oct_concat(struct variable*c, struct variable *a, struct variable *b)
 	var_force_type(c, VAR_OCTSTRING);
 
 	return 0;
+}
+
+int
+varop_octstr_sub(struct variable *res, struct variable *s, struct variable *start, struct variable *len)
+{
+	octstr_t *octstr;
+	octstr_t *resstr;
+	mpl_int *a, *b;
+	long unsigned int first, n;
+	int ret;
+
+	octstr = var_cast_to_octstr(s);
+	a = var_cast_to_bignum(start);
+	b = var_cast_to_bignum(len);
+
+	ret = mpl_to_uint(a, &first);
+	if (ret != MPL_OK) {
+		print_warn("too big\n");
+		goto err;
+	}
+	ret = mpl_to_uint(b, &n);
+	if (ret != MPL_OK) {
+		print_warn("too big\n");
+		goto err;
+	}
+
+	resstr = var_octstr_ptr(res);
+	ret = octstr_substr(resstr, octstr, first, n);
+	if (ret != 0) {
+		print_warn("substr error\n");
+		goto err;
+	}
+
+	var_force_type(res, VAR_OCTSTRING);
+
+	return 0;
+err:
+	return 1;
 }
 
 /* Rel operations.

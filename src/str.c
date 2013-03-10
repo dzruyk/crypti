@@ -105,6 +105,12 @@ str_reverse(str_t *str)
 	}
 }
 
+int
+str_substr(str_t *res, str_t *str, int first, int n)
+{
+	return 0;
+}
+
 char *
 str_append(str_t *str, const char *ptr)
 {

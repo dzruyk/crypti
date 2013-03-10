@@ -168,6 +168,13 @@ octstr_and(octstr_t *dst, const octstr_t *a, const octstr_t *b)
 	octstr_bitwise(dst, a, b, OCTSTR_OP_AND);
 }
 
+
+int
+octstr_substr(octstr_t *res, octstr_t *str, int first, int n)
+{
+	return 0;
+}
+
 char *
 octstr_append(octstr_t *octstr, const char *ptr)
 {

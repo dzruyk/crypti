@@ -19,6 +19,7 @@ void octstr_or(octstr_t *dst, const octstr_t *a, const octstr_t *b);
 void octstr_xor(octstr_t *dst, const octstr_t *a, const octstr_t *b);
 void octstr_and(octstr_t *dst, const octstr_t *a, const octstr_t *b);
 
+int octstr_substr(octstr_t *res, octstr_t *str, int first, int n);
 char *octstr_append(octstr_t *octstr, const char *ptr);
 char *octstr_append_n(octstr_t *octstr, const void *ptr, size_t n);
 char *octstr_append_octstr(octstr_t *dst, const octstr_t *src);

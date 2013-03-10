@@ -8,6 +8,7 @@
 #include "libcall.h"
 #include "macros.h"
 #include "variable.h"
+#include "var_op.h"
 
 int
 libcall_print(id_item_t **args, int *rettype, void **retval)
@@ -58,10 +59,10 @@ libcall_sum(id_item_t **args, int *rettype, void **retval)
 int
 libcall_type(id_item_t **args, int *rettype, void **retval)
 {
-	assert(args != NULL && args[0] != NULL);
-
 	id_item_t *current;
 	
+	assert(args != NULL && args[0] != NULL);
+
 	current = args[0];
 
 	switch (current->type) {
@@ -80,6 +81,80 @@ libcall_type(id_item_t **args, int *rettype, void **retval)
 	*retval = NULL;
 
 	return 0;
+}
+
+int
+libcall_subs(id_item_t **args, int *rettype, void **retval)
+{
+	id_item_t *arg1, *arg2, *arg3;
+	struct variable *res;
+	int ret;
+
+	assert(args != NULL && args[0] != NULL);
+
+	*rettype = ID_UNKNOWN;
+	*retval = NULL;
+
+	arg1 = args[0];
+	arg2 = args[1];
+	arg3 = args[2];
+	if (arg1->type != ID_VAR ||
+	    arg2->type != ID_VAR ||
+	    arg3->type != ID_VAR) {
+		print_warn("error libcall_subs: string expected\n");
+		return 1;
+	}
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+	
+	ret = varop_str_sub(res, arg1->var, arg2->var, arg3->var);
+	if (ret != 0)
+		goto err;
+
+	*rettype = ID_VAR;
+	*retval = res;
+	
+	return 0;
+err:
+	var_clear(res);
+	return 1;
+}
+
+int
+libcall_subocts(id_item_t **args, int *rettype, void **retval)
+{
+	id_item_t *arg1, *arg2, *arg3;
+	struct variable *res;
+	int ret;
+
+	assert(args != NULL && args[0] != NULL);
+
+	*rettype = ID_UNKNOWN;
+	*retval = NULL;
+
+	arg1 = args[0];
+	arg2 = args[1];
+	arg3 = args[2];
+	if (arg1->type != ID_VAR ||
+	    arg2->type != ID_VAR ||
+	    arg3->type != ID_VAR) {
+		print_warn("error libcall_subocts: string expected\n");
+		return 1;
+	}
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+	
+	ret = varop_octstr_sub(res, arg1->var, arg2->var, arg3->var);
+	if (ret != 0)
+		goto err;
+
+	*rettype = ID_VAR;
+	*retval = res;
+	
+	return 0;
+err:
+	var_clear(res);
+	return 1;
 }
 
 /*

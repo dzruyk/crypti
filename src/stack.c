@@ -61,6 +61,20 @@ stack_push(void *data)
 	stack->arr[stack->cur++] = data;
 }
 
+
+void
+stack_push_n(void **data, int n)
+{
+	int i;
+
+	assert (stack != NULL &&
+	    stack->sz > stack->cur + 1);
+
+	for (i = 0; i < n; i++)
+		stack_push(*data++);
+}
+
+
 void *
 stack_pop()
 {
@@ -75,13 +89,48 @@ stack_pop()
 	return stack->arr[stack->cur];
 }
 
+void
+stack_pop_n(void **ptr, int n)
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*ptr++ = stack_pop();
+}
+
+/*
+void *
+stack_ptr()
+{
+	return stack->arr + stack->cur;
+}
+*/
+
+void
+stack_remove()
+{
+
+	assert (stack != NULL && 
+	    stack->cur > 0);
+
+	stack->cur --;
+	stack->destructor(stack->arr[stack->cur]);
+}
+
+void 
+stack_remove_n(int n)
+{
+	while (n-- > 0)
+		stack_remove();
+}
+
 void 
 stack_flush()
 {
+	int i;
+
 	assert (stack != NULL && 
 	    stack->sz > stack->cur + 1);
-
-	int i;
 
 	for (i = 0; i < stack->cur; i++)
 		stack->destructor(stack->arr[i]);
