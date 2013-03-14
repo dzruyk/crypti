@@ -24,7 +24,6 @@ ast_node_free(ast_node_t *tree)
 	ast_node_del_t *delnode;
 	ast_node_unary_t *unary;
 	ast_node_import_t *import;
-	ast_node_return_t *ret;
 
 	int i, n;
 
@@ -57,8 +56,6 @@ ast_node_free(ast_node_t *tree)
 		ufree(acc->ind);
 		break;
 	case AST_NODE_RETURN:
-		ret = (ast_node_return_t *)tree;
-		ast_node_unref(ret->retval);
 		break;
 	case AST_NODE_IF:
 		ifnode = (ast_node_if_t *)tree;
@@ -144,6 +141,9 @@ ast_node_func_free(ast_node_t *tree)
 			ufree(func->args[i]);
 		ufree(func->args);
 
+		for (i = 0; i < func->nret; i++)
+			ufree(func->retargs[i]);
+		ufree(func->retargs);
 		//now you must free body manualy!
 
 		break;
@@ -360,14 +360,14 @@ ast_node_access_new(char *name, int dims, ast_node_t **ind)
 }
 
 ast_node_t *
-ast_node_func_def_new(char *name)
+ast_node_func_def_new()
 {
 	ast_node_func_t *res;
 
 	res = (ast_node_func_t *) 
 	    ast_node_new(AST_NODE_DEF, sizeof(*res), ast_node_func_free);
 
-	res->name = name;
+	res->name = NULL;
 	res->args = NULL;
 	res->nargs = 0;
 
@@ -581,15 +581,13 @@ ast_node_continue_new()
 }
 
 ast_node_t *
-ast_node_return_new(ast_node_t *retval)
+ast_node_return_new()
 {
 	ast_node_return_t *res;
 
 	res = (ast_node_return_t *) 
 	    ast_node_new(AST_NODE_RETURN, sizeof(*res), ast_node_free);
 
-	res->retval = retval;
-	
 	return AST_NODE(res);
 }
 

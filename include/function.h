@@ -14,6 +14,8 @@ typedef struct {
 	char *name;
 	char **args;
 	int nargs;
+	char **retargs;
+	int nret;
 	int is_lib;
 	union {
 		libcall_handler_t handler;
@@ -34,6 +36,7 @@ func_t *func_new(char *name);
 //FIXME: REWRITE ME. function.c have function_table_destroy_cb
 ret_t func_table_delete(func_t *func);
 
+void func_set_retargs(func_t *func, char **retargs, int nret);
 /*
  * add arguments to function
  * WARNING: multiple set_args can be possible memory leak

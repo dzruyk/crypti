@@ -98,6 +98,7 @@ static ast_node_t *process_scope(struct syn_ctx *ctx);
 static ast_node_t *process_import();
 
 static ast_node_t *process_function();
+static ret_t process_function_ret_lst(ast_node_func_t *func);
 static ret_t process_function_argu(ast_node_func_t *func);
 static ret_t process_function_body(ast_node_func_t *func);
 
@@ -1426,7 +1427,7 @@ process_continue(struct syn_ctx *ctx)
 static ast_node_t *
 process_return(struct syn_ctx *ctx)
 {
-	ast_node_t *node;
+	assert(ctx != NULL);
 
 	if (ctx->type != CTX_FUNCTION) {
 		print_warn("return not in function\n");
@@ -1434,9 +1435,7 @@ process_return(struct syn_ctx *ctx)
 		return ast_node_stub_new();
 	}
 
-	node = logic_or();
-
-	return ast_node_return_new(node);
+	return ast_node_return_new();
 }
 
 static ast_node_t *
@@ -1577,20 +1576,69 @@ err:
 	return ast_node_stub_new();
 }
 
+//parse comma separated list of arguments and sets dst, nargs variables
+//stops when finds tok endtok
+//returns:
+// FALSE if saw invalid token
+// TRUE if all ok
+boolean_t
+get_name_arr(char ***dst, int *nargs, int endtok)
+{
+	int i, n;
+	char *id;
+
+	n = 0;
+	*dst = NULL;
+
+	while (current_tok != endtok) {
+		if (match(TOK_ID) == FALSE) {
+			print_warn("identifier required\n");
+			goto err;
+		}
+
+		id = lex_item_prev.name;
+		
+		*dst = xrealloc(*dst, (n + 1) * sizeof(**dst));
+		(*dst)[n++] = id;
+		
+		if (match(TOK_COMMA) == FALSE &&
+		    current_tok != endtok) {
+			print_warn("comma expected\n");
+			goto err;
+		}
+	}
+	*nargs = n;
+
+	return TRUE;
+err:
+	for (i = 0; i < *nargs; i++)
+		ufree((*dst)[i]);
+	ufree(*dst);
+	*dst = NULL;
+	*nargs = 0;
+
+	return FALSE;
+}
+
 static ast_node_t *
 process_function()
 {
 	ast_node_func_t *func;
 	int ret;
 
+	func = (ast_node_func_t *)ast_node_func_def_new();
+	
+	ret = process_function_ret_lst(func);
+	if (ret != ret_ok)
+		goto err;
+
 	if (match(TOK_ID) == FALSE) {
-		nerrors++;
 		print_warn("you must set function name"
 		    " at initialisation\n");
-		return ast_node_stub_new();
+		goto err;
 	}
 
-	func = (ast_node_func_t *)ast_node_func_def_new(lex_item_prev.name);
+	func->name = lex_item_prev.name;
 	
 	ret = process_function_argu(func);
 	if (ret != ret_ok)
@@ -1611,17 +1659,23 @@ err:
 	return ast_node_stub_new();
 }
 
-static void
-func_add_next_argu(ast_node_func_t *func, char *name)
+static ret_t 
+process_function_ret_lst(ast_node_func_t *func)
 {
-	int n;
+	if (!match(TOK_LBRACKET)) {
+		print_warn("you must set function return list"
+		    "at initialisation\n");
+		return ret_err;
+	}
 
-	n = func->nargs++;
+	if (!get_name_arr(&func->retargs, &func->nret, TOK_RBRACKET))
+		return ret_err;
 
-	func->args = xrealloc(func->args, 
-	    func->nargs * sizeof(*(func->args)));
-
-	func->args[n] = name;
+	if (!match(TOK_RBRACKET)) {
+		print_warn("']' expected\n");
+		return ret_err;
+	}
+	return ret_ok;
 }
 
 //need to flush token stream after errrors
@@ -1629,44 +1683,21 @@ func_add_next_argu(ast_node_func_t *func, char *name)
 static ret_t
 process_function_argu(ast_node_func_t *func)
 {
-	char *id;
-
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"
 		    "at initialisation\n");
-		goto err;	
+		return ret_err;
 	}
 
 	//get arguments
-	while (match(TOK_RPAR) == FALSE) {
-		if (match(TOK_ID) == FALSE) {
-			print_warn("identifier required\n");
-			goto err;
-		}
+	if (!get_name_arr(&func->args, &func->nargs, TOK_RPAR))
+		return ret_err;
 
-		id = lex_item_prev.name;
-
-		func_add_next_argu(func, id);
-
-		if (match(TOK_COMMA) == FALSE &&
-		    current_tok != TOK_RPAR) {
-			print_warn("comma expected");
-			goto err;
-		}
+	if (!match(TOK_RPAR)) {
+		print_warn("')' expected\n");
+		return ret_err;
 	}
-
 	return ret_ok;
-
-err:
-
-	if (func->args != NULL) {
-		int i;
-		for (i = 0; i < func->nargs; i++)
-			ufree(func->args[i]);
-		ufree(func->args);
-	}
-
-	return ret_err;
 }
 
 static ret_t

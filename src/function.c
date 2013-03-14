@@ -18,14 +18,15 @@ static struct hash_table *func_table;
 static struct {
 	char *name;
 	int nargs;
+	int nret;
 	libcall_handler_t handler;
 } builtin [] = {
-	{"print", 1, libcall_print},
-	{"sum", -1, libcall_sum},
+	{"print", 1, 0, libcall_print},
+	{"sum", -1, 1, libcall_sum},
 	/*{"del", 1, libcall_del},*/
-	{"type", 1, libcall_type},
-	{"subs", 3, libcall_subs},
-	{"subocts", 3, libcall_subocts},
+	{"type", 1, 0, libcall_type},
+	{"subs", 3, 1, libcall_subs},
+	{"subocts", 3, 1, libcall_subocts},
 };
 
 
@@ -118,6 +119,7 @@ function_table_fill()
 		tmp->name = builtin[i].name;
 		tmp->handler = builtin[i].handler;
 		tmp->nargs = builtin[i].nargs;
+		tmp->nret = builtin[i].nret;
 
 		function_table_insert(tmp);
 	}
@@ -129,6 +131,8 @@ function_table_insert(func_t *item)
 {
 	int res;
 	
+	assert(item != NULL);
+
 	res = hash_table_insert_unique(func_table, item->name, item);
 	if (res == ret_out_of_memory)
 		error(1, "error at func table insertion\n");
@@ -142,6 +146,8 @@ func_t *
 function_table_lookup(char *name)
 {
 	func_t *res;
+
+	assert(name != NULL);
 
 	if (hash_table_lookup(func_table, name, (void **)&res) != ret_ok)
 		return NULL;
@@ -171,6 +177,8 @@ func_t *
 func_new(char *name)
 {
 	func_t *func;
+	
+	assert(name != NULL);
 
 	func = xmalloc(sizeof(*func));
 
@@ -187,6 +195,8 @@ func_table_delete(func_t *func)
 {
 	int ret;
 
+	assert(func != NULL);
+
 	if (func->is_lib)
 		return ret_err;
 	
@@ -199,14 +209,31 @@ func_table_delete(func_t *func)
 	return ret_ok;
 }
 
+void
+func_set_retargs(func_t *func, char **retargs, int nret)
+{
+	int i;
+	
+	assert(func != NULL);
+
+	if (nret > 0)
+		func->retargs = xmalloc(sizeof(*retargs) * nret);
+
+	for (i = 0; i < nret; i++)
+		func->retargs[i] = strdup_or_die(retargs[i]);
+
+	func->nret = nret;
+}
+
+
 //set args and add id_items to scope
 void
 func_set_args(func_t *func, char **args, int nargs)
 {
-	assert(func != NULL);
-
 	int i;
 	
+	assert(func != NULL);
+
 	if (nargs > 0)
 		func->args = xmalloc(sizeof(*args) * nargs);
 

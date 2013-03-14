@@ -292,6 +292,13 @@ traverse_func_def(ast_node_t *tree)
 	function_table_insert(func); 
 }
 
+boolean_t
+push_return_args(func_t *func)
+{
+	error(1, "WIP\n");
+	return TRUE;
+}
+
 void
 exec_function(func_t *func)
 {
@@ -322,6 +329,7 @@ exec_function(func_t *func)
 			continue;
 		}
 	}
+	push_return_args(func);
 }
 
 /*
@@ -1212,24 +1220,9 @@ finalize:
 static void
 traverse_return(ast_node_t *tree)
 {
-	ast_node_return_t *rettree;
-
 	assert(tree != NULL);
 
-	rettree = (ast_node_return_t *) tree;
-
-	if (rettree->retval == NULL) {
-		//NOTE: if func res is NULL and it
-		//assign to some val then runtime err
-		return;
-	} else {
-		traverse(rettree->retval);
-		//FIXME: return check?
-		return;
-	}
-	
 	helper.is_return++;
-	error(1, "return node traverse WIP!\n");
 }
 
 static void
@@ -1238,7 +1231,7 @@ traverse_import(ast_node_t *tree)
 	ast_node_import_t *import;
 	int i, old;
 
-	assert(tree != 0);
+	assert(tree != NULL);
 
 	import = (ast_node_import_t *) tree;
 

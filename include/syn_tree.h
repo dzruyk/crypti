@@ -101,6 +101,8 @@ typedef struct {
 	char *name;
 	char **args;
 	int nargs;
+	char **retargs;
+	int nret;
 	ast_node_t *body;
 } ast_node_func_t;
 
@@ -179,7 +181,6 @@ typedef struct {
 
 typedef struct {
 	ast_node_t tree;
-	ast_node_t *retval;
 } ast_node_return_t;
 
 typedef struct {
@@ -218,7 +219,7 @@ ast_node_t *ast_node_arr_new(ast_node_t **arr, int sz);
 
 ast_node_t *ast_node_access_new(char *name, int dims, ast_node_t **ind);
 
-ast_node_t *ast_node_func_def_new(char *name);
+ast_node_t *ast_node_func_def_new();
 
 ast_node_t *ast_node_func_call_new(char *name);
 
@@ -252,7 +253,7 @@ ast_node_t *ast_node_break_new();
 
 ast_node_t *ast_node_continue_new();
 
-ast_node_t *ast_node_return_new(ast_node_t *retval);
+ast_node_t *ast_node_return_new();
 
 ast_node_t *ast_node_import_new(ast_node_t **nodes, int len);
 
