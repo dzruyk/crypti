@@ -6,12 +6,13 @@
 #include "array.h"
 #include "eval.h"
 #include "libcall.h"
+#include "log.h"
 #include "macros.h"
 #include "variable.h"
 #include "var_op.h"
 
 int
-libcall_print(id_item_t **args, int *rettype, void **retval)
+libcall_print(id_item_t **args, int *rettypes, void **retvals)
 {
 	assert(args != NULL && args[0] != NULL);
 
@@ -35,29 +36,29 @@ libcall_print(id_item_t **args, int *rettype, void **retval)
 		error(1, "something wrong\n");
 	}
 
-	*rettype = ID_UNKNOWN;
-	*retval = NULL;
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	return 0;
 }
 
 int
-libcall_sum(id_item_t **args, int *rettype, void **retval)
+libcall_sum(id_item_t **args, int *rettypes, void **retvals)
 {
 	assert(args != NULL && args[0] != NULL);
 
 	//id_item_t *current;
 
-	//FIXME: stub, wanna implement variable argue funtion
+	//FIXME: stub, wanna implement variable length arguments funtions
 	
-	*rettype = ID_UNKNOWN;
-	*retval = NULL;
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	return 0;
 }
 
 int
-libcall_type(id_item_t **args, int *rettype, void **retval)
+libcall_type(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *current;
 	
@@ -77,14 +78,71 @@ libcall_type(id_item_t **args, int *rettype, void **retval)
 		break;
 	}
 
-	*rettype = ID_UNKNOWN;
-	*retval = NULL;
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	return 0;
 }
 
 int
-libcall_subs(id_item_t **args, int *rettype, void **retval)
+libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals)
+{
+	id_item_t *arg1;
+	arr_item_t *aitem;
+	arr_iterate_t *iter;
+	arr_t *arr;
+	struct variable *tmp;
+
+	struct variable *min, *max;
+
+	assert(args != NULL && args[0] != NULL);
+
+	DEBUG(LOG_DEFAULT, "arr_min_max executed\n");
+
+	arg1 = args[0];
+
+	if (arg1->type != ID_ARR) {
+		print_warn("error libcall_arr_min_max: array expected\n");
+		return 1;
+	}
+
+	arr = arg1->arr;
+
+	if (arr->nitems == 0) {
+		print_warn("array is empty\n");
+		return 1;
+	}
+
+	min = xmalloc(sizeof(*min));
+	max = xmalloc(sizeof(*max));
+	var_initv(min, max, NULL);
+
+	iter = array_iterate_new(arr);
+	
+	array_iterate(iter, &aitem);
+	var_copy(min, aitem->var);
+	var_copy(max, aitem->var);
+
+	while (array_iterate(iter, &aitem)) {
+		tmp = aitem->var;
+		if (varop_cmp(min, tmp) == -1)
+			var_copy(min, tmp);
+		if (varop_cmp(max, tmp) == 1)
+			var_copy(max, tmp);
+	}
+	
+	array_iterate_free(iter);
+
+	rettypes[0] = ID_VAR;
+	rettypes[1] = ID_VAR;
+	retvals[0] = min;
+	retvals[1] = max;
+
+	return 0;
+}
+
+int
+libcall_subs(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *arg1, *arg2, *arg3;
 	struct variable *res;
@@ -92,8 +150,8 @@ libcall_subs(id_item_t **args, int *rettype, void **retval)
 
 	assert(args != NULL && args[0] != NULL);
 
-	*rettype = ID_UNKNOWN;
-	*retval = NULL;
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	arg1 = args[0];
 	arg2 = args[1];
@@ -111,8 +169,8 @@ libcall_subs(id_item_t **args, int *rettype, void **retval)
 	if (ret != 0)
 		goto err;
 
-	*rettype = ID_VAR;
-	*retval = res;
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
 	
 	return 0;
 err:
@@ -121,7 +179,7 @@ err:
 }
 
 int
-libcall_subocts(id_item_t **args, int *rettype, void **retval)
+libcall_subocts(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *arg1, *arg2, *arg3;
 	struct variable *res;
@@ -129,8 +187,8 @@ libcall_subocts(id_item_t **args, int *rettype, void **retval)
 
 	assert(args != NULL && args[0] != NULL);
 
-	*rettype = ID_UNKNOWN;
-	*retval = NULL;
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	arg1 = args[0];
 	arg2 = args[1];
@@ -148,8 +206,8 @@ libcall_subocts(id_item_t **args, int *rettype, void **retval)
 	if (ret != 0)
 		goto err;
 
-	*rettype = ID_VAR;
-	*retval = res;
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
 	
 	return 0;
 err:
@@ -159,7 +217,7 @@ err:
 
 /*
 int
-libcall_del(id_item_t **args, int *rettype, void **retval)
+libcall_del(id_item_t **args, int *rettypes, void **retvals)
 {
 	assert(args != NULL && args[0] != NULL);
 
@@ -188,8 +246,8 @@ libcall_del(id_item_t **args, int *rettype, void **retval)
 	
 	args[0] = NULL;
 
-	*rettype = ID_UNKNOWN;
-	*retval = NULL;
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	return 0;
 }

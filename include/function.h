@@ -8,7 +8,7 @@
 //FIXME: return value?
 
 //FIXME STUB
-typedef int (*libcall_handler_t)(id_item_t **args, int *rettype, void **retval);
+typedef int (*libcall_handler_t)(id_item_t **args, int *rettypes, void **retvals);
 
 typedef struct {
 	char *name;

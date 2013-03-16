@@ -8,6 +8,7 @@ extern char *arr_sep;
 
 typedef struct {
 	struct hash_table *hash;
+	int nitems;
 } arr_t;
 
 typedef struct {
@@ -15,7 +16,9 @@ typedef struct {
 	struct variable *var;
 } arr_item_t;
 
-
+typedef struct {
+	struct hash_table_iter *iter;
+} arr_iterate_t;
 /* 
  * Create new empty array
  */
@@ -57,6 +60,15 @@ void arr_print(arr_t *arr);
  * WARN: dont set arr to NULL
  */
 void arr_free(arr_t *arr);
+
+/*
+ * Functions for array elements iteration
+ */
+arr_iterate_t *array_iterate_new(arr_t *arr);
+
+boolean_t array_iterate(arr_iterate_t *iterate, arr_item_t **res);
+
+void array_iterate_free(arr_iterate_t *arr);
 
 #endif
 

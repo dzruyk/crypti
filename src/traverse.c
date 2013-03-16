@@ -4,13 +4,14 @@
 #include <string.h>
 
 #include "array.h"
-#include "log.h"
+#include "climits.h"
 #include "common.h"
-#include "function.h"
 #include "eval.h"
+#include "function.h"
 #include "id_table.h"
 #include "lex.h"
 #include "list.h"
+#include "log.h"
 #include "macros.h"
 #include "stack.h"
 #include "traverse.h"
@@ -286,6 +287,7 @@ traverse_func_def(ast_node_t *tree)
 
 	func = func_new(synfunc->name);
 
+	func_set_retargs(func, synfunc->retargs,synfunc->nret);
 	func_set_args(func, synfunc->args, synfunc->nargs);
 	func_set_body(func, synfunc->body);
 
@@ -393,8 +395,9 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 {
 	eval_t *ev;
 	id_item_t **items;
-	int err, i, rtype;
-	void *rval;
+	int err, i;
+	int rtypes[MAXRETARGS];
+	void *rvals[MAXRETARGS];
 	
 	items = NULL;
 
@@ -415,24 +418,25 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 			goto finalize;
 		}
 
-	//double free(if we exec libcall_del)
-	err = func->handler(items, &rtype, &rval);
+	err = func->handler(items, (int *)rtypes, (void **)rvals);
 	if (err != 0) {
 		print_warn("error when exec %s\n", func->name);
 		nerrors++;
 		goto finalize;
 	}
 	
-	switch (rtype) {
-	case ID_VAR:
-		ev = eval_var_new(rval);
-		stack_push(ev);
-		break;
-	case ID_ARR:
-		error(1, "WIP\n");
-		break;
-	default:
-		break;
+	for (i = func->nret - 1; i >= 0; i--) {
+		switch (rtypes[i]) {
+		case ID_VAR:
+			ev = eval_var_new(rvals[i]);
+			stack_push(ev);
+			break;
+		case ID_ARR:
+			error(1, "WIP\n");
+			break;
+		default:
+			break;
+		}
 	}
 
 finalize:
@@ -445,9 +449,7 @@ finalize:
 			id_item_free(items[i]);
 	}
 
-	
 	ufree(items);
-	
 	return;
 }
 

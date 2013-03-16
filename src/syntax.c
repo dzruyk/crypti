@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "climits.h"
 #include "common.h"
 #include "lex.h"
 #include "list.h"
@@ -1582,7 +1583,7 @@ err:
 // FALSE if saw invalid token
 // TRUE if all ok
 boolean_t
-get_name_arr(char ***dst, int *nargs, int endtok)
+get_name_arr(char ***dst, int *nargs, int limit, char *errmsg, int endtok)
 {
 	int i, n;
 	char *id;
@@ -1593,6 +1594,11 @@ get_name_arr(char ***dst, int *nargs, int endtok)
 	while (current_tok != endtok) {
 		if (match(TOK_ID) == FALSE) {
 			print_warn("identifier required\n");
+			goto err;
+		}
+
+		if (n + 1 > limit) {
+			print_warn("%s: %d is maximum\n", errmsg, limit);
 			goto err;
 		}
 
@@ -1668,7 +1674,8 @@ process_function_ret_lst(ast_node_func_t *func)
 		return ret_err;
 	}
 
-	if (!get_name_arr(&func->retargs, &func->nret, TOK_RBRACKET))
+	if (!get_name_arr(&func->retargs, &func->nret, MAXRETARGS,
+	    "function return arguments:", TOK_RBRACKET))
 		return ret_err;
 
 	if (!match(TOK_RBRACKET)) {
@@ -1690,7 +1697,8 @@ process_function_argu(ast_node_func_t *func)
 	}
 
 	//get arguments
-	if (!get_name_arr(&func->args, &func->nargs, TOK_RPAR))
+	if (!get_name_arr(&func->args, &func->nargs, MAXFARGS,
+	    "function arguments", TOK_RPAR))
 		return ret_err;
 
 	if (!match(TOK_RPAR)) {

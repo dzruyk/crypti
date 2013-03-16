@@ -72,6 +72,7 @@ arr_new()
 	
 	arr->hash = hash_table_new(initial_size, (hash_callback_t) arr_hash_cb,
 	    (hash_compare_t) arr_cmp);
+	arr->nitems = 0;
 
 	return arr;
 }
@@ -98,6 +99,8 @@ arr_dup(arr_t *arr)
 
 	hash_table_iterate_deinit(&iter);
 
+	copy->nitems = arr->nitems;
+
 	return copy;
 }
 
@@ -122,6 +125,8 @@ arr_set_item(arr_t *arr, char *key, struct variable *var)
 		error(1, "error at array insertion\n");
 	else if (ret != ret_ok)
 		error(1, "internal error, should not happen\n");
+
+	arr->nitems++;
 }
 
 struct variable *
@@ -149,6 +154,8 @@ arr_remove_item(arr_t *arr, char *key)
 		return ret_err;
 
 	arr_item_free(old);
+	
+	arr->nitems--;
 
 	return ret_ok;
 }
@@ -156,28 +163,27 @@ arr_remove_item(arr_t *arr, char *key)
 void
 arr_print(arr_t *arr)
 {
-	struct hash_table_iter *iter;
+	arr_iterate_t *iter;
 	struct variable *var;
 	arr_item_t *item;
 	str_t *str;
-	void *key;
 
 	assert(arr != NULL);
 	
 	printf("{");
 
-	iter = hash_table_iterate_init(arr->hash);
+	iter = array_iterate_new(arr);
 	if (iter == NULL)
-		error(1, "hash_table_iterate_init fail\n");
+		error(1, "array_iterate_new fail\n");
 
-	if (hash_table_iterate(iter, &key, (void **)&item) == FALSE)
+	if (array_iterate(iter, &item) == FALSE)
 		item = NULL;
 
 	while (item != NULL) {
 		var = item->var;
 		str = var_cast_to_str(var);
 		printf("%s", str_ptr(str));
-		if (hash_table_iterate(iter, &key, (void **)&item) == FALSE)
+		if (array_iterate(iter, &item) == FALSE)
 			item = NULL;
 		else
 			printf(", ");
@@ -185,27 +191,59 @@ arr_print(arr_t *arr)
 	}
 
 	printf("}\n");
-	hash_table_iterate_deinit(&iter);
+	array_iterate_free(iter);
 }
-
 
 void
 arr_free(arr_t *arr)
 {
-	struct hash_table_iter *iter;
+	arr_iterate_t *iter;
 	arr_item_t *item;
-	void *key;
 
-	iter = hash_table_iterate_init(arr->hash);
+	iter = array_iterate_new(arr);
 	if (iter == NULL)
-		error(1, "hash_table_iterate_init fail\n");
+		error(1, "array_iterate_new fail\n");
 
-	while (hash_table_iterate(iter, &key, (void **)&item) != FALSE) {
+	while (array_iterate(iter, &item) != FALSE) {
 		arr_item_free(item);
 	}
 
-	hash_table_iterate_deinit(&iter);
+	array_iterate_free(iter);
+
 	hash_table_destroy(&arr->hash);
+
 	ufree(arr);
+}
+
+arr_iterate_t *
+array_iterate_new(arr_t *arr)
+{
+	arr_iterate_t *iterate;
+
+	iterate = xmalloc(sizeof(*iterate));
+	
+	iterate->iter = hash_table_iterate_init(arr->hash);
+	if (iterate->iter == NULL)
+		error(1, "hash_table_iterate_init fail\n");
+
+	return iterate;
+}
+
+boolean_t 
+array_iterate(arr_iterate_t *iterate, arr_item_t **res)
+{
+	void *key;
+
+	return hash_table_iterate(iterate->iter, &key, (void **)res);
+}
+
+void
+array_iterate_free(arr_iterate_t *iterate)
+{
+	if (iterate == NULL)
+		return;
+
+	hash_table_iterate_deinit(&iterate->iter);
+	ufree(iterate);
 }
 

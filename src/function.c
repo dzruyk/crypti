@@ -25,6 +25,7 @@ static struct {
 	{"sum", -1, 1, libcall_sum},
 	/*{"del", 1, libcall_del},*/
 	{"type", 1, 0, libcall_type},
+	{"arr_min_max", 1, 2, libcall_arr_min_max},
 	{"subs", 3, 1, libcall_subs},
 	{"subocts", 3, 1, libcall_subocts},
 };
