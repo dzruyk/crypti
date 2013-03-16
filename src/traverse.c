@@ -297,7 +297,41 @@ traverse_func_def(ast_node_t *tree)
 boolean_t
 push_return_args(func_t *func)
 {
-	error(1, "WIP\n");
+	id_item_t *items[MAXRETARGS];
+	int i;
+
+	for (i = func->nret - 1; i >= 0; i--) {
+		items[i] = id_table_lookup(func->retargs[i]);
+		if (items[i] == NULL) {
+			return FALSE;
+		}
+	}
+	for (i = func->nret - 1; i >= 0; i--) {
+		struct variable *var, *copy;
+		arr_t *arr;
+		eval_t *ev;
+
+		//copy
+		switch (items[i]->type) {
+		case ID_VAR:
+			var = items[i]->var;
+
+			copy = xmalloc(sizeof(*copy));
+			var_init(copy);
+			var_copy(copy, var);
+
+			ev = eval_var_new(copy);
+			break;
+		case ID_ARR:
+			arr = arr_dup(ev->arr);
+			ev = eval_arr_new(arr);
+			break;
+		default:
+			error(1, "unknown id_item_type");
+		}
+		stack_push(ev);
+	}
+
 	return TRUE;
 }
 
@@ -331,7 +365,10 @@ exec_function(func_t *func)
 			continue;
 		}
 	}
-	push_return_args(func);
+	if (push_return_args(func) == FALSE) {
+		print_warn("Can't get return all arguments\n");
+		nerrors++;
+	}
 }
 
 /*
