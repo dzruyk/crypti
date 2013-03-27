@@ -208,7 +208,7 @@ octstring_to_string(struct variable *to, const struct variable *from)
 	src = octstr_ptr(octstr);
 
 	for (i = 0; i < len; i++) {
-		char ch;
+		unsigned char ch;
 		ch = src[i];
 		if (isprint(ch)) {
 			str_putc(str, ch);

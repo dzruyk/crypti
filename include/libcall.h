@@ -17,4 +17,8 @@ int libcall_subocts(id_item_t **args, int *rettypes, void **retvals);
 
 //int libcall_del(id_item_t **args, int *rettypes, void **retvals);
 
+/* Crypto hashes */
+int libcall_md5(id_item_t **args, int *rettypes, void **retvals);
+int libcall_sha1(id_item_t **args, int *rettypes, void **retvals);
+int libcall_sha256(id_item_t **args, int *rettypes, void **retvals);
 #endif

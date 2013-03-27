@@ -28,6 +28,10 @@ static struct {
 	{"arr_min_max", 1, 2, libcall_arr_min_max},
 	{"subs", 3, 1, libcall_subs},
 	{"subocts", 3, 1, libcall_subocts},
+	/* Crypto hashes */
+	{"md5", 1, 1, libcall_md5},
+	{"sha1", 1, 1, libcall_sha1},
+	{"sha256", 1, 1, libcall_sha256},
 };
 
 
@@ -76,7 +80,10 @@ function_table_destroy_cb(func_t *item)
 		}
 		*/
 		ast_node_unref(item->body);
-
+	
+		for (i = 0; i < item->nret; i++)
+			ufree(item->retargs[i]);
+		ufree(item->retargs);
 		for (i = 0; i < item->nargs; i++)
 			ufree(item->args[i]);
 		ufree(item->args);

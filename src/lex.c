@@ -131,8 +131,7 @@ get_octstring()
 		goto err;
 	}
 
-	if ((tmp = realloc(s, used)) == NULL)
-		error(1, "realloc_err");
+	tmp = xrealloc(s, used);
 	s = tmp;
 
 	octstr_append_n(octstr, s, used);

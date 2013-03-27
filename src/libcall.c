@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "array.h"
+#include "crypt_hashes.h"
 #include "eval.h"
 #include "libcall.h"
 #include "log.h"
@@ -252,3 +253,45 @@ libcall_del(id_item_t **args, int *rettypes, void **retvals)
 	return 0;
 }
 */
+int libcall_md5(id_item_t **args, int *rettypes, void **retvals)
+{
+	id_item_t *arg1;
+	struct variable *res;
+	octstr_t *dst, *src;
+
+	assert(args != NULL && args[0] != NULL);
+
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
+
+	arg1 = args[0];
+	if (arg1->type != ID_VAR) {
+		print_warn("error libcall_md5: string expected\n");
+		return 1;
+	}
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+
+	src = var_cast_to_octstr(arg1->var);
+	dst = var_str_ptr(res);
+	
+	octstr_md5(dst, src);
+
+	var_force_type(res, VAR_OCTSTRING);
+
+	return 0;
+}
+
+int libcall_sha1(id_item_t **args, int *rettypes, void **retvals)
+{
+
+	return 0;
+}
+
+int libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
+{
+
+	return 0;
+}
+

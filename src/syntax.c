@@ -1433,6 +1433,7 @@ process_return(struct syn_ctx *ctx)
 	if (ctx->type != CTX_FUNCTION) {
 		print_warn("return not in function\n");
 		nerrors++;
+		sync_stream();
 		return ast_node_stub_new();
 	}
 
@@ -1661,6 +1662,7 @@ err:
 	nerrors++;
 	//do cleanup
 	ast_node_unref(AST_NODE(func));
+	sync_stream();
 
 	return ast_node_stub_new();
 }
@@ -1670,7 +1672,7 @@ process_function_ret_lst(ast_node_func_t *func)
 {
 	if (!match(TOK_LBRACKET)) {
 		print_warn("you must set function return list"
-		    "at initialisation\n");
+		    " at initialisation\n");
 		return ret_err;
 	}
 

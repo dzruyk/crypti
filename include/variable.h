@@ -42,6 +42,7 @@ void var_set_zero(struct variable *var);
 
 void var_force_type(struct variable *var, var_type_t type);
 
+/* NOTE: Function always succeeds */
 str_t *var_cast_to_str(struct variable *var);
 octstr_t *var_cast_to_octstr(struct variable *var);
 mpl_int *var_cast_to_bignum(struct variable *var);

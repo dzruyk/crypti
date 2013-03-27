@@ -10,6 +10,8 @@ LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o \
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test
 
+CRYPT_LIB=lib/crypto/crypt_lib.a
+
 CRYPTI_OBJS = $(patsubst %,src/%,stack.o syntax.o syn_tree.o traverse.o eval.o function.o list.o libcall.o)
 CRYPTI_MAIN = crypti.o
 CRYPTI_TEST = $(BIN)/crypti
@@ -26,9 +28,11 @@ all: $(LEX_TEST) $(CRYPTI_TEST) $(VAROP_TEST)
 $(LEX_TEST): $(LEX_OBJS) $(LEX_MAIN) $(MP_LIB)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
-$(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN) $(MP_LIB)
+$(CRYPTI_TEST): $(LEX_OBJS) $(CRYPTI_OBJS) $(CRYPTI_MAIN) $(MP_LIB) $(CRYPT_LIB)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
+$(CRYPT_LIB):
+	$(MAKE) -c lib/crypto
 clean:
 	rm -f *.o
 	rm -f $(SRC)/*.o
