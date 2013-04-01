@@ -352,12 +352,30 @@ begin:
 		return get_octstring();
 
 	switch (peek) {
+
+#define CASE_ITEM(ch, tok_type)			\
+case ch:					\
+	lex_item.id = tok_type;			\
+	goto clean_end				\
+
+	CASE_ITEM('(', TOK_LPAR);
+	CASE_ITEM(')', TOK_RPAR);
+	CASE_ITEM('[', TOK_LBRACKET);
+	CASE_ITEM(']', TOK_RBRACKET);
+	CASE_ITEM('{', TOK_LBRACE);
+	CASE_ITEM('}', TOK_RBRACE);
+	CASE_ITEM(',', TOK_COMMA);
+	CASE_ITEM(';', TOK_SEMICOLON);
+	CASE_ITEM('#', TOK_HASH);
+	CASE_ITEM('.', TOK_DOT);
+	CASE_ITEM('\n', TOK_EOL);
+	CASE_ITEM(EOF, TOK_EOF);
+
 	case '=':
 		peek = fgetc(input);
 		if (peek == '=') {
 			lex_item.id = TOK_EQ;
-			peek = ' ';
-			return TOK_EQ;
+			goto clean_end;
 		}
 		lex_item.id = TOK_AS;
 		
@@ -365,10 +383,8 @@ begin:
 	case '!':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_NEQ;
-			
-			return TOK_NEQ;
+			goto clean_end;
 		}
 		lex_item.id = TOK_NOT;
 
@@ -376,177 +392,103 @@ begin:
 	case '<':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_LE;
-			
-			return TOK_LE;
+			goto clean_end;
 		} else if (peek == '<') {
 			peek = fgetc(input);
 			if (peek == '=') {
-				peek = ' ';
 				lex_item.id = TOK_SHL_AS;
-
-				return TOK_SHL_AS;
+				goto clean_end;
 			}
 			lex_item.id = TOK_SHL;
-			
+
 			return TOK_SHL;
 		}
 		lex_item.id = TOK_LO;
-		
+
 		return TOK_LO;
 	case '>':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_GE;
-			
-			return TOK_GE;
+			goto clean_end;
 		} else if (peek == '>') {
 			peek = fgetc(input);
 			if (peek == '=') {
-				peek = ' ';
 				lex_item.id = TOK_SHR_AS;
-
-				return TOK_SHR_AS;
+				goto clean_end;
 			}
 			lex_item.id = TOK_SHR;
-			
+
 			return TOK_SHR;
 		}
 		lex_item.id = TOK_GR;
-		
+
 		return TOK_GR;
 	case '&':
 		peek = fgetc(input);
 		if (peek == '&') {
-			peek = ' ';
 			lex_item.id = TOK_L_AND;
-			
-			return TOK_L_AND;
+			goto clean_end;
 		} else if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_B_AND_AS;
-
-			return TOK_B_AND_AS;
+			goto clean_end;
 		}
 		lex_item.id = TOK_B_AND;
-		
+
 		return TOK_B_AND;
 	case '|':
 		peek = fgetc(input);
 		if (peek == '|') {
-			peek = ' ';
 			lex_item.id = TOK_L_OR;
-			
-			return TOK_L_OR;
+			goto clean_end;
 		} else if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_B_OR_AS;
-
-			return TOK_B_OR_AS;
+			goto clean_end;
 		}
 		lex_item.id = TOK_B_OR;
-		
+
 		return TOK_B_OR;
 	case '^':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_B_XOR_AS;
-
-			return TOK_B_XOR_AS;
+			goto clean_end;
 		}
 		lex_item.id = TOK_B_XOR;
 
 		return TOK_B_XOR;
-	case '(':
-		peek = ' ';
-		lex_item.id = TOK_LPAR;
-		
-		return TOK_LPAR;
-	case ')':
-		peek = ' ';
-		lex_item.id = TOK_RPAR;
-		
-		return TOK_RPAR;
-	case '[':
-		peek = ' ';
-		lex_item.id = TOK_LBRACKET;
-		
-		return TOK_LBRACKET;
-	case ']':
-		peek = ' ';
-		lex_item.id = TOK_RBRACKET;
-		
-		return TOK_RBRACKET;
-	case '{':
-		peek = ' ';
-		lex_item.id = TOK_LBRACE;
-		
-		return TOK_LBRACE;
-	case '}':
-		peek = ' ';
-		lex_item.id = TOK_RBRACE;
-		
-		return TOK_RBRACE;
-	case ',':
-		peek = ' ';
-		lex_item.id = TOK_COMMA;
-
-		return TOK_COMMA;
-	case ';':
-		peek = ' ';
-		lex_item.id = TOK_SEMICOLON;
-
-		return TOK_SEMICOLON;
 	case '+':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_PLUS_AS;
-			return TOK_PLUS_AS;
-		} /* Unsupported now
-		     else if (peek == '+') {
-			peek = ' ';
-			lex_item.id = TOK_INC;
-			return TOK_INC;
+			goto clean_end;
 		}
-		*/
 		lex_item.id = TOK_PLUS;
 		
 		return TOK_PLUS;
 	case '-':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_MINUS_AS;
-			return TOK_MINUS_AS;
-		} /* Unsupported now
-		     else if (peek == '-') {
-			peek = ' ';
-			lex_item.id = TOK_DEC;
-			return TOK_DEC;
+			goto clean_end;
 		}
-		*/
 		lex_item.id = TOK_MINUS;
 		
 		return TOK_MINUS;
 	case '*':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_MUL_AS;
-			return TOK_MUL_AS;
+			goto clean_end;
 		} else if (peek == '*') {
 			peek = fgetc(input);
 			if (peek == '=') {
-				peek = ' ';
 				lex_item.id = TOK_POW_AS;
-				return TOK_POW_AS;
+				goto clean_end;
 			}
-
 			lex_item.id = TOK_POW;
+
 			return TOK_POW;
 		}
 		lex_item.id = TOK_MUL;
@@ -555,9 +497,8 @@ begin:
 	case '/':
 		peek = fgetc(input);
 		if (peek == '=') {
-			peek = ' ';
 			lex_item.id = TOK_DIV_AS;
-			return TOK_DIV_AS;
+			goto clean_end;
 		} else if (peek == '/') {
 			skip_comment();
 			goto begin;
@@ -568,32 +509,14 @@ begin:
 		lex_item.id = TOK_DIV;
 
 		return TOK_DIV;
-	case '#':
-		peek = ' ';
-		lex_item.id = TOK_HASH;
-
-		return TOK_HASH;
-	case '.':
-		peek = ' ';
-		lex_item.id = TOK_DOT;
-
-		return TOK_DOT;
-	case '\n':
-		peek = ' ';
-		lex_item.id = TOK_EOL;
-		
-		return TOK_EOL;
-	case EOF:
-		peek = ' ';
-		lex_item.id = TOK_EOF;
-		
-		return TOK_EOF;
+	default:
+		lex_item.id = TOK_UNKNOWN;
+		goto clean_end;
 	}
-	
-	peek = ' ';
-	lex_item.id = TOK_UNKNOWN;
 
-	return TOK_UNKNOWN;
+clean_end:	
+	peek = ' ';
+	return lex_item.id;
 }
 
 void

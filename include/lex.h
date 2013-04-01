@@ -49,10 +49,6 @@ typedef enum {
 	TOK_SHL,	// <<
 	TOK_SHR,	// >>
 	
-	/*
-	TOK_INC,	// ++
-	TOK_DEC,	// --
-	*/
 	TOK_PLUS,
 	TOK_MINUS,
 	TOK_MUL,

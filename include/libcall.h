@@ -17,8 +17,21 @@ int libcall_subocts(id_item_t **args, int *rettypes, void **retvals);
 
 //int libcall_del(id_item_t **args, int *rettypes, void **retvals);
 
-/* Crypto hashes */
+/* Crypto hashes (simple) */
 int libcall_md5(id_item_t **args, int *rettypes, void **retvals);
 int libcall_sha1(id_item_t **args, int *rettypes, void **retvals);
 int libcall_sha256(id_item_t **args, int *rettypes, void **retvals);
+
+/* Crypto hashes (full) */
+int libcall_md5_init(id_item_t **args, int *rettypes, void **retvals);
+int libcall_md5_update(id_item_t **args, int *rettypes, void **retvals);
+int libcall_md5_finalize(id_item_t **args, int *rettypes, void **retvals);
+
+int libcall_sha1_init(id_item_t **args, int *rettypes, void **retvals);
+int libcall_sha1_update(id_item_t **args, int *rettypes, void **retvals);
+int libcall_sha1_finalize(id_item_t **args, int *rettypes, void **retvals);
+
+int libcall_sha256_init(id_item_t **args, int *rettypes, void **retvals);
+int libcall_sha256_update(id_item_t **args, int *rettypes, void **retvals);
+int libcall_sha256_finalize(id_item_t **args, int *rettypes, void **retvals);
 #endif

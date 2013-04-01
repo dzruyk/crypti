@@ -31,24 +31,6 @@ void
 octstr_md5(octstr_t *dst, octstr_t *src)
 {
 	generic_hash(dst, src, md5, 16);
-/*
-	struct md5_context ctx;
-	unsigned char d[16];
-	unsigned char *p;
-	size_t len;
-
-	md5_context_init(&ctx);
-
-	len = octstr_len(src);
-	p = octstr_ptr(src);
-
-	md5_update(&ctx, p, len);
-
-	md5_final(&ctx, d);
-
-	octstr_reset(dst);
-	octstr_append_n(dst, d, sizeof(d));
-*/
 }
 
 void
@@ -62,5 +44,12 @@ void
 octstr_sha256(octstr_t *dst, octstr_t *src)
 {
 	generic_hash(dst, src, sha256, 32);
+}
+
+
+void
+octstr_md5_init(str_t *id, arr_t *arr)
+{
+
 }
 

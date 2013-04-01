@@ -28,10 +28,22 @@ static struct {
 	{"arr_min_max", 1, 2, libcall_arr_min_max},
 	{"subs", 3, 1, libcall_subs},
 	{"subocts", 3, 1, libcall_subocts},
-	/* Crypto hashes */
+
+	/* Crypto hashes (full) */
 	{"md5", 1, 1, libcall_md5},
 	{"sha1", 1, 1, libcall_sha1},
 	{"sha256", 1, 1, libcall_sha256},
+
+	/* Crypto hashes (full) */
+	{"md5_init", 1, 1, libcall_md5_init},
+	{"md5_update", 2, 0, libcall_md5_update},
+	{"md5_finalize", 1, 1, libcall_md5_finalize},
+	{"sha1_init", 1, 1, libcall_sha1_init},
+	{"sha1_update", 2, 0, libcall_sha1_update},
+	{"sha1_finalize", 1, 1, libcall_sha1_finalize},
+	{"sha256_init", 1, 1, libcall_sha256_init},
+	{"sha256_update", 2, 0, libcall_sha256_update},
+	{"sha256_finalize", 1, 1, libcall_sha256_finalize},
 };
 
 
