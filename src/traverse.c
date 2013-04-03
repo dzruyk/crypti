@@ -345,6 +345,8 @@ exec_function(func_t *func)
 	assert(func != NULL);
 
 	next = func->body;
+	
+	helper.is_call++;
 
 	while (next != NULL) {
 		res = traverse_body(next);
@@ -359,12 +361,16 @@ exec_function(func_t *func)
 			print_warn("unexpected break\n");
 			return;
 		case RES_RETURN:
-			return;
+			goto finalize;
 		default:
 			next = next->child;
 			continue;
 		}
 	}
+finalize:
+
+	helper.is_call--;
+
 	if (push_return_args(func) == FALSE) {
 		print_warn("Can't get return all arguments\n");
 		nerrors++;

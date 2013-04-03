@@ -5,7 +5,8 @@ SRC= ./src
 TEST= ./test/crypti
 INCLUDES= -I ./include -I ./lib
 LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o \
-	keyword.o common.o crypt_hashes.o array.o str.o octstr.o buffer.o type_convertions.o variable.o var_op.o)
+	keyword.o common.o crypt_hashes.o array.o str.o octstr.o \
+	defaults.o buffer.o type_convertions.o variable.o var_op.o)
 
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test

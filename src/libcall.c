@@ -308,8 +308,10 @@ int libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
 int libcall_md5_init(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *arg1;
-	arr_t *res;
+	struct variable *res;
+	mpl_int *st;
 	str_t *id;
+	int ret;
 	
 	arg1 = args[0];
 
@@ -318,24 +320,53 @@ int libcall_md5_init(id_item_t **args, int *rettypes, void **retvals)
 		return 1;
 	}
 
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+
+	st = var_bignum_ptr(res);
+
 	id = var_cast_to_str(arg1->var);
 
-	res = arr_new();
+	ret = octstr_md5_init(id);
+	if (ret != 0)
+		mpl_set_one(st);
+	else
+		mpl_set_sint(st, 0);
 
-	octstr_md5_init(id, res);
+	var_force_type(res, VAR_BIGNUM);
 
-	arr_set_item(res, "name", NULL);
-	arr_set_item(res, "type", NULL);
-	arr_set_item(res, "n", NULL);
-
-	rettypes[0] = ID_ARR;
+	rettypes[0] = ID_VAR;
 	retvals[0] = res;
 
 	return 0;
+
 }
 
 int libcall_md5_update(id_item_t **args, int *rettypes, void **retvals)
 {
+	id_item_t *arg1, *arg2;
+	str_t *id;
+	octstr_t *chunk;
+	
+	arg1 = args[0];
+	arg2 = args[1];
+
+	if (arg1->type != ID_VAR) {
+		print_warn("error libcall_md5_init: string expected");
+		return 1;
+	}
+	if (arg2->type != ID_VAR) {
+		print_warn("error libcall_md5_init: string expected");
+		return 1;
+	}
+
+	id = var_cast_to_str(arg1->var);
+	chunk = var_cast_to_octstr(arg2->var);
+
+	octstr_md5_update(id, chunk);
+
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
 
 	return 0;
 }

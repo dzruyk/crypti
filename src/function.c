@@ -3,12 +3,11 @@
 
 #include <stdio.h>
 
+#include "defaults.h"
 #include "function.h"
 #include "hash.h"
 #include "libcall.h"
 #include "macros.h"
-
-#define INITIAL_SZ 32
 
 static struct hash_table *func_table;
 
@@ -49,27 +48,6 @@ static struct {
 
 static void function_table_fill();
 
-static int
-function_compare(void *a, void *b)
-{	
-	return strcmp((char*)a, (char*)b);
-}
-
-static unsigned long
-function_hash_cb(const void *data)
-{
-	int i, mult, res;
-	char *s;
-	
-	mult = 31;
-	res = 0;
-	s = (char*)data;
-
-	for (i = 0; i < strlen(data); i++)
-		res = res * mult + s[i];
-	return res;
-}
-
 static void
 function_table_destroy_cb(func_t *item)
 {
@@ -81,16 +59,6 @@ function_table_destroy_cb(func_t *item)
 		
 		ufree(item->name);
 		
-
-		//FIXME: need to write non recursion finalize?
-		/*
-		ast_node_t *tmp, *prev;
-
-		for (tmp = prev = item->body; tmp != NULL; prev = tmp) {
-			tmp = prev->child;
-			ast_node_unref(prev);
-		}
-		*/
 		ast_node_unref(item->body);
 	
 		for (i = 0; i < item->nret; i++)
@@ -108,11 +76,11 @@ void
 function_table_init()
 {
 	if (func_table != NULL)
-		error(1, "function already initialisated!");
+		error(1, "function table already initialisated!");
 	
 	func_table = hash_table_new(INITIAL_SZ, 
-	    (hash_callback_t )function_hash_cb,
-	    (hash_compare_t )function_compare);
+	    (hash_callback_t )default_hash_cb,
+	    (hash_compare_t )default_hash_compare);
 	
 	if (func_table == NULL)
 		error(1, "error at table table creation\n");

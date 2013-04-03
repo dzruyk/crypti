@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include "common.h"
+#include "crypt_hashes.h"
 #include "log.h"
 #include "eval.h"
 #include "function.h"
@@ -18,8 +19,6 @@ print_programme_info()
 {
 	printf("=======================================\n");
 	printf("*Simple language for crypto researches*\n");
-	printf("*Now work without libbignum           *\n");
-	printf("*but Work In Process                  *\n");
 	printf("=======================================\n");
 }
 
@@ -77,6 +76,7 @@ initialisation()
 	id_table_init();
 	keyword_table_init();
 	function_table_init();
+	hash_ctx_table_init();
 	stack_init((stack_destructor)eval_free);
 }
 
@@ -86,6 +86,7 @@ deinitialisation()
 	id_table_destroy();
 	keyword_table_destroy();
 	function_table_destroy();
+	hash_ctx_table_destroy();
 	stack_destroy();
 }
 

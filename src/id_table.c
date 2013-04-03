@@ -5,14 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "defaults.h"
 #include "hash.h"
 #include "id_table.h"
 #include "lex.h"
 #include "log.h"
 #include "macros.h"
 #include "variable.h"
-
-#define INITIAL_SZ 32
 
 struct scopes {
 	struct scopes *prev;
@@ -23,28 +22,6 @@ struct scopes *scopes;
 
 struct hash_table *global;
 struct hash_table *current;
-
-
-static int
-id_compare(const void *a, const void *b)
-{	
-	return strcmp((char*)a, (char*)b);
-}
-
-static unsigned long
-id_hash_cb(const void *data)
-{
-	int i, mult, res;
-	char *s;
-	
-	mult = 31;
-	res = 0;
-	s = (char*)data;
-
-	for (i = 0; i < strlen(s); i++)
-		res = res * mult + s[i];
-	return res;
-}
 
 void
 id_item_default_release(id_item_t *item)
@@ -143,8 +120,8 @@ id_table_create()
 {
 	struct hash_table *table;
 
-	table = hash_table_new(INITIAL_SZ, (hash_callback_t)id_hash_cb,
-	    (hash_compare_t)id_compare);
+	table = hash_table_new(INITIAL_SZ, (hash_callback_t)default_hash_cb,
+	    (hash_compare_t)default_hash_compare);
 	
 	if (table == NULL)
 		error(1, "error at table table creation\n");
@@ -209,6 +186,8 @@ id_table_insert_to(struct hash_table *table, id_item_t *item)
 ret_t
 id_table_insert(id_item_t *item)
 {
+	assert(item != NULL);
+
 	return id_table_insert_to(current, item);
 }
 
@@ -217,6 +196,8 @@ id_item_t *
 id_table_lookup_in(struct hash_table *table, char *name)
 {
 	id_item_t *res;
+
+	assert(table != NULL && name != NULL);
 	
 	if (hash_table_lookup(table, name, (void**)&res) != ret_ok)
 		return NULL;
@@ -228,6 +209,8 @@ id_table_lookup_in(struct hash_table *table, char *name)
 id_item_t *
 id_table_lookup(char *name)
 {
+	assert(name != NULL);
+
 	return id_table_lookup_in(current, name);
 }
 
@@ -238,6 +221,8 @@ id_table_lookup_all(char *name)
 	id_item_t *item;
 	struct scopes *tmp;
 	
+	assert(name != NULL);
+
 	tmp = scopes;
 	while (tmp != NULL) {
 		item = id_table_lookup_in(tmp->scope, name);
@@ -258,6 +243,8 @@ id_table_remove(char *name)
 	
 	tmp = scopes;
 
+	assert(name != NULL);
+
 	while (tmp != NULL) {
 		ret = id_table_remove_from(tmp->scope, name);
 		if (ret == ret_ok)
@@ -275,6 +262,8 @@ id_table_remove_from(struct hash_table *table, char *name)
 {
 	id_item_t *item;
 	
+	assert(table != NULL && name != NULL);
+
 	item = id_table_lookup_in(table, name);
 	if (item == NULL)
 		return ret_err;
