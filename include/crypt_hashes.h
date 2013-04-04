@@ -16,4 +16,12 @@ int octstr_md5_init(str_t *id);
 int octstr_md5_update(str_t *id, octstr_t *data);
 int octstr_md5_finalize(str_t *id, octstr_t *out);
 
+int octstr_sha1_init(str_t *id);
+int octstr_sha1_update(str_t *id, octstr_t *data);
+int octstr_sha1_finalize(str_t *id, octstr_t *out);
+
+int octstr_sha255_init(str_t *id);
+int octstr_sha255_update(str_t *id, octstr_t *data);
+int octstr_sha255_finalize(str_t *id, octstr_t *out);
+
 #endif

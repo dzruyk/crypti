@@ -1,0 +1,8 @@
+md5("hello, world")
+
+id = "this is id"
+ret = md5_init(id)
+md5_update(id, "hello, ")
+md5_update(id, "world")
+md5_finalize(id)
+

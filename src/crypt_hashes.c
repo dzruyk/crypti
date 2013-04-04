@@ -54,6 +54,7 @@ static void
 hash_ctx_destroy_cb(struct hash_ctx *ctx)
 {
 	ufree(ctx->name);
+	ufree(ctx->ctx);
 	ufree(ctx);
 }
 
@@ -183,10 +184,91 @@ octstr_sha256(octstr_t *dst, octstr_t *src)
 	generic_hash(dst, src, sha256, 32);
 }
 
+#define generic_hash_init(id, hash_name, ctx_type)	do {	\
+	struct hash_ctx *h;					\
+	struct hash_name ## _context *ctx;			\
+	char *p;						\
+								\
+	p = str_ptr(id);					\
+								\
+	if (hash_ctx_table_lookup(p) != NULL) {			\
+		print_warn(					\
+		    "ctx with name %s already created\n", p);	\
+		return 1;					\
+	}							\
+								\
+	ctx = xmalloc(sizeof(*ctx));				\
+	hash_name ## _context_init(ctx);			\
+								\
+	h = hash_ctx_new(p, ctx_type, ctx);			\
+								\
+	hash_ctx_table_insert(h);				\
+								\
+	return 0;						\
+} while (0)
+
+#define generic_hash_update(id, data, hash_name, ctx_type) do {	\
+	struct hash_ctx *ctx;					\
+	char *s;						\
+	void *p;						\
+	int len;						\
+								\
+	s = str_ptr(id);					\
+								\
+	ctx = hash_ctx_table_lookup(s);				\
+	if (ctx == NULL) {					\
+		print_warn(					\
+		    "can't find ctx with name %s\n", s);	\
+		return 1;					\
+	}							\
+								\
+	if (ctx->type != ctx_type) {				\
+		print_warn("invalid ctx type\n");		\
+		return 1;					\
+	}							\
+								\
+	p = octstr_ptr(data);					\
+	len = octstr_len(data);					\
+								\
+	hash_name ## _update(ctx->ctx, p, len);				\
+								\
+	return 0;						\
+} while (0)
+
+#define generic_hash_finalize(id, out, hash_name, ctx_type, hash_len) \
+do {								\
+	struct hash_ctx *ctx;					\
+	char *s;						\
+	unsigned char d[hash_len];				\
+								\
+	s = str_ptr(id);					\
+	ctx = hash_ctx_table_lookup(s);				\
+	if (ctx == NULL) {					\
+		print_warn("can't find ctx with name %s\n", s);	\
+		return 1;					\
+	}							\
+								\
+	if (ctx->type != ctx_type) {				\
+		print_warn("invalid ctx type\n");		\
+		return 1;					\
+	}							\
+								\
+	hash_name ## _final(ctx->ctx, d);			\
+								\
+	octstr_reset(out);					\
+	octstr_append_n(out, d, sizeof(d));			\
+								\
+	if (hash_ctx_delete(ctx) != ret_ok)			\
+		return 1;					\
+								\
+	return 0;						\
+} while (0)
 
 int
 octstr_md5_init(str_t *id)
 {
+	generic_hash_init(id, md5, CTX_TYPE_MD5);
+	/*
 	struct hash_ctx *h;
 	struct md5_context *ctx;
 	char *p;
@@ -206,11 +288,14 @@ octstr_md5_init(str_t *id)
 	hash_ctx_table_insert(h);
 
 	return 0;
+	*/
 }
 
 int
 octstr_md5_update(str_t *id, octstr_t *data)
 {
+	generic_hash_update(id, data, md5, CTX_TYPE_MD5);
+	/*
 	struct hash_ctx *ctx;
 	char *s;
 	void *p;
@@ -235,11 +320,14 @@ octstr_md5_update(str_t *id, octstr_t *data)
 	md5_update(ctx->ctx, p, len);
 
 	return 0;
+	*/
 }
 
 int 
 octstr_md5_finalize(str_t *id, octstr_t *out)
 {
+	generic_hash_finalize(id, out, md5, CTX_TYPE_MD5, 16);
+	/*
 	struct hash_ctx *ctx;
 	char *s;
 	unsigned char d[16];
@@ -265,5 +353,6 @@ octstr_md5_finalize(str_t *id, octstr_t *out)
 		return 1;
 
 	return 0;
+	*/
 }
 
