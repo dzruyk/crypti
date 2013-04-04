@@ -373,6 +373,30 @@ int libcall_md5_update(id_item_t **args, int *rettypes, void **retvals)
 
 int libcall_md5_finalize(id_item_t **args, int *rettypes, void **retvals)
 {
+	struct variable *res;
+	id_item_t *arg1;
+	str_t *id;
+	octstr_t *out;
+	
+	arg1 = args[0];
+
+	if (arg1->type != ID_VAR) {
+		print_warn("error libcall_md5_init: string expected");
+		return 1;
+	}
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+
+	id = var_cast_to_str(arg1->var);
+	out = var_octstr_ptr(res);
+
+	octstr_md5_finalize(id, out);
+
+	var_force_type(res, VAR_OCTSTRING);
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+
 
 	return 0;
 }

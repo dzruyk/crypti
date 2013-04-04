@@ -212,13 +212,15 @@ int
 octstr_md5_update(str_t *id, octstr_t *data)
 {
 	struct hash_ctx *ctx;
-	char *p;
+	char *s;
+	void *p;
+	int len;
 
-	p = str_ptr(id);
+	s = str_ptr(id);
 
-	ctx = hash_ctx_table_lookup(p);
+	ctx = hash_ctx_table_lookup(s);
 	if (ctx == NULL) {
-		print_warn("can't find ctx with name %s\n", p);
+		print_warn("can't find ctx with name %s\n", s);
 		return 1;
 	}
 
@@ -227,13 +229,41 @@ octstr_md5_update(str_t *id, octstr_t *data)
 		return 1;
 	}
 
-	//md5_update(ctx, 
+	p = octstr_ptr(data);
+	len = octstr_len(data);
+
+	md5_update(ctx->ctx, p, len);
+
 	return 0;
 }
 
 int 
 octstr_md5_finalize(str_t *id, octstr_t *out)
 {
+	struct hash_ctx *ctx;
+	char *s;
+	unsigned char d[16];
+
+	s = str_ptr(id);
+	ctx = hash_ctx_table_lookup(s);
+	if (ctx == NULL) {
+		print_warn("can't find ctx with name %s\n", s);
+		return 1;
+	}
+
+	if (ctx->type != CTX_TYPE_MD5) {
+		print_warn("invalid ctx type\n");
+		return 1;
+	}
+
+	md5_final(ctx->ctx, d);
+
+	octstr_reset(out);
+	octstr_append_n(out, d, sizeof(d));
+
+	if (hash_ctx_delete(ctx) != ret_ok)
+		return 1;
 
 	return 0;
 }
+
