@@ -283,21 +283,24 @@ libcall_del(id_item_t **args, int *rettypes, void **retvals)
 } while(0)
 
 /* Crypto hashes (simple) */
-int libcall_md5(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_md5(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic(md5);
 
 	return 0;
 }
 
-int libcall_sha1(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha1(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic(sha1);
 
 	return 0;
 }
 
-int libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic(sha256);
 
@@ -305,137 +308,161 @@ int libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
 }
 
 /* Crypto hashes (full) */
-int libcall_md5_init(id_item_t **args, int *rettypes, void **retvals)
+
+#define libcall_hash_generic_init(args, rettypes, retvals, hash_type) 	\
+do {									\
+	id_item_t *arg1;						\
+	struct variable *res;						\
+	mpl_int *st;							\
+	str_t *id;							\
+	int ret;							\
+									\
+	arg1 = args[0];							\
+									\
+	if (arg1->type != ID_VAR) {					\
+		print_warn("error libcall_"				\
+		    #hash_type "_init: string expected");		\
+		return 1;						\
+	}								\
+									\
+	res = xmalloc(sizeof(*res));					\
+	var_init(res);							\
+									\
+	st = var_bignum_ptr(res);					\
+									\
+	id = var_cast_to_str(arg1->var);				\
+									\
+	ret = octstr_ ## hash_type ## _init(id);			\
+	if (ret != 0)							\
+		mpl_set_one(st);					\
+	else								\
+		mpl_set_sint(st, 0);					\
+									\
+	var_force_type(res, VAR_BIGNUM);				\
+									\
+	rettypes[0] = ID_VAR;						\
+	retvals[0] = res;						\
+									\
+	return 0;							\
+} while (0)
+
+#define libcall_hash_generic_update(args, rettypes, retvals, hash_type) \
+do {									\
+	id_item_t *arg1, *arg2;						\
+	str_t *id;							\
+	octstr_t *chunk;						\
+									\
+	arg1 = args[0];							\
+	arg2 = args[1];							\
+									\
+	if (arg1->type != ID_VAR) {					\
+		print_warn("error libcall_" # hash_type			\
+		    "_init: string expected");				\
+		return 1;						\
+	}								\
+	if (arg2->type != ID_VAR) {					\
+		print_warn("error libcall_" # hash_type			\
+		    "_init: string expected");				\
+		return 1;						\
+	}								\
+									\
+	id = var_cast_to_str(arg1->var);				\
+	chunk = var_cast_to_octstr(arg2->var);				\
+									\
+	octstr_ ## hash_type ## _update(id, chunk);			\
+									\
+	rettypes[0] = ID_UNKNOWN;					\
+	retvals[0] = NULL;						\
+									\
+	return 0;							\
+} while (0)
+
+
+#define libcall_hash_generic_finalize(args, rettypes, retvals, hash_type) \
+do {									\
+	struct variable *res;						\
+	id_item_t *arg1;						\
+	str_t *id;							\
+	octstr_t *out;							\
+									\
+	arg1 = args[0];							\
+									\
+	if (arg1->type != ID_VAR) {					\
+		print_warn("error libcall_"# hash_type			\
+		    "_init: string expected");				\
+		return 1;						\
+	}								\
+	res = xmalloc(sizeof(*res));					\
+	var_init(res);							\
+									\
+	id = var_cast_to_str(arg1->var);				\
+	out = var_octstr_ptr(res);					\
+									\
+	octstr_ ## hash_type ## _finalize(id, out);			\
+									\
+	var_force_type(res, VAR_OCTSTRING);				\
+									\
+	rettypes[0] = ID_VAR;						\
+	retvals[0] = res;						\
+									\
+									\
+	return 0;							\
+									\
+} while (0)
+
+int
+libcall_md5_init(id_item_t **args, int *rettypes, void **retvals)
 {
-	id_item_t *arg1;
-	struct variable *res;
-	mpl_int *st;
-	str_t *id;
-	int ret;
-	
-	arg1 = args[0];
-
-	if (arg1->type != ID_VAR) {
-		print_warn("error libcall_md5_init: string expected");
-		return 1;
-	}
-
-	res = xmalloc(sizeof(*res));
-	var_init(res);
-
-	st = var_bignum_ptr(res);
-
-	id = var_cast_to_str(arg1->var);
-
-	ret = octstr_md5_init(id);
-	if (ret != 0)
-		mpl_set_one(st);
-	else
-		mpl_set_sint(st, 0);
-
-	var_force_type(res, VAR_BIGNUM);
-
-	rettypes[0] = ID_VAR;
-	retvals[0] = res;
-
-	return 0;
-
+	libcall_hash_generic_init(args, rettypes, retvals, md5);
 }
 
-int libcall_md5_update(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_md5_update(id_item_t **args, int *rettypes, void **retvals)
 {
-	id_item_t *arg1, *arg2;
-	str_t *id;
-	octstr_t *chunk;
-	
-	arg1 = args[0];
-	arg2 = args[1];
-
-	if (arg1->type != ID_VAR) {
-		print_warn("error libcall_md5_init: string expected");
-		return 1;
-	}
-	if (arg2->type != ID_VAR) {
-		print_warn("error libcall_md5_init: string expected");
-		return 1;
-	}
-
-	id = var_cast_to_str(arg1->var);
-	chunk = var_cast_to_octstr(arg2->var);
-
-	octstr_md5_update(id, chunk);
-
-	rettypes[0] = ID_UNKNOWN;
-	retvals[0] = NULL;
-
-	return 0;
+	libcall_hash_generic_update(args, rettypes, retvals, md5);
 }
 
-int libcall_md5_finalize(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_md5_finalize(id_item_t **args, int *rettypes, void **retvals)
 {
-	struct variable *res;
-	id_item_t *arg1;
-	str_t *id;
-	octstr_t *out;
-	
-	arg1 = args[0];
-
-	if (arg1->type != ID_VAR) {
-		print_warn("error libcall_md5_init: string expected");
-		return 1;
-	}
-	res = xmalloc(sizeof(*res));
-	var_init(res);
-
-	id = var_cast_to_str(arg1->var);
-	out = var_octstr_ptr(res);
-
-	octstr_md5_finalize(id, out);
-
-	var_force_type(res, VAR_OCTSTRING);
-
-	rettypes[0] = ID_VAR;
-	retvals[0] = res;
-
-
-	return 0;
+	libcall_hash_generic_finalize(args, rettypes, retvals, md5);
 }
 
 
-int libcall_sha1_init(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha1_init(id_item_t **args, int *rettypes, void **retvals)
 {
-
-	return 0;
+	libcall_hash_generic_init(args, rettypes, retvals, sha1);
 }
 
-int libcall_sha1_update(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha1_update(id_item_t **args, int *rettypes, void **retvals)
 {
-
-	return 0;
+	libcall_hash_generic_update(args, rettypes, retvals, sha1);
 }
 
-int libcall_sha1_finalize(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha1_finalize(id_item_t **args, int *rettypes, void **retvals)
 {
-
-	return 0;
+	libcall_hash_generic_finalize(args, rettypes, retvals, sha1);
 }
 
 
-int libcall_sha256_init(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha256_init(id_item_t **args, int *rettypes, void **retvals)
 {
-
-	return 0;
+	libcall_hash_generic_init(args, rettypes, retvals, sha256);
 }
 
-int libcall_sha256_update(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha256_update(id_item_t **args, int *rettypes, void **retvals)
 {
-
-	return 0;
+	libcall_hash_generic_update(args, rettypes, retvals, sha256);
 }
 
-int libcall_sha256_finalize(id_item_t **args, int *rettypes, void **retvals)
+int
+libcall_sha256_finalize(id_item_t **args, int *rettypes, void **retvals)
 {
-
-	return 0;
+	libcall_hash_generic_finalize(args, rettypes, retvals, sha256);
 }
 

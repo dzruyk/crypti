@@ -230,7 +230,7 @@ octstr_sha256(octstr_t *dst, octstr_t *src)
 	p = octstr_ptr(data);					\
 	len = octstr_len(data);					\
 								\
-	hash_name ## _update(ctx->ctx, p, len);				\
+	hash_name ## _update(ctx->ctx, p, len);			\
 								\
 	return 0;						\
 } while (0)
@@ -268,91 +268,55 @@ int
 octstr_md5_init(str_t *id)
 {
 	generic_hash_init(id, md5, CTX_TYPE_MD5);
-	/*
-	struct hash_ctx *h;
-	struct md5_context *ctx;
-	char *p;
-
-	p = str_ptr(id);
-
-	if (hash_ctx_table_lookup(p) != NULL) {
-		print_warn("ctx with name %s already created\n", p);
-		return 1;
-	}
-	
-	ctx = xmalloc(sizeof(*ctx));
-	md5_context_init(ctx);
-
-	h = hash_ctx_new(p, CTX_TYPE_MD5, ctx);
-
-	hash_ctx_table_insert(h);
-
-	return 0;
-	*/
 }
 
 int
 octstr_md5_update(str_t *id, octstr_t *data)
 {
 	generic_hash_update(id, data, md5, CTX_TYPE_MD5);
-	/*
-	struct hash_ctx *ctx;
-	char *s;
-	void *p;
-	int len;
-
-	s = str_ptr(id);
-
-	ctx = hash_ctx_table_lookup(s);
-	if (ctx == NULL) {
-		print_warn("can't find ctx with name %s\n", s);
-		return 1;
-	}
-
-	if (ctx->type != CTX_TYPE_MD5) {
-		print_warn("invalid ctx type\n");
-		return 1;
-	}
-
-	p = octstr_ptr(data);
-	len = octstr_len(data);
-
-	md5_update(ctx->ctx, p, len);
-
-	return 0;
-	*/
 }
 
-int 
+int
 octstr_md5_finalize(str_t *id, octstr_t *out)
 {
 	generic_hash_finalize(id, out, md5, CTX_TYPE_MD5, 16);
-	/*
-	struct hash_ctx *ctx;
-	char *s;
-	unsigned char d[16];
+}
 
-	s = str_ptr(id);
-	ctx = hash_ctx_table_lookup(s);
-	if (ctx == NULL) {
-		print_warn("can't find ctx with name %s\n", s);
-		return 1;
-	}
+int
+octstr_sha1_init(str_t *id)
+{
+	generic_hash_init(id, sha1, CTX_TYPE_SHA1);
+}
 
-	if (ctx->type != CTX_TYPE_MD5) {
-		print_warn("invalid ctx type\n");
-		return 1;
-	}
+int
+octstr_sha1_update(str_t *id, octstr_t *data)
+{
+	generic_hash_update(id, data, sha1, CTX_TYPE_SHA1);
+}
 
-	md5_final(ctx->ctx, d);
+int
+octstr_sha1_finalize(str_t *id, octstr_t *out)
+{
+	generic_hash_finalize(id, out, sha1, CTX_TYPE_SHA1, 20);
 
-	octstr_reset(out);
-	octstr_append_n(out, d, sizeof(d));
+}
 
-	if (hash_ctx_delete(ctx) != ret_ok)
-		return 1;
 
-	return 0;
-	*/
+int
+octstr_sha256_init(str_t *id)
+{
+	generic_hash_init(id, sha256, CTX_TYPE_SHA256);
+}
+
+int
+octstr_sha256_update(str_t *id, octstr_t *data)
+{
+	generic_hash_update(id, data, sha256, CTX_TYPE_SHA256);
+}
+
+int
+octstr_sha256_finalize(str_t *id, octstr_t *out)
+{
+	generic_hash_finalize(id, out, sha1, CTX_TYPE_SHA256, 32);
 }
 
