@@ -23,6 +23,20 @@ struct scopes *scopes;
 struct hash_table *global;
 struct hash_table *current;
 
+char *id_type_desc[] = {
+	"variable",
+	"array",
+	"unknown"
+};
+
+char *
+id_type_2_str(int type)
+{
+	assert(type > 0 && type < ARRSZ(id_type_desc));
+
+	return id_type_desc[type];
+}
+
 void
 id_item_default_release(id_item_t *item)
 {

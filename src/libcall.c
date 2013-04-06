@@ -12,9 +12,10 @@
 #include "variable.h"
 #include "var_op.h"
 
-#define CHECK_TYPE(arg, expected, fname)		do {	\
+#define CHECK_TYPE(arg, expected)			do {	\
 	if (arg->type != expected) {				\
-		print_warn("error " #fname);			\
+		print_warn("error: %s expected", 			\
+		id_type_2_str(expected));				\
 		return 1;					\
 	}							\
 } while(0)
@@ -95,12 +96,11 @@ libcall_type(id_item_t **args, int *rettypes, void **retvals)
 int
 libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals)
 {
-	id_item_t *arg1;
 	arr_item_t *aitem;
 	arr_iterate_t *iter;
 	arr_t *arr;
+	id_item_t *arg1;
 	struct variable *tmp;
-
 	struct variable *min, *max;
 
 	assert(args != NULL && args[0] != NULL);
@@ -109,10 +109,7 @@ libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals)
 
 	arg1 = args[0];
 
-	if (arg1->type != ID_ARR) {
-		print_warn("error libcall_arr_min_max: array expected\n");
-		return 1;
-	}
+	CHECK_TYPE(arg1, ID_ARR);
 
 	arr = arg1->arr;
 
@@ -164,12 +161,11 @@ libcall_subs(id_item_t **args, int *rettypes, void **retvals)
 	arg1 = args[0];
 	arg2 = args[1];
 	arg3 = args[2];
-	if (arg1->type != ID_VAR ||
-	    arg2->type != ID_VAR ||
-	    arg3->type != ID_VAR) {
-		print_warn("error libcall_subs: string expected\n");
-		return 1;
-	}
+
+	CHECK_TYPE(arg1, ID_VAR);
+	CHECK_TYPE(arg2, ID_VAR);
+	CHECK_TYPE(arg3, ID_VAR);
+
 	res = xmalloc(sizeof(*res));
 	var_init(res);
 	
@@ -201,12 +197,11 @@ libcall_subocts(id_item_t **args, int *rettypes, void **retvals)
 	arg1 = args[0];
 	arg2 = args[1];
 	arg3 = args[2];
-	if (arg1->type != ID_VAR ||
-	    arg2->type != ID_VAR ||
-	    arg3->type != ID_VAR) {
-		print_warn("error libcall_subocts: string expected\n");
-		return 1;
-	}
+
+	CHECK_TYPE(arg1, ID_VAR);
+	CHECK_TYPE(arg2, ID_VAR);
+	CHECK_TYPE(arg3, ID_VAR);
+
 	res = xmalloc(sizeof(*res));
 	var_init(res);
 	
@@ -226,6 +221,12 @@ err:
 int
 libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals)
 {
+	id_item_t *arg1, *arg2, *arg3;
+	struct variable *res;
+	int ret;
+
+	assert(args != NULL && args[0] != NULL && args[1] != NULL);
+
 	return 0;
 }
 

@@ -6,10 +6,13 @@
 #include "str.h"
 
 typedef enum {
-	ID_VAR,
-	ID_ARR,
-	ID_UNKNOWN,
+	ID_VAR = 0,
+	ID_ARR = 1,
+	ID_UNKNOWN = 2,
 } id_type_t;
+
+/* Return string representation of passed id_type_t */
+char *id_type_2_str(int type);
 
 struct id_item;
 

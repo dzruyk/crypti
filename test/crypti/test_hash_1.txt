@@ -2,7 +2,7 @@ md5("hello, world")
 
 id = "this is id"
 ret = md5_init(id)
-md5_update(id, "hello, ")
-md5_update(id, "world")
+md5_update(id, "The quick brown fox")
+md5_update(id, " jumps over the lazy dog")
 md5_finalize(id)
 
