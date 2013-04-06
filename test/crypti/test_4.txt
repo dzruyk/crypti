@@ -6,12 +6,12 @@ b
 del a
 del b
 
-#must be error
+//must be error
 a = {{1,2},2}
 a
 del a
 
-# assign with op test
+// assign with op test
 def [a] func(){
 a=2 
 }

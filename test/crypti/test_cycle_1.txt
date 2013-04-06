@@ -1,10 +1,10 @@
-#for cycle test
+//for cycle test
 
 for (i = 2; i < 5; i=i+1){
 	print(i)
 }
 
-#while test
+//while test
 a = 2
 while (a < 40) {
 	a = a * 2

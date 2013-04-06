@@ -10,6 +10,9 @@ int varop_mul(struct variable *c, struct variable *a, struct variable *b);
 int varop_div(struct variable *c, struct variable *a, struct variable *b);
 int varop_pow(struct variable *c, struct variable *a, struct variable *b);
 int varop_gcd(struct variable *c, struct variable *a, struct variable *b);
+int varop_mod_inv(struct variable *c, struct variable *a, struct variable *b);
+int varop_mod_exp(struct variable *res, struct variable *a,
+    struct variable *y, struct variable *b);
 
 /* Octstr operations: */
 int varop_or(struct variable *c, struct variable *a, struct variable *b);

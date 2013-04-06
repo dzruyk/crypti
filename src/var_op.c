@@ -41,37 +41,37 @@ varop_bnum_op(struct variable *c, struct variable *a, struct variable *b, bnum_o
 int
 varop_add(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
-
-	if (varop_bnum_op(c, a, b, mpl_add) != 0) {
-		return 1;
-	}
-
-	return 0;
+	return varop_bnum_op(c, a, b, mpl_add);
 }
 
 int
 varop_sub(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
-
-	if (varop_bnum_op(c, a, b, mpl_sub) != 0) {
-		return 1;
-	}
-
-	return 0;
+	return varop_bnum_op(c, a, b, mpl_sub);
 }
 
 int
 varop_mul(struct variable *c, struct variable *a, struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
+	return varop_bnum_op(c, a, b, mpl_mul);
+}
 
-	if (varop_bnum_op(c, a, b, mpl_mul) != 0) {
-		return 1;
-	}
+int
+varop_pow(struct variable *c, struct variable *a, struct variable *b)
+{
+	return varop_bnum_op(c, a, b, mpl_exp);
+}
 
-	return 0;
+int
+varop_gcd(struct variable *c, struct variable *a, struct variable *b)
+{
+	return varop_bnum_op(c, a, b, mpl_gcd);
+}
+
+int
+varop_mod_inv(struct variable *c, struct variable *a, struct variable *b)
+{
+	return varop_bnum_op(c, a, b, mpl_mod_inv);
 }
 
 int
@@ -97,25 +97,25 @@ varop_div(struct variable *c, struct variable *a, struct variable *b)
 }
 
 int
-varop_pow(struct variable *c, struct variable *a, struct variable *b)
+varop_mod_exp(struct variable *res, struct variable *a, struct variable *y,
+    struct variable *b)
 {
-	assert(c != NULL && a != NULL && b != NULL);
+	mpl_int *ap, *bp, *yp, *resp;
+	int ret;
 
-	if (varop_bnum_op(c, a, b, mpl_exp) != 0) {
-		return 1;
-	}
+	assert(res != NULL && a != NULL && y != NULL && b != NULL);
 	
-	return 0;
-}
+	ap = var_cast_to_bignum(a);
+	bp = var_cast_to_bignum(b);
+	yp = var_cast_to_bignum(y);
+	resp = var_bignum_ptr(res);
 
-int
-varop_gcd(struct variable *c, struct variable *a, struct variable *b)
-{
-	assert(c != NULL && a != NULL && b != NULL);
-
-	if (varop_bnum_op(c, a, b, mpl_gcd) != 0) {
+	ret = mpl_mod_exp(resp, ap, yp, bp);
+	if (ret != MPL_OK) {
 		return 1;
 	}
+
+	var_force_type(res, VAR_BIGNUM);
 
 	return 0;
 }

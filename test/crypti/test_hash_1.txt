@@ -1,8 +1,20 @@
 md5("hello, world")
 
 id = "this is id"
+
 ret = md5_init(id)
 md5_update(id, "The quick brown fox")
 md5_update(id, " jumps over the lazy dog")
 md5_finalize(id)
+
+
+ret = sha1_init(id)
+sha1_update(id, "The quick brown fox")
+sha1_update(id, " jumps over the lazy dog")
+sha1_finalize(id)
+
+ret = sha256_init(id)
+sha256_update(id, "The quick brown fox")
+sha256_update(id, " jumps over the lazy dog")
+sha256_finalize(id)
 

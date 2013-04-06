@@ -1,4 +1,4 @@
-#while/if/break test
+//while/if/break test
 a = 1
 while (a < 5) {
         if (a == 4)
@@ -7,31 +7,31 @@ while (a < 5) {
         a = a + 1
 }
 
-#while/break test
+//while/break test
 while(1) {
 if (1 == 1)
 	break
 }
 
-#for/continue test
+//for/continue test
 for (i = 0; i < 25; i = i+1) {
 	if ( i > 10 && i < 15)
 		continue
 	print(i)
 }
 
-#for/array test
+//for/array test
 a = {1,2,3,4}
 
 for (i=0; i < 4; i= i + 1)
 	print(a[i])
 
-#double for test
+//double for test
 for (i = 0; i < 15; i = i + 1)
 	for(j = 0; j < 15; j = j + 1)
 		print(j*i);
 
-#factorial function
+//factorial function
 def factorial(i) {
 	if (i <= 0) {
 		return (1)
@@ -40,7 +40,7 @@ def factorial(i) {
 	}
 }
 
-# print multidimentional array in cycle
+// print multidimentional array in cycle
 
 a = {{1,2,3,4}, {5,6,7,8}}
 for (i = 0; i < 4; i = i + 1)

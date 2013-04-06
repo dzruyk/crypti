@@ -1,5 +1,5 @@
 
-#recursion
+//recursion
 
 def a(i) {
 	if (i < 10) {
@@ -10,7 +10,7 @@ def a(i) {
 
 a(0);
 
-#recursion r2
+//recursion r2
 
 def a(i) {
 	if (i < 10) {

@@ -30,7 +30,7 @@ static struct {
 
 	/* mpl function wrappers. */
 	{"mod_inv", 2, 1, libcall_mod_inv},
-	{"mod_exp", 2, 1, libcall_mod_exp},
+	{"mod_exp", 3, 1, libcall_mod_exp},
 
 	/* Crypto hashes (simple) */
 	{"md5", 1, 1, libcall_md5},

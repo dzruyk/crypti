@@ -3,7 +3,7 @@ def a(b,c,d) {
 }
 a(1,2,3)
 
-#builtin functions test
+//builtin functions test
 b = 44
 print(2 - b)
 

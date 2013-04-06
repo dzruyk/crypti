@@ -14,8 +14,8 @@
 
 #define CHECK_TYPE(arg, expected)			do {	\
 	if (arg->type != expected) {				\
-		print_warn("error: %s expected", 			\
-		id_type_2_str(expected));				\
+		print_warn("error: %s expected", 		\
+		id_type_2_str(expected));			\
 		return 1;					\
 	}							\
 } while(0)
@@ -221,19 +221,64 @@ err:
 int
 libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals)
 {
-	id_item_t *arg1, *arg2, *arg3;
+	id_item_t *arg1, *arg2;
 	struct variable *res;
 	int ret;
 
 	assert(args != NULL && args[0] != NULL && args[1] != NULL);
+	arg1 = args[0];
+	arg2 = args[1];
 
+	CHECK_TYPE(arg1, ID_VAR);
+	CHECK_TYPE(arg2, ID_VAR);
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+
+	ret = varop_mod_inv(res, arg1->var, arg2->var);
+	if (ret != 0)
+		goto err;
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+	
 	return 0;
+err:
+	var_clear(res);
+	return 1;
 }
 
 int
 libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals)
 {
+	id_item_t *arg1, *arg2, *arg3;
+	struct variable *res;
+	int ret;
+
+	assert(args != NULL && args[0] != NULL &&
+	    args[1] != NULL && args[2] != NULL);
+	arg1 = args[0];
+	arg2 = args[1];
+	arg3 = args[2];
+
+	CHECK_TYPE(arg1, ID_VAR);
+	CHECK_TYPE(arg2, ID_VAR);
+	CHECK_TYPE(arg3, ID_VAR);
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+
+	ret = varop_mod_exp(res, arg1->var, arg2->var, arg3->var);
+	if (ret != 0)
+		goto err;
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+	
 	return 0;
+err:
+	var_clear(res);
+	return 1;
 }
 
 
@@ -245,11 +290,7 @@ libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals)
 	assert(args != NULL && args[0] != NULL);			\
 									\
 	arg1 = args[0];							\
-	if (arg1->type != ID_VAR) {					\
-		print_warn("error libcall " #hash_name			\
-		": string expected\n");					\
-		return 1;						\
-	}								\
+	CHECK_TYPE(arg1, ID_VAR);					\
 									\
 	res = xmalloc(sizeof(*res));					\
 	var_init(res);							\
@@ -257,12 +298,14 @@ libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals)
 	src = var_cast_to_octstr(arg1->var);				\
 	dst = var_octstr_ptr(res);					\
 									\
-	octstr_ ## hash_name (dst, src);						\
+	octstr_ ## hash_name (dst, src);				\
 									\
 	var_force_type(res, VAR_OCTSTRING);				\
 									\
 	rettypes[0] = ID_VAR;						\
 	retvals[0] = res;						\
+									\
+	return 0;							\
 } while(0)
 
 /* Crypto hashes (simple) */
@@ -270,24 +313,18 @@ int
 libcall_md5(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic(md5);
-
-	return 0;
 }
 
 int
 libcall_sha1(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic(sha1);
-
-	return 0;
 }
 
 int
 libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic(sha256);
-
-	return 0;
 }
 
 /* Crypto hashes (full) */
@@ -302,11 +339,7 @@ do {									\
 									\
 	arg1 = args[0];							\
 									\
-	if (arg1->type != ID_VAR) {					\
-		print_warn("error libcall_"				\
-		    #hash_type "_init: string expected");		\
-		return 1;						\
-	}								\
+	CHECK_TYPE(arg1, ID_VAR);					\
 									\
 	res = xmalloc(sizeof(*res));					\
 	var_init(res);							\
@@ -338,16 +371,8 @@ do {									\
 	arg1 = args[0];							\
 	arg2 = args[1];							\
 									\
-	if (arg1->type != ID_VAR) {					\
-		print_warn("error libcall_" # hash_type			\
-		    "_init: string expected");				\
-		return 1;						\
-	}								\
-	if (arg2->type != ID_VAR) {					\
-		print_warn("error libcall_" # hash_type			\
-		    "_init: string expected");				\
-		return 1;						\
-	}								\
+	CHECK_TYPE(arg1, ID_VAR);					\
+	CHECK_TYPE(arg2, ID_VAR);					\
 									\
 	id = var_cast_to_str(arg1->var);				\
 	chunk = var_cast_to_octstr(arg2->var);				\
@@ -370,11 +395,8 @@ do {									\
 									\
 	arg1 = args[0];							\
 									\
-	if (arg1->type != ID_VAR) {					\
-		print_warn("error libcall_"# hash_type			\
-		    "_init: string expected");				\
-		return 1;						\
-	}								\
+	CHECK_TYPE(arg1, ID_VAR);					\
+									\
 	res = xmalloc(sizeof(*res));					\
 	var_init(res);							\
 									\
