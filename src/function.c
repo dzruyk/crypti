@@ -28,7 +28,11 @@ static struct {
 	{"subs", 3, 1, libcall_subs},
 	{"subocts", 3, 1, libcall_subocts},
 
-	/* Crypto hashes (full) */
+	/* mpl function wrappers. */
+	{"mod_inv", 2, 1, libcall_mod_inv},
+	{"mod_exp", 2, 1, libcall_mod_exp},
+
+	/* Crypto hashes (simple) */
 	{"md5", 1, 1, libcall_md5},
 	{"sha1", 1, 1, libcall_sha1},
 	{"sha256", 1, 1, libcall_sha256},

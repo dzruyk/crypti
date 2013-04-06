@@ -12,6 +12,13 @@
 #include "variable.h"
 #include "var_op.h"
 
+#define CHECK_TYPE(arg, expected, fname)		do {	\
+	if (arg->type != expected) {				\
+		print_warn("error " #fname);			\
+		return 1;					\
+	}							\
+} while(0)
+
 int
 libcall_print(id_item_t **args, int *rettypes, void **retvals)
 {
@@ -216,43 +223,18 @@ err:
 	return 1;
 }
 
-/*
 int
-libcall_del(id_item_t **args, int *rettypes, void **retvals)
+libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals)
 {
-	assert(args != NULL && args[0] != NULL);
-
-	id_item_t *current;
-	id_item_t *tmp;
-	ret_t ret;
-
-	current = args[0];
-
-	//FIXME: rly need reserve some name?
-	if (strcmp(current->name, "") == 0) {
-		print_warn("cant delete, its not variable\n");
-		return 1;
-	}
-	
-	tmp = id_table_lookup_all(current->name);
-	
-	if (tmp == NULL)
-		SHOULDNT_REACH();
-
-	ret = id_table_remove(current->name);
-	if (ret != ret_ok) {
-		print_warn("symbol %s undefined\n", current->name);
-		return 1;
-	}
-	
-	args[0] = NULL;
-
-	rettypes[0] = ID_UNKNOWN;
-	retvals[0] = NULL;
-
 	return 0;
 }
-*/
+
+int
+libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals)
+{
+	return 0;
+}
+
 
 #define libcall_hash_generic(hash_name)	do {				\
 	id_item_t *arg1;						\

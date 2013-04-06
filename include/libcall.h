@@ -17,6 +17,10 @@ int libcall_subocts(id_item_t **args, int *rettypes, void **retvals);
 
 //int libcall_del(id_item_t **args, int *rettypes, void **retvals);
 
+/* mpl function wrappers. */
+int libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals);
+int libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals);
+
 /* Crypto hashes (simple) */
 int libcall_md5(id_item_t **args, int *rettypes, void **retvals);
 int libcall_sha1(id_item_t **args, int *rettypes, void **retvals);
