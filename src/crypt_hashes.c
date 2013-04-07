@@ -317,6 +317,6 @@ octstr_sha256_update(str_t *id, octstr_t *data)
 int
 octstr_sha256_finalize(str_t *id, octstr_t *out)
 {
-	generic_hash_finalize(id, out, sha1, CTX_TYPE_SHA256, 32);
+	generic_hash_finalize(id, out, sha256, CTX_TYPE_SHA256, 32);
 }
 

@@ -1,12 +1,1 @@
-FIX BUG:
-
-id = "this is id"
-ret = sha256_init(id)
-sha256_update(id, "The quick brown fox")
-sha256_update(id, " jumps over the lazy dog")
-sha256_finalize(id)
-"G\x8F%L3\xCC$F\x02\x86QL>J^\x80\x04\xBA\xE2I\xE90\x05\x08\x80\x915\x09\x04\x00\x00\x00"
-
-sha256("The quick brown fox jumps over the lazy dog")
-"\xD7\xA8\xFB\xB3\x07\xD7\x80\x94i\xCA\x9A\xBC\xB0\x08.O\x8DVQ\xE4m<\xDBv-\x02\xD0\xBF7\xC9\xE5\x92"
-
+Need to fix in mpl_reduce_barret
