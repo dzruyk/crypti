@@ -17,6 +17,8 @@ eval_var_new(void *var)
 {
 	eval_t *res;
 	
+	assert(var != NULL);
+
 	res = xmalloc(sizeof(*res));
 	res->type = EVAL_VAR;
 	res->var = var;
@@ -29,6 +31,8 @@ eval_arr_new(arr_t *arr)
 {
 	eval_t *res;
 	
+	assert(arr != NULL);
+
 	res = xmalloc(sizeof(*res));
 	res->type = EVAL_ARR;
 	res->arr = arr;
@@ -107,12 +111,12 @@ eval_is_zero(eval_t *eval)
 eval_t *
 eval_process_unary(eval_t *ev, opcode_t opcode)
 {
-	assert(ev != NULL);
-
 	eval_t *res;
 	struct variable *resvar;
 	struct variable *var;
 	int ret;
+
+	assert(ev != NULL);
 
 	if (ev->type != EVAL_VAR)
 		return NULL;
@@ -160,13 +164,12 @@ error:
 eval_t *
 eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 {
-	assert(left != NULL && right != NULL);
-
 	struct variable *a, *b, *res;
 	eval_t *ev;
 	int ret;
 	
-	//FIXME
+	assert(left != NULL && right != NULL);
+
 	if (left->type != EVAL_VAR)
 		return NULL;
 	if (right->type != EVAL_VAR)
@@ -179,11 +182,11 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	b = right->var;
 
 	switch(opcode) {
-#define CASE_ITEM(OP, handler)				\
-	case OP:					\
-		ret = handler(res, a, b);		\
-		if (ret != 0)				\
-			goto error;			\
+#define CASE_ITEM(OP, handler)					\
+	case OP:						\
+		ret = handler(res, a, b);			\
+		if (ret != 0)					\
+			goto error;				\
 		break
 
 	CASE_ITEM(OP_POW, varop_pow);
@@ -199,49 +202,22 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	CASE_ITEM(OP_STR_CONCAT, varop_str_concat);
 	CASE_ITEM(OP_OCTSTR_CONCAT, varop_oct_concat);
 
-	case OP_EQ:
-		ret = varop_cmp(a, b);
-		if (ret == 0)
-			var_set_one(res);
-		else
-			var_set_zero(res);
+#define CASE_REL_ITEM(OP, expected, do_if_yes, do_if_no)	\
+	case OP:						\
+		ret = varop_cmp(a, b);				\
+		if (ret == expected)				\
+			do_if_yes(res);				\
+		else						\
+			do_if_no(res);				\
+		break
+	
+	CASE_REL_ITEM(OP_EQ, 0, var_set_one, var_set_zero);
+	CASE_REL_ITEM(OP_NEQ, 0, var_set_zero, var_set_one);
+	CASE_REL_ITEM(OP_GR, 1, var_set_one, var_set_zero);
+	CASE_REL_ITEM(OP_LE, 1, var_set_zero, var_set_one);
+	CASE_REL_ITEM(OP_LO, -1, var_set_one, var_set_zero);
+	CASE_REL_ITEM(OP_GE, -1, var_set_zero, var_set_one);
 
-		break;
-	case OP_NEQ:
-		ret = varop_cmp(a, b);
-		if (ret == 0)
-			var_set_zero(res);
-		else
-			var_set_one(res);
-		break;
-	case OP_GR:
-		ret = varop_cmp(a, b);
-		if (ret == 1)
-			var_set_one(res);
-		else
-			var_set_zero(res);
-		break;
-	case OP_LO:
-		ret = varop_cmp(a, b);
-		if (ret == -1)
-			var_set_one(res);
-		else
-			var_set_zero(res);
-		break;
-	case OP_GE:
-		ret = varop_cmp(a, b);
-		if (ret == 1 || ret == 0)
-			var_set_one(res);
-		else
-			var_set_zero(res);
-		break;
-	case OP_LE:
-		ret = varop_cmp(a, b);
-		if (ret == -1 || ret == 0)
-			var_set_one(res);
-		else
-			var_set_zero(res);
-		break;
 	case OP_L_AND:
 		if (varop_is_true(a) && varop_is_true(b))
 			var_set_one(res);
@@ -263,7 +239,10 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	return ev;
 
 error:
-	error(1, "eval_op error!\n");
+	var_clear(res);
+	ufree(res);
+
+	return NULL;
 }
 
 

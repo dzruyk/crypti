@@ -378,11 +378,11 @@ finalize:
 }
 
 /*
- * Get next function argue..
+ * Get next function argument.
  * If fails return errors and/or inc nerrors
  */
 id_item_t *
-get_next_argue(ast_node_t *argnode, char *hint)
+get_next_argument(ast_node_t *argnode, char *hint)
 {
 	eval_t *ev;
 	id_item_t *item;
@@ -454,7 +454,7 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 		//that variable didn't inserted to scope
 		//may be more usefull to pass at libcall
 		//new type?
-		items[i] = get_next_argue(call->args[i], "");
+		items[i] = get_next_argument(call->args[i], "");
 
 		//FIXME: may be memory leak
 		if (items[i] == NULL || nerrors != 0)
@@ -497,7 +497,7 @@ finalize:
 }
 
 /* NOTE:
- * Don't remove thrid argue!
+ * Don't remove thrid argument!
  * When we use recursion we must get args from
  * previous scope and push in new one, then we need to
  * call id_table_push(new scope).
@@ -517,7 +517,7 @@ add_args_to_scope(func_t *func, ast_node_func_call_t *call,
 		if (name == NULL)
 			error(1, "NULL name ptr\n");
 
-		item = get_next_argue(call->args[i], name);
+		item = get_next_argument(call->args[i], name);
 
 		if (item == NULL)
 			return;
