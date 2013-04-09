@@ -179,35 +179,26 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	b = right->var;
 
 	switch(opcode) {
-	case OP_POW:
-		ret = varop_pow(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_MUL:
-		ret = varop_mul(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_DIV:
-		if (b == 0) {
-			print_warn("divide by zero\n");
-			return NULL;
-		}
-		ret = varop_div(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_PLUS:
-		ret = varop_add(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_MINUS:
-		ret = varop_sub(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
+#define CASE_ITEM(OP, handler)				\
+	case OP:					\
+		ret = handler(res, a, b);		\
+		if (ret != 0)				\
+			goto error;			\
+		break
+
+	CASE_ITEM(OP_POW, varop_pow);
+	CASE_ITEM(OP_MUL, varop_mul);
+	CASE_ITEM(OP_DIV, varop_div);
+	CASE_ITEM(OP_PLUS, varop_add);
+	CASE_ITEM(OP_MINUS, varop_sub);
+	CASE_ITEM(OP_B_OR, varop_or);
+	CASE_ITEM(OP_B_XOR, varop_xor);
+	CASE_ITEM(OP_B_AND, varop_and);
+	CASE_ITEM(OP_SHL, varop_shl);
+	CASE_ITEM(OP_SHR, varop_shr);
+	CASE_ITEM(OP_STR_CONCAT, varop_str_concat);
+	CASE_ITEM(OP_OCTSTR_CONCAT, varop_oct_concat);
+
 	case OP_EQ:
 		ret = varop_cmp(a, b);
 		if (ret == 0)
@@ -263,41 +254,6 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 		else
 			var_set_zero(res);
 		break;
-	case OP_B_OR:
-		ret = varop_or(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_B_XOR:
-		ret = varop_xor(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_B_AND:
-		ret = varop_and(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_SHL:
-		ret = varop_shl(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_SHR:
-		ret = varop_shr(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_STR_CONCAT:
-		ret = varop_str_concat(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
-	case OP_OCTSTR_CONCAT:
-		ret = varop_oct_concat(res, a, b);
-		if (ret != 0)
-			goto error;
-		break;
 	default:
 		SHOULDNT_REACH();
 	}
@@ -307,7 +263,7 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	return ev;
 
 error:
-	error(1, "WIP!\n");
+	error(1, "eval_op error!\n");
 }
 
 
