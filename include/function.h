@@ -5,7 +5,7 @@
 #include "id_table.h"
 #include "syn_tree.h"
 
-//FIXME: return value?
+#define FUNC_VAR_ARGS -1
 
 //FIXME STUB
 typedef int (*libcall_handler_t)(id_item_t **args, int *rettypes, void **retvals);

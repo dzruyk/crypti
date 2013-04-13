@@ -14,7 +14,7 @@
 
 #define CHECK_TYPE(arg, expected)			do {	\
 	if (arg->type != expected) {				\
-		print_warn("error: %s expected", 		\
+		print_warn("error: %s expected\n", 		\
 		id_type_2_str(expected));			\
 		return 1;					\
 	}							\
@@ -52,18 +52,46 @@ libcall_print(id_item_t **args, int *rettypes, void **retvals)
 }
 
 int
+libcall_printf(id_item_t **args, int *rettypes, void **retvals)
+{
+	return 0;
+}
+
+int
 libcall_sum(id_item_t **args, int *rettypes, void **retvals)
 {
-	assert(args != NULL && args[0] != NULL);
+	id_item_t *arg;
+	struct variable *res;
 
-	//id_item_t *current;
+	assert(args != NULL);
 
-	//FIXME: stub, wanna implement variable length arguments funtions
-	
 	rettypes[0] = ID_UNKNOWN;
 	retvals[0] = NULL;
 
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+	var_set_zero(res);
+	
+	while (*args != NULL) {
+		arg = *args;
+		if (arg->type != ID_VAR) {
+			print_warn("error: %s ID_VAR\n",
+			id_type_2_str(ID_VAR));
+			goto err;
+		}
+		
+		if (varop_add(res, res, arg->var) != 0)
+			goto err;
+		args++;
+	}
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+
 	return 0;
+err:
+	var_clear(res);
+	return 1;
 }
 
 int

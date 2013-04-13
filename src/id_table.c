@@ -32,7 +32,7 @@ char *id_type_desc[] = {
 char *
 id_type_2_str(int type)
 {
-	assert(type > 0 && type < ARRSZ(id_type_desc));
+	assert(type >= 0 && type < ARRSZ(id_type_desc));
 
 	return id_type_desc[type];
 }

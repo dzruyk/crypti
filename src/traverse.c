@@ -445,11 +445,15 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	items = NULL;
 
 	if (call->nargs != 0) {
-		items = xmalloc(sizeof(*items) * func->nargs);
-		memset(items, 0, sizeof(*items) * func->nargs);
+		/* 
+		 * NOTE: Last argument must be NULL (need for
+		 *  variable length functions).
+		 */
+		items = xmalloc(sizeof(*items) * (call->nargs + 1));
+		memset(items, 0, sizeof(*items) * (call->nargs + 1));
 	}
 
-	for (i = 0; i < func->nargs; i++) {
+	for (i = 0; i < call->nargs; i++) {
 		//FIXME: now we use empty name to indicate
 		//that variable didn't inserted to scope
 		//may be more usefull to pass at libcall
@@ -477,6 +481,9 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 		case ID_ARR:
 			error(1, "WIP\n");
 			break;
+		case ID_UNKNOWN:
+			DEBUG(LOG_DEFAULT, "return args isn't set\n");
+			break;
 		default:
 			break;
 		}
@@ -484,9 +491,9 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 
 finalize:
 
-	//destruct args
+	//Destroy args
 	//NOTE: we can't touch not internal args
-	for (i = 0; i < func->nargs; i++) {
+	for (i = 0; i < call->nargs; i++) {
 		if (items[i] != NULL && 
 		    strcmp(items[i]->name, "") == 0)
 			id_item_free(items[i]);
@@ -510,7 +517,8 @@ add_args_to_scope(func_t *func, ast_node_func_call_t *call,
 	id_item_t *item;
 	char *name;
 
-	assert(func != NULL && func->args != NULL);
+	assert(func != NULL && func->args != NULL &&
+	    func->nargs != FUNC_VAR_ARGS);
 
 	for (i = 0; i < func->nargs; i++) {
 		name = func->args[i];
@@ -541,7 +549,12 @@ traverse_func_call(ast_node_t *tree)
 		return;
 	}
 
-	if (call->nargs != func->nargs) {
+	/* 
+	 * FIXME: now olny library functions can have var length
+	 * parameters list
+	 */
+	if (func->nargs != FUNC_VAR_ARGS &&
+	    call->nargs != func->nargs) {
 		nerrors++;
 		print_warn("function have %d paramethers\n", func->nargs);
 		return;

@@ -13,7 +13,6 @@ static struct hash_table *func_table;
 
 // need to imlement builtin functions
 
-
 static struct {
 	char *name;
 	int nargs;
@@ -21,7 +20,8 @@ static struct {
 	libcall_handler_t handler;
 } builtin [] = {
 	{"print", 1, 0, libcall_print},
-	{"sum", -1, 1, libcall_sum},
+	{"printf", FUNC_VAR_ARGS, 0, libcall_printf},
+	{"sum", FUNC_VAR_ARGS, 1, libcall_sum},
 	/*{"del", 1, libcall_del},*/
 	{"type", 1, 0, libcall_type},
 	{"arr_min_max", 1, 2, libcall_arr_min_max},
