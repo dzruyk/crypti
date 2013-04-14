@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "array.h"
+#include "climits.h"
 #include "crypt_hashes.h"
 #include "eval.h"
 #include "libcall.h"
@@ -11,6 +12,7 @@
 #include "macros.h"
 #include "variable.h"
 #include "var_op.h"
+#include "var_print.h"
 
 #define CHECK_TYPE(arg, expected)			do {	\
 	if (arg->type != expected) {				\
@@ -23,11 +25,11 @@
 int
 libcall_print(id_item_t **args, int *rettypes, void **retvals)
 {
-	assert(args != NULL && args[0] != NULL);
-
 	id_item_t *current;
 	str_t *str;
 	struct variable *var;
+
+	assert(args != NULL && args[0] != NULL);
 
 	current = args[0];
 	
@@ -54,6 +56,29 @@ libcall_print(id_item_t **args, int *rettypes, void **retvals)
 int
 libcall_printf(id_item_t **args, int *rettypes, void **retvals)
 {
+	id_item_t *fmt;
+	struct variable *vars[MAXFARGS];
+	int i;
+
+	if (*args == NULL) {
+		print_warn("printf need at least 1 argument\n");
+		return 1;
+	}
+	fmt = *args++;
+	CHECK_TYPE(fmt, ID_VAR);
+	
+	for (i = 0; args[i] != NULL; i++) {
+		assert(i < MAXFARGS);
+		//printf can process only variables now.
+		CHECK_TYPE(args[i], ID_VAR);
+		vars[i] = args[i]->var;
+	}
+
+	var_print_formatted(fmt->var, vars, i);
+
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
+	
 	return 0;
 }
 

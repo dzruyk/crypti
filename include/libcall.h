@@ -4,6 +4,14 @@
 #include "id_table.h"
 
 int libcall_print(id_item_t **args, int *rettypes, void **retvals);
+/*
+ * Supported modifiers:
+ *
+ * %d - output variable as decimal integer
+ * %x - output variable as hex sequence
+ * %s - output variable as string
+ *
+ */
 int libcall_printf(id_item_t **args, int *rettypes, void **retvals);
 
 int libcall_sum(id_item_t **args, int *rettypes, void **retvals);

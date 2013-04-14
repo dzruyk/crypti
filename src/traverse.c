@@ -387,21 +387,7 @@ get_next_argument(ast_node_t *argnode, char *hint)
 	eval_t *ev;
 	id_item_t *item;
 
-	/* warning! conflict when free */
-	//try to get args by value(not by copy)
-	if (argnode->type == AST_NODE_ID) {
-		ast_node_id_t *id;
-		id_item_t *res;
-		id = (ast_node_id_t *) argnode;
-		res = id_table_lookup_all(id->name);
-		if (res == NULL) {
-			print_warn("cant get id %s\n", id->name);
-			nerrors++;
-		}
-		//FIXME: need to copy value and
-		//change name to hint
-		return res;
-	}
+	assert(argnode != NULL && hint != NULL);
 
 	traverse(argnode);
 
@@ -414,9 +400,6 @@ get_next_argument(ast_node_t *argnode, char *hint)
 		print_warn("cant get value\n");
 		return NULL;
 	}
-	
-	if (hint == NULL)
-		error(1, "hint is NULL\n");
 	
 	item = id_item_new(hint);
 	
@@ -494,8 +477,7 @@ finalize:
 	//Destroy args
 	//NOTE: we can't touch not internal args
 	for (i = 0; i < call->nargs; i++) {
-		if (items[i] != NULL && 
-		    strcmp(items[i]->name, "") == 0)
+		if (items[i] != NULL)
 			id_item_free(items[i]);
 	}
 

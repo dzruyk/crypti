@@ -100,7 +100,7 @@ static ast_node_t *process_import();
 
 static ast_node_t *process_function();
 static ret_t process_function_ret_lst(ast_node_func_t *func);
-static ret_t process_function_argu(ast_node_func_t *func);
+static ret_t process_function_arguments(ast_node_func_t *func);
 static ret_t process_function_body(ast_node_func_t *func);
 
 static ast_node_t *function_call();
@@ -1647,7 +1647,7 @@ process_function()
 
 	func->name = lex_item_prev.name;
 	
-	ret = process_function_argu(func);
+	ret = process_function_arguments(func);
 	if (ret != ret_ok)
 		goto err;
 
@@ -1690,7 +1690,7 @@ process_function_ret_lst(ast_node_func_t *func)
 //need to flush token stream after errrors
 //
 static ret_t
-process_function_argu(ast_node_func_t *func)
+process_function_arguments(ast_node_func_t *func)
 {
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("you must set parameter list"

@@ -1,0 +1,5 @@
+printf("hello, world\n");
+printf("hello, %d\n", "borka")
+printf("The lazy %s\n")
+printf("%d", 123)
+printf("%x", "hello, world\n")

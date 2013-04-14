@@ -42,6 +42,7 @@ var_initv(struct variable *var, ...)
 		var_init(p);
 		p = va_arg(ap, struct variable *);
 	}
+	va_end(ap);
 }
 
 void
@@ -68,6 +69,7 @@ var_clearv(struct variable *var, ...)
 		var_clear(p);
 		p = va_arg(ap, struct variable *);
 	}
+	va_end(ap);
 }
 
 void
