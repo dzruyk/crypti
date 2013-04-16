@@ -382,6 +382,12 @@ libcall_sha256(id_item_t **args, int *rettypes, void **retvals)
 	libcall_hash_generic(sha256);
 }
 
+int
+libcall_whirlpool(id_item_t **args, int *rettypes, void **retvals)
+{
+	libcall_hash_generic(whirlpool);
+}
+
 /* Crypto hashes (full) */
 
 #define libcall_hash_generic_init(args, rettypes, retvals, hash_type) 	\
@@ -524,5 +530,24 @@ int
 libcall_sha256_finalize(id_item_t **args, int *rettypes, void **retvals)
 {
 	libcall_hash_generic_finalize(args, rettypes, retvals, sha256);
+}
+
+
+int
+libcall_whirlpool_init(id_item_t **args, int *rettypes, void **retvals)
+{
+	libcall_hash_generic_init(args, rettypes, retvals, whirlpool);
+}
+
+int
+libcall_whirlpool_update(id_item_t **args, int *rettypes, void **retvals)
+{
+	libcall_hash_generic_update(args, rettypes, retvals, whirlpool);
+}
+
+int
+libcall_whirlpool_finalize(id_item_t **args, int *rettypes, void **retvals)
+{
+	libcall_hash_generic_finalize(args, rettypes, retvals, whirlpool);
 }
 

@@ -698,7 +698,7 @@ import "crypto"
 [res] mod_inv(num, modulo)
 ----
 
-Находит обратное _num_ число по модулю _modulo_.
+Находит обратное _num_ число по модулю _modulo_ или -1 если такого числа не существует.
 
 ----
 [res] mod_exp(n, exp, modulo)
@@ -708,33 +708,41 @@ import "crypto"
 +(_n_ ** _exp_) % _modulo_+
 
 ----
-[ctx] md5_ctx_new()
-[] md5_ctx_update(ctx, msg)
-[digest] md5_ctx_final(ctx)
+[digest] md5(str)
+
+[ret] md5_ctx_init(id)
+[] md5_ctx_update(id, msg)
+[digest] md5_ctx_finalize(id)
 ----
 
 Набор функций для получения md5 хеша.
 
 ----
-[ctx] whirpool_ctx_new()
-[] whirpool_ctx_update(ctx, msg)
-[digest] whirpool_ctx_final(ctx)
+[digest] whirpool(str)
+
+[ret] whirpool_ctx_init(id)
+[] whirpool_ctx_update(id, msg)
+[digest] whirpool_ctx_finalize(id)
 ----
 
 Набор функций для получения whirpool хеша.
 
 ----
-[ctx] sha1_ctx_new()
-[] sha1_ctx_update(ctx, msg)
-[digest] sha1_ctx_final(ctx)
+[digest] sha1(str)
+
+[ret] sha1_ctx_init(id)
+[] sha1_ctx_update(id, msg)
+[digest] sha1_ctx_finalize(id)
 ----
 
 Набор функций для получения sha1 хеша.
 
 ----
-[ctx] sha256_ctx_new()
-[] sha256_ctx_update(ctx, msg)
-[digest] sha256_ctx_final(ctx)
+[digest] sha256(str)
+
+[ret] sha256_ctx_init(id)
+[] sha256_ctx_update(id, msg)
+[digest] sha256_ctx_finalize(id)
 ----
 
 Набор функций для получения sha256 хеша.

@@ -36,6 +36,7 @@ static struct {
 	{"md5", 1, 1, libcall_md5},
 	{"sha1", 1, 1, libcall_sha1},
 	{"sha256", 1, 1, libcall_sha256},
+	{"whirlpool", 1, 1, libcall_whirlpool},
 
 	/* Crypto hashes (full) */
 	{"md5_init", 1, 1, libcall_md5_init},
@@ -47,6 +48,9 @@ static struct {
 	{"sha256_init", 1, 1, libcall_sha256_init},
 	{"sha256_update", 2, 0, libcall_sha256_update},
 	{"sha256_finalize", 1, 1, libcall_sha256_finalize},
+	{"whirlpool_init", 1, 1, libcall_whirlpool_init},
+	{"whirlpool_update", 2, 0, libcall_whirlpool_update},
+	{"whirlpool_finalize", 1, 1, libcall_whirlpool_finalize},
 };
 
 

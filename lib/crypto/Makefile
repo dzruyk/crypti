@@ -3,7 +3,7 @@ include ../../Common.mk
 AR=ar
 INCLUDES= -I ../../include
 
-OBJS=md5.o sha1.o sha256.o
+OBJS=md5.o sha1.o sha256.o whirlpool.o
 
 CRYPT_LIB=crypt_lib.a
 

@@ -11,6 +11,7 @@
 #include "crypto/md5.h"
 #include "crypto/sha1.h"
 #include "crypto/sha256.h"
+#include "crypto/whirlpool.h"
 
 #define MAX_N_CTX 32
 
@@ -31,6 +32,7 @@ enum {
 	CTX_TYPE_MD5,
 	CTX_TYPE_SHA1,
 	CTX_TYPE_SHA256,
+	CTX_TYPE_WHIRLPOOL,
 };
 
 void
@@ -184,6 +186,12 @@ octstr_sha256(octstr_t *dst, octstr_t *src)
 	generic_hash(dst, src, sha256, 32);
 }
 
+void
+octstr_whirlpool(octstr_t *dst, octstr_t *src)
+{
+	generic_hash(dst, src, whirlpool, 64);
+}
+
 #define generic_hash_init(id, hash_name, ctx_type)	do {	\
 	struct hash_ctx *h;					\
 	struct hash_name ## _context *ctx;			\
@@ -318,5 +326,23 @@ int
 octstr_sha256_finalize(str_t *id, octstr_t *out)
 {
 	generic_hash_finalize(id, out, sha256, CTX_TYPE_SHA256, 32);
+}
+
+int
+octstr_whirlpool_init(str_t *id)
+{
+	generic_hash_init(id, whirlpool, CTX_TYPE_WHIRLPOOL);
+}
+
+int
+octstr_whirlpool_update(str_t *id, octstr_t *data)
+{
+	generic_hash_update(id, data, whirlpool, CTX_TYPE_WHIRLPOOL);
+}
+
+int
+octstr_whirlpool_finalize(str_t *id, octstr_t *out)
+{
+	generic_hash_finalize(id, out, whirlpool, CTX_TYPE_WHIRLPOOL, 64);
 }
 

@@ -1,20 +1,37 @@
-md5("hello, world")
+printf("%s\n", "Simple hash tests:");
+
+printf("%x\n", md5("hello, world"))
+printf("%x\n", sha1("hello, world"))
+printf("%x\n", sha256("hello, world"))
+printf("%x\n", whirlpool("hello, world"))
 
 id = "this is id"
+
+printf("\n%s\n", "MD5 complex test:");
 
 ret = md5_init(id)
 md5_update(id, "The quick brown fox")
 md5_update(id, " jumps over the lazy dog")
-md5_finalize(id)
+printf("%x\n", md5_finalize(id))
 
+printf("\n%s\n", "SHA1 complex test:");
 
 ret = sha1_init(id)
 sha1_update(id, "The quick brown fox")
 sha1_update(id, " jumps over the lazy dog")
-sha1_finalize(id)
+printf("%x\n", sha1_finalize(id))
+
+printf("\n%s\n", "SHA256 complex test:");
 
 ret = sha256_init(id)
 sha256_update(id, "The quick brown fox")
 sha256_update(id, " jumps over the lazy dog")
-sha256_finalize(id)
+printf("%x\n", sha256_finalize(id))
+
+printf("\n%s\n", "whirlpool complex test:");
+
+ret = whirlpool_init(id)
+whirlpool_update(id, "The quick brown fox")
+whirlpool_update(id, " jumps over the lazy dog")
+printf("%x\n", whirlpool_finalize(id))
 

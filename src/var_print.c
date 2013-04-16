@@ -75,6 +75,9 @@ var_str_print_formatted(struct variable *dst, struct variable *fmt, struct varia
 		if (*s == '\\') {
 			s++;
 			switch (*s) {
+			case 't':
+				str_putc(d, '\t');
+				break;
 			case 'n':
 				str_putc(d, '\n');
 				break;
