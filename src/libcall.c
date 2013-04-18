@@ -272,6 +272,38 @@ err:
 }
 
 int
+libcall_gcd(id_item_t **args, int *rettypes, void **retvals)
+{
+	id_item_t *arg1, *arg2;
+	struct variable *res;
+	int ret;
+
+	assert(args != NULL && args[0] != NULL && args[1] != NULL);
+	arg1 = args[0];
+	arg2 = args[1];
+
+	CHECK_TYPE(arg1, ID_VAR);
+	CHECK_TYPE(arg2, ID_VAR);
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+
+	ret = varop_gcd(res, arg1->var, arg2->var);
+	if (ret != 0) {
+		mpl_int *tmp;
+
+		tmp = var_bignum_ptr(res);
+		mpl_set_sint(tmp, -1);
+		var_force_type(res, VAR_BIGNUM);
+	}
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+	
+	return 0;
+}
+
+int
 libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *arg1, *arg2;
@@ -302,6 +334,7 @@ libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals)
 	
 	return 0;
 }
+
 
 int
 libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals)

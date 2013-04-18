@@ -8,6 +8,7 @@ int varop_add(struct variable *c, struct variable *a, struct variable *b);
 int varop_sub(struct variable *c, struct variable *a, struct variable *b);
 int varop_mul(struct variable *c, struct variable *a, struct variable *b);
 int varop_div(struct variable *c, struct variable *a, struct variable *b);
+int varop_mod(struct variable *c, struct variable *a, struct variable *b);
 int varop_pow(struct variable *c, struct variable *a, struct variable *b);
 int varop_gcd(struct variable *c, struct variable *a, struct variable *b);
 int varop_mod_inv(struct variable *c, struct variable *a, struct variable *b);

@@ -97,6 +97,28 @@ varop_div(struct variable *c, struct variable *a, struct variable *b)
 }
 
 int
+varop_mod(struct variable *c, struct variable *a, struct variable *b)
+{
+	mpl_int *ap, *bp, *cp;
+	int ret;
+
+	assert(c != NULL && a != NULL && b != NULL);
+
+	ap = var_cast_to_bignum(a);
+	bp = var_cast_to_bignum(b);
+	cp = var_bignum_ptr(c);
+
+	ret = mpl_div(NULL, cp, ap, bp);
+	if (ret != MPL_OK) {
+		return 1;
+	}
+
+	var_force_type(c, VAR_BIGNUM);
+
+	return 0;
+}
+
+int
 varop_mod_exp(struct variable *res, struct variable *a, struct variable *y,
     struct variable *b)
 {

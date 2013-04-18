@@ -370,6 +370,7 @@ case ch:					\
 	CASE_ITEM('.', TOK_DOT);
 	CASE_ITEM('\n', TOK_EOL);
 	CASE_ITEM(EOF, TOK_EOF);
+	CASE_ITEM('%', TOK_PERSENT);
 
 	case '=':
 		peek = fgetc(input);

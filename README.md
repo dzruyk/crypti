@@ -11,7 +11,7 @@ Installation
 For installing crypti you need to install libmpl lib,
 accessible at https://github.com/dzruyk/libmpl
 
-after downloading it build it with
+after downloading build it with
 
     make
 

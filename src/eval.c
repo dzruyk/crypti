@@ -192,6 +192,7 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	CASE_ITEM(OP_POW, varop_pow);
 	CASE_ITEM(OP_MUL, varop_mul);
 	CASE_ITEM(OP_DIV, varop_div);
+	CASE_ITEM(OP_MOD, varop_mod);
 	CASE_ITEM(OP_PLUS, varop_add);
 	CASE_ITEM(OP_MINUS, varop_sub);
 	CASE_ITEM(OP_B_OR, varop_or);

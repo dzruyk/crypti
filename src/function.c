@@ -29,6 +29,7 @@ static struct {
 	{"subocts", 3, 1, libcall_subocts},
 
 	/* mpl function wrappers. */
+	{"gcd", 2, 1, libcall_gcd},
 	{"mod_inv", 2, 1, libcall_mod_inv},
 	{"mod_exp", 3, 1, libcall_mod_exp},
 

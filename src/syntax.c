@@ -937,6 +937,9 @@ mul_expr_rest(ast_node_t *left)
 		case TOK_DIV:
 			op = OP_DIV;
 			break;
+		case TOK_PERSENT:
+			op = OP_MOD;
+			break;
 		default:
 			return result;
 		}
