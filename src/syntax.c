@@ -56,7 +56,7 @@ syn_ctx_free(struct syn_ctx *ctx)
 static ast_node_t * global_expr();
 static ast_node_t * stmts(struct syn_ctx *ctx);
 static ast_node_t *block(struct syn_ctx *ctx);
-static ast_node_t *statesment(struct syn_ctx *ctx);
+static ast_node_t *statement(struct syn_ctx *ctx);
 static ast_node_t *expr();
 
 static ast_node_t *assign(ast_node_t *first, int nesting);
@@ -310,7 +310,7 @@ stmts(struct syn_ctx *ctx)
 	//if (ctx->type != CTX_GLOBAL)
 	return block(ctx);
 	
-	//return statesment(ctx);
+	//return statement(ctx);
 }
 
 static ast_node_t *
@@ -329,7 +329,7 @@ block(struct syn_ctx *ctx)
 		if (current_tok == TOK_RBRACE)
 			break;
 	
-		tmp = statesment(ctx);
+		tmp = statement(ctx);
 
 		if (result == NULL)
 			result = tmp;
@@ -348,7 +348,7 @@ block(struct syn_ctx *ctx)
 		if (is_stmt_end() != TRUE) {
 			nerrors++;
 			sync_stream();
-			print_warn("expected end of statesment\n");
+			print_warn("expected end of statement\n");
 			break;
 		}
 
@@ -364,7 +364,7 @@ block(struct syn_ctx *ctx)
 }
 
 static ast_node_t *
-statesment(struct syn_ctx *ctx)
+statement(struct syn_ctx *ctx)
 {	
 	DEBUG(LOG_VERBOSE, "\n");
 	
@@ -1174,7 +1174,7 @@ process_if(struct syn_ctx *ctx)
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statesment(ctx);
+		body = statement(ctx);
 	} else
 		body = process_scope(ctx);
 	
@@ -1187,7 +1187,7 @@ process_if(struct syn_ctx *ctx)
 
 	if (match(TOK_ELSE) == TRUE) {
 		skip_eol();
-		_else = statesment(ctx);
+		_else = statement(ctx);
 		if (_else == NULL) {
 			print_warn("cant get stmt after 'else'\n");
 			goto err;
@@ -1254,7 +1254,7 @@ process_for(struct syn_ctx *ctx)
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statesment(ctx);
+		body = statement(ctx);
 	} else
 		body = process_scope(ctx);
 	
@@ -1290,7 +1290,7 @@ process_do(struct syn_ctx *ctx)
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statesment(ctx);
+		body = statement(ctx);
 	} else
 		body = process_scope(ctx);
 	
@@ -1354,7 +1354,7 @@ process_while(struct syn_ctx *ctx)
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statesment(ctx);
+		body = statement(ctx);
 	} else
 		body = process_scope(ctx);
 	
@@ -1381,7 +1381,7 @@ process_del(struct syn_ctx *ctx)
 
 	DEBUG(LOG_VERBOSE, "\n");
 
-	//FIXME: programmer must delete multiple identifiers with one statesment.
+	//FIXME: programmer must delete multiple identifiers with one statement.
 	if (match(TOK_ID) == FALSE)
 		goto err;
 
@@ -1775,7 +1775,7 @@ function_call()
 		//get next ast_node
 		node = logic_or();
 		if (node == NULL) {
-			print_warn("expected statesment");
+			print_warn("expected statement");
 			goto err;
 		}
 

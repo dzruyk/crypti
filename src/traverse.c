@@ -411,7 +411,7 @@ get_next_argument(ast_node_t *argnode, char *hint)
 }
 
 /*
- * add args to func array, then
+ * Add args to func array, then
  * try to execute library function
  * WARN: we must be care with global args(passed by name)
  * bcs may be double free situation
@@ -475,7 +475,6 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 finalize:
 
 	//Destroy args
-	//NOTE: we can't touch not internal args
 	for (i = 0; i < call->nargs; i++) {
 		if (items[i] != NULL)
 			id_item_free(items[i]);
@@ -1222,8 +1221,6 @@ traverse_op_as(ast_node_t *tree)
 
 	assert(tree != NULL);
 
-	res = NULL;
-
 	traverse(tree->left);	
 	traverse(tree->right);
 
@@ -1242,7 +1239,6 @@ traverse_op_as(ast_node_t *tree)
 	}
 	
 	res = eval_process_op(left, right, optree->opcode);
-	
 	if (res == NULL) {
 		nerrors++;
 		print_warn("operation error\n");
