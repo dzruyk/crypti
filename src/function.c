@@ -27,6 +27,8 @@ static struct {
 	{"arr_min_max", 1, 2, libcall_arr_min_max},
 	{"subs", 3, 1, libcall_subs},
 	{"subocts", 3, 1, libcall_subocts},
+	{"len", 1, 1, libcall_len},
+	{"lpad", 2, 1, libcall_lpad},
 
 	/* mpl function wrappers. */
 	{"gcd", 2, 1, libcall_gcd},

@@ -23,6 +23,8 @@ int libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals);
 int libcall_subs(id_item_t **args, int *rettypes, void **retvals);
 
 int libcall_subocts(id_item_t **args, int *rettypes, void **retvals);
+int libcall_len(id_item_t **args, int *rettypes, void **retvals);
+int libcall_lpad(id_item_t **args, int *rettypes, void **retvals);
 
 //int libcall_del(id_item_t **args, int *rettypes, void **retvals);
 

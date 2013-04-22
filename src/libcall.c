@@ -272,6 +272,20 @@ err:
 }
 
 int
+libcall_len(id_item_t **args, int *rettypes, void **retvals)
+{
+	return 0;
+}
+
+int
+libcall_lpad(id_item_t **args, int *rettypes, void **retvals)
+{
+
+	return 0;
+}
+
+
+int
 libcall_gcd(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *arg1, *arg2;

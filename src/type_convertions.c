@@ -187,7 +187,7 @@ octstring_to_octstring(struct variable *to, const struct variable *from)
 
 /*
  * FIXME:
- * now use fat snprintf version, write light version of itoa;
+ * now use fat snprintf version, write light version with itoa;
  */
 static void *
 octstring_to_string(struct variable *to, const struct variable *from)
@@ -250,16 +250,20 @@ err:
 }
 
 /* 
- * WARN:
- * can produce problem with byte order
+ * FIXME: Now we convert bignum to octstring
+ * with temp buffer as intermediate represidence.
+ * May be need to write some octstring or bnum wrappers
+ * to fix this.
+ * Or we can reduce count of malloc/free calls with using
+ * of static variables
  */
 static void *
 bignum_to_octstring(struct variable *to, const struct variable *from)
 {
 	mpl_int *bnum;
-	_mpl_int_t *dig;
 	octstr_t *octstr;
-	int bytes, n;
+	int bytes, n, rc;
+	unsigned char *tmp;
 
 	DEBUG(LOG_VERBOSE, "bignum to oct_string\n");
 
@@ -281,10 +285,16 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 	bytes = n / CHAR_BIT;
 	if (n % CHAR_BIT != 0)
 		bytes++;
+	
+	tmp = xmalloc(bytes);
 
-	dig = bnum->dig;
+	rc = mpl_to_uchar(bnum, tmp, bytes);
+	if (rc != MPL_OK) 
+		error(1, "mpl_to_uchar conversion fail\n");
+	
+	octstr_append_n(octstr, tmp, bytes);
 
-	octstr_append_n(octstr, dig, bytes);
+	ufree(tmp);
 
 	return octstr;
 }
