@@ -1,0 +1,26 @@
+mod_exp(1000000, 100000000000, 455)
+mod_exp(100000, 1, 455)
+
+a = 2 << 64
+printf("%x", a)
+\x00\x00\x00\x00\x00\x00\x00\x00\x00
+похоже проблема в байт ордере
+
+a = 0x123456789123456
+printf("%x", a)
+\x56\x34\x12\x09\x78\x56\x34\x02
+
+a = 0x11223344556677889912
+printf("%x", a)
+\x12\x99\x88\x07\x67\x56\x45\x04\x33\x22
+
+вообще какойто винегрет
+
+printf("\"hello\"")
+src/syntax.c 1786 function_call warning:comma expected
+src/syntax.c 351 block warning:expected end of statement
+
+len and size tests!
+
+traverse.c при выковыривании аргументов id_table_lookup_all зырит во все таблички, что не является правильным
++ если аргументы возвращаются из вложенной области видимости push_return_args не могёт найти все аргументы
