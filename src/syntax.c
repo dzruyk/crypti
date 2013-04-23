@@ -281,7 +281,6 @@ static ast_node_t *
 global_expr()
 {
 	ast_node_t *node;
-	struct syn_ctx *ctx;
 
 	DEBUG(LOG_VERBOSE, "\n");
 
@@ -292,12 +291,7 @@ global_expr()
 	else if (match(TOK_IMPORT))
 		return process_import();
 
-	ctx = syn_ctx_new();
-	ctx->type = CTX_GLOBAL;
-
-	node = stmts(ctx);
-
-	syn_ctx_free(ctx);
+	node = stmts(NULL);
 
 	return node;
 }
@@ -352,9 +346,11 @@ block(struct syn_ctx *ctx)
 			break;
 		}
 
-		//FIXME: rewrite me
-		//mb implement CTX_SCOPE?
-		if (ctx->type == CTX_GLOBAL)
+		/*
+		 * We assume that if ctx is NULL then caller is global_expr()
+		 *FIXME: rewrite me
+		 */
+		if (ctx == NULL)
 			break;
 
 		tok_next();
@@ -1218,10 +1214,16 @@ process_for(struct syn_ctx *ctx)
 {
 	ast_node_t *expr1, *expr2, *expr3;
 	ast_node_t *body;
+	struct syn_ctx helper;
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	body = expr1 = expr2 = expr3 = NULL;
+	if (ctx == NULL) {
+		ctx = &helper;
+		memset(ctx, 0, sizeof(*ctx));
+		ctx->type = CTX_GLOBAL;
+	}
 	
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
@@ -1280,11 +1282,17 @@ process_for(struct syn_ctx *ctx)
 static ast_node_t *
 process_do(struct syn_ctx *ctx)
 {
+	struct syn_ctx helper;
 	ast_node_t *cond, *body;
 
 	DEBUG(LOG_VERBOSE, "\n");
 
 	body = cond = NULL;
+	if (ctx == NULL) {
+		ctx = &helper;
+		memset(ctx, 0, sizeof(*ctx));
+		ctx->type = CTX_GLOBAL;
+	}
 	
 	ctx->is_cycle++;
 
@@ -1330,11 +1338,17 @@ err:
 static ast_node_t *
 process_while(struct syn_ctx *ctx)
 {
+	struct syn_ctx helper;
 	ast_node_t *cond, *body;
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	body = cond = NULL;
+	if (ctx == NULL) {
+		ctx = &helper;
+		memset(ctx, 0, sizeof(*ctx));
+		ctx->type = CTX_GLOBAL;
+	}
 	
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
@@ -1407,7 +1421,7 @@ process_break(struct syn_ctx *ctx)
 {
 	DEBUG(LOG_VERBOSE, "\n");
 
-	if (ctx->is_cycle == 0) {
+	if (ctx == NULL || ctx->is_cycle == 0) {
 		print_warn("break outside cycle\n");
 		nerrors++;
 		return ast_node_stub_new();
@@ -1419,7 +1433,7 @@ process_break(struct syn_ctx *ctx)
 static ast_node_t *
 process_continue(struct syn_ctx *ctx)
 {
-	if (ctx->is_cycle == 0) {
+	if (ctx == NULL || ctx->is_cycle == 0) {
 		print_warn("continue outside cycle\n");
 		nerrors++;
 		return ast_node_stub_new();
@@ -1431,9 +1445,7 @@ process_continue(struct syn_ctx *ctx)
 static ast_node_t *
 process_return(struct syn_ctx *ctx)
 {
-	assert(ctx != NULL);
-
-	if (ctx->type != CTX_FUNCTION) {
+	if (ctx == NULL || ctx->type != CTX_FUNCTION) {
 		print_warn("return not in function\n");
 		nerrors++;
 		sync_stream();
@@ -1447,11 +1459,13 @@ static ast_node_t *
 process_scope(struct syn_ctx *ctx)
 {
 	ast_node_t *node;
-	int prev_type;
+	struct syn_ctx helper;
 	
-	//FIXME: I do this without new allocated ctx.
-	prev_type = ctx->type;
-	ctx->type = CTX_SCOPE;
+	if (ctx == NULL) {
+		ctx = &helper;
+		memset(ctx, 0, sizeof(*ctx));
+		ctx->type = CTX_SCOPE;
+	}
 
 	node = block(ctx);
 	if (nerrors != 0) 
@@ -1462,11 +1476,8 @@ process_scope(struct syn_ctx *ctx)
 		goto err;
 	}
 
-	ctx->type = prev_type;
-
 	return ast_node_scope_new(node);
 err:
-	ctx->type = prev_type;
 	
 	ast_node_unref(node);
 	return ast_node_stub_new();

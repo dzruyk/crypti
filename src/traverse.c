@@ -372,7 +372,7 @@ finalize:
 	helper.is_call--;
 
 	if (push_return_args(func) == FALSE) {
-		print_warn("Can't get return all arguments\n");
+		print_warn("Can't return all function arguments\n");
 		nerrors++;
 	}
 }
