@@ -97,7 +97,6 @@ get_octstring()
 	octstr_t *octstr;
 	struct variable *var;
 	char *s = NULL;
-	char *tmp;
 	int len, used;
 
 	var = xmalloc(sizeof(*var));
@@ -131,9 +130,6 @@ get_octstring()
 		goto err;
 	}
 
-	tmp = xrealloc(s, used);
-	s = tmp;
-
 	octstr_append_n(octstr, s, used);
 
 	peek = ' ';
@@ -157,7 +153,6 @@ get_string()
 	str_t *str;
 	struct variable *var;
 	char *s = NULL;
-	char *tmp;
 	int len, used;
 
 	var = xmalloc(sizeof(*var));
@@ -190,10 +185,6 @@ get_string()
 	}
 
 	s[used++] = '\0';
-
-	if ((tmp = realloc(s, used)) == NULL)
-		error(1, "realloc_err");
-	s = tmp;
 
 	str_append(str, s);
 

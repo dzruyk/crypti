@@ -274,7 +274,59 @@ err:
 int
 libcall_len(id_item_t **args, int *rettypes, void **retvals)
 {
+	id_item_t *arg1;
+	struct variable *res;
+	int ret;
+	
+	assert(args != NULL && args[0] != NULL);
+
+	arg1 = args[0];
+
+	CHECK_TYPE(arg1, ID_VAR);
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+	
+	ret = varop_str_len(res, arg1->var);
+	if (ret != 0)
+		goto err;
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+	
 	return 0;
+err:
+	var_clear(res);
+	return 1;
+}
+
+int
+libcall_size(id_item_t **args, int *rettypes, void **retvals)
+{
+	id_item_t *arg1;
+	struct variable *res;
+	int ret;
+	
+	assert(args != NULL && args[0] != NULL);
+
+	arg1 = args[0];
+
+	CHECK_TYPE(arg1, ID_VAR);
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+	
+	ret = varop_octstr_len(res, arg1->var);
+	if (ret != 0)
+		goto err;
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
+	
+	return 0;
+err:
+	var_clear(res);
+	return 1;
 }
 
 int
@@ -284,6 +336,12 @@ libcall_lpad(id_item_t **args, int *rettypes, void **retvals)
 	return 0;
 }
 
+int
+libcall_rpad(id_item_t **args, int *rettypes, void **retvals)
+{
+
+	return 0;
+}
 
 int
 libcall_gcd(id_item_t **args, int *rettypes, void **retvals)

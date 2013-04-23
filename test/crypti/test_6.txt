@@ -1,0 +1,24 @@
+def [] len_test(s) {
+	printf("'%s' len is \t%d\n", s, len(s));
+}
+
+def [] size_test(s) {
+	printf("'%x' size is \t%d\n", s, size(s));
+}
+
+printf("len() tests\n");
+
+len_test("hello")
+len_test("")
+len_test(12)
+len_test(``)
+len_test(`\x12`)
+
+printf("\nsize() tests\n\n");
+
+size_test("hello")
+size_test("")
+size_test(12)
+size_test(``)
+size_test(`\x12`)
+
