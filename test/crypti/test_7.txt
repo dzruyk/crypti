@@ -1,0 +1,7 @@
+def [a, b] get_2_4() {
+	a = 2
+	b = 4
+}
+
+c, d = get_2_4()
+printf("c = %d, d = %d\n", c, d)

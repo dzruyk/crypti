@@ -1,0 +1,17 @@
+
+def [] func() {
+	a = 2
+}
+
+func();
+
+def [ret] func() {
+	i = 0;
+	while (i < 5) {
+		i += 1
+		if (i == 4)
+			return
+	}
+}
+
+func()

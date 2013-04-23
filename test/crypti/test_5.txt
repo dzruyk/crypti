@@ -1,0 +1,10 @@
+a = 0x123456
+printf("%x\n", a)
+
+a = 1 <<36
+printf("%x\n", a)
+a = 1 << 39
+printf("%x\n", a)
+
+a = 0x11223344556677889912
+printf("%x\n", a);
