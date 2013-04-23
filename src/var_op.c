@@ -385,16 +385,16 @@ err:
 int
 varop_str_len(struct variable *res, struct variable *a)
 {
-	octstr_t *octstr;
+	str_t *str;
 	mpl_int *bnum;
 	int len;
 
 	assert(res != NULL && a != NULL);
 
-	octstr = var_cast_to_octstr(a);
+	str = var_cast_to_str(a);
 	bnum = var_bignum_ptr(res);
 
-	len = octstr_len(octstr);
+	len = str_len(str);
 	mpl_set_sint(bnum, len);
 
 	var_force_type(res, VAR_BIGNUM);
@@ -462,16 +462,16 @@ err:
 int
 varop_octstr_len(struct variable *res, struct variable *a)
 {
-	str_t *str;
+	octstr_t *octstr;
 	mpl_int *bnum;
 	int len;
 
 	assert(res != NULL && a != NULL);
 
-	str = var_cast_to_str(a);
+	octstr = var_cast_to_octstr(a);
 	bnum = var_bignum_ptr(res);
 
-	len = str_len(str);
+	len = octstr_len(octstr);
 	mpl_set_sint(bnum, len);
 
 	var_force_type(res, VAR_BIGNUM);
