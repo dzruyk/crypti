@@ -31,8 +31,8 @@ static struct {
 	{"len", 1, 1, libcall_len},
 	/* Octstr byte count */
 	{"size", 1, 1, libcall_size},
-	{"lpad", 2, 1, libcall_lpad},
-	{"rpad", 2, 1, libcall_rpad},
+	{"lpad", 3, 1, libcall_lpad},
+	{"rpad", 3, 1, libcall_rpad},
 
 	/* mpl function wrappers. */
 	{"gcd", 2, 1, libcall_gcd},

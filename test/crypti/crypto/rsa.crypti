@@ -12,38 +12,44 @@ def rsakg(const len, exp, n, d) {
 
 	phi = p * q
 
-	d = mod_inv(e, phi);
+	d = mod_inv(exp, phi);
 
 	return 0;
 }
 
-def rsaep(m, exp, n, cipher) {
+
+
+
+def [c, error] rsaep(m, exp, n) {
 
 	if (m >= n) {
-		print("error\n");
-		return -1;
+		error = "message representative out of range"
+		c = 0
+		return
 	}
 
-	mod_exp(chipher, m, exp, n)
-	return 0;
+	c = mod_exp(m, exp, n)
+	error = ""
 }
 
-def rsadp(chipher, d, n, m) {
+def [m, error] rsadp(c, d, n) {
 	
-	if (cipher >= n) {
-		print("error\n");
-		return -1;
+	if (c >= n) {
+		error = "message representative out of range"
+		m = 0
+		return;
 	}
 
-	mod_exp(m, chipher, d, n);
-	return 0;
+	m = mod_exp(c, d, n);
+	error = ""
 }
+
+
 
 /*
  * Without MGF hash OS2I I2OS functions
  */
-def rsa_oaep_ep(n, e, M, L, c) {
-	//without error checks now
+def [error, c] rsa_oaep_ep(n, e, M, L) {
 	lHash = SOME_HASH(L);
 	hLen = len(lHash);
 	mLen = len(M);
@@ -57,18 +63,13 @@ def rsa_oaep_ep(n, e, M, L, c) {
 	seedMask = MGF(maskedDB, hLen)
 	maskedSeed = seed ^ seedMask
 
-	EM = "\x00" # maskedSeed # maskedDB
+	EM = `\x00` # maskedSeed # maskedDB
 
-	m = to_num(EM);
-
-	rsaep(m, e, n, cipher)
-	c = to_str(cipher);
-
-	return 0;
+	c = rsaep(EM, e, n)
+	error = ""
 }
 
 def rsa_oaep_dp(c, d, n, L, M) {
-
 	
 	cipher = to_int(c);
 	rsadp(cipher, d, n, m)

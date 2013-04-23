@@ -206,7 +206,8 @@ libcall_subs(id_item_t **args, int *rettypes, void **retvals)
 	struct variable *res;
 	int ret;
 
-	assert(args != NULL && args[0] != NULL);
+	assert(args != NULL && args[0] != NULL &&
+	    args[1] != NULL && args[2] != NULL);
 
 	rettypes[0] = ID_UNKNOWN;
 	retvals[0] = NULL;
@@ -332,8 +333,40 @@ err:
 int
 libcall_lpad(id_item_t **args, int *rettypes, void **retvals)
 {
+	id_item_t *arg1, *arg2, *arg3;
+	struct variable *res;
+	int ret;
+
+	assert(args != NULL && args[0] != NULL &&
+	    args[1] != NULL && args[2] != NULL);
+
+	rettypes[0] = ID_UNKNOWN;
+	retvals[0] = NULL;
+
+	arg1 = args[0];
+	arg2 = args[1];
+	arg3 = args[2];
+
+	CHECK_TYPE(arg1, ID_VAR);
+	CHECK_TYPE(arg2, ID_VAR);
+	CHECK_TYPE(arg3, ID_VAR);
+
+	res = xmalloc(sizeof(*res));
+	var_init(res);
+	
+	/*
+	ret = varop_lpad(res, arg1->var, arg2->var, arg3->var);
+	if (ret != 0)
+		goto err;
+	*/
+
+	rettypes[0] = ID_VAR;
+	retvals[0] = res;
 
 	return 0;
+err:
+	var_clear(res);
+	return 1;
 }
 
 int
