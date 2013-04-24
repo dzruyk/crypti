@@ -31,7 +31,11 @@ static struct {
 	{"len", 1, 1, libcall_len},
 	/* Octstr byte count */
 	{"size", 1, 1, libcall_size},
+	/* Perform left padding */
+	/* def [dst] lpad(src, width, filler) */
 	{"lpad", 3, 1, libcall_lpad},
+	/* Perform right padding */
+	/* def [dst] rpad(src, width, filler) */
 	{"rpad", 3, 1, libcall_rpad},
 
 	/* mpl function wrappers. */

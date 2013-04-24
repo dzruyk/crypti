@@ -403,6 +403,71 @@ varop_str_len(struct variable *res, struct variable *a)
 }
 
 /* Octstring operations: */
+enum {
+	PAD_LEFT,
+	PAD_RIGHT,
+};
+
+static int
+varop_padding(struct variable *dst, struct variable *src, struct variable *width, struct variable *filler, int type)
+{
+	octstr_t *dp, *sp, *fp;
+	mpl_int *wp;
+	long int sz;
+	size_t flen;
+
+	dp = var_octstr_ptr(dst);
+	sp = var_cast_to_octstr(src);
+	fp = var_cast_to_octstr(filler);
+	wp = var_cast_to_bignum(width);
+
+	//FIXME: write mpl_to_sint
+	if (mpl_to_uint(wp, (unsigned long int *) &sz) != MPL_OK)
+		return 1;
+	
+	flen = octstr_len(fp);
+	if (flen == 0)
+		return 0;
+	/* padding size is width - size(src) */
+	sz -= octstr_len(sp);
+
+	octstr_reset(dp);
+
+	if (type == PAD_RIGHT)
+		octstr_append_octstr(dp, sp);
+	
+	while (sz > 0 && sz > flen) {
+		octstr_append_octstr(dp, fp);
+		sz -= flen;
+	}
+
+	if (sz > 0) {
+		unsigned char *tmp;
+
+		tmp = octstr_ptr(fp);
+		octstr_append_n(dp, tmp, sz);
+	}
+
+	if (type == PAD_LEFT)
+		octstr_append_octstr(dp, sp);
+
+	var_force_type(dst, VAR_OCTSTRING);
+
+	return 0;
+}
+
+int
+varop_lpad(struct variable *dst, struct variable *src, struct variable *width, struct variable *filler)
+{
+	return varop_padding(dst, src, width, filler, PAD_LEFT);
+}
+
+int
+varop_rpad(struct variable *dst, struct variable *src, struct variable *width, struct variable *filler)
+{
+	return varop_padding(dst, src, width, filler, PAD_RIGHT);
+}
+
 int
 varop_oct_concat(struct variable *c, struct variable *a, struct variable *b)
 {

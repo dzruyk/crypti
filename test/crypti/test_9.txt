@@ -1,0 +1,10 @@
+printf("rpadding tests:\n");
+rpad(``, 1, `\x12\x34`);
+rpad(`hell`, 5, `\x6f`);
+
+printf("lpadding tests:\n");
+lpad("Monty", 0, `\x30`);
+lpad("Monty", 6, `\x30`);
+lpad("Monty", 10, `\x30`);
+lpad("Monty", 1, `\x30`);
+lpad("", 1, `\x30`);

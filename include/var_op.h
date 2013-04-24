@@ -32,6 +32,8 @@ int varop_str_sub(struct variable *res, struct variable *s, struct variable *sta
 int varop_str_len(struct variable *res, struct variable *a);
 
 /* Octstring operations: */
+int varop_lpad(struct variable *dst, struct variable *src, struct variable *width, struct variable *filler);
+int varop_rpad(struct variable *dst, struct variable *src, struct variable *width, struct variable *filler);
 int varop_oct_concat(struct variable *c, struct variable *a, struct variable *b);
 int varop_octstr_sub(struct variable *res, struct variable *s, struct variable *start, struct variable *len);
 int varop_octstr_len(struct variable *res, struct variable *a);

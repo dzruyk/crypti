@@ -10,7 +10,7 @@ def [ret] func() {
 	while (i < 5) {
 		i += 1
 		if (i == 4)
-			return
+			{ret = i;return;}
 	}
 }
 

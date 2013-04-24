@@ -1,0 +1,12 @@
+subs("", 0, 45);
+subs("", 1, 45);
+subs("", 0, 0);
+
+subs("hello", 0, 45);
+subs("hello", 1, 45);
+subs("hello", 0, 0);
+subs("hello", 1, 2);
+
+subs("2", 0, 45);
+subs("", 1, 45);
+subs("", 0, 0);

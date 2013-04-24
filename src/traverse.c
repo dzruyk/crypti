@@ -30,6 +30,8 @@ struct trav_ctx {
 	int is_return;
 	int is_break;
 	int is_continue;
+
+	func_t *func; 
 };
 
 struct trav_ctx helper;
@@ -311,7 +313,7 @@ push_return_args(func_t *func)
 		arr_t *arr;
 		eval_t *ev;
 
-		//copy
+		/* copy & push finded items */
 		switch (items[i]->type) {
 		case ID_VAR:
 			var = items[i]->var;
@@ -340,12 +342,15 @@ exec_function(func_t *func)
 {
 	//FIXME: write me!
 	ast_node_t *next;
+	func_t *saved;
 	res_type_t res;
 
 	assert(func != NULL);
 
 	next = func->body;
 	
+	saved = helper.func;
+	helper.func = func;
 	helper.is_call++;
 
 	while (next != NULL) {
@@ -367,14 +372,16 @@ exec_function(func_t *func)
 			continue;
 		}
 	}
-finalize:
-
-	helper.is_call--;
-
-	if (push_return_args(func) == FALSE) {
+	/* Return not found while processing body. */
+	if (push_return_args(helper.func) == FALSE) {
 		print_warn("Can't return all function arguments\n");
 		nerrors++;
 	}
+
+finalize:
+
+	helper.is_call--;
+	helper.func = saved;
 }
 
 /*
@@ -1259,6 +1266,11 @@ traverse_return(ast_node_t *tree)
 	assert(tree != NULL);
 
 	helper.is_return++;
+
+	if (push_return_args(helper.func) == FALSE) {
+		print_warn("Can't return all function arguments\n");
+		nerrors++;
+	}
 }
 
 static void

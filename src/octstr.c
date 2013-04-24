@@ -82,9 +82,14 @@ octstr_copy(octstr_t *dst, const octstr_t *src)
 	buffer_copy(dst->buf, src->buf, buffer_size(src->buf));
 }
 
+/*
+ * WARN: assume that dst != a
+ */
 void
 octstr_concat(octstr_t *dst, const octstr_t *a, const octstr_t *b)
 {
+	assert (dst != a);
+
 	octstr_copy(dst, a);
 	octstr_append_octstr(dst, b);
 }

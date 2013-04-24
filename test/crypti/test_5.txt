@@ -8,3 +8,7 @@ printf("%x\n", a)
 
 a = 0x11223344556677889912
 printf("%x\n", a);
+
+printf("mod_exp tests:\n");
+mod_exp(1023, 103, 2003)
+

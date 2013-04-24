@@ -24,3 +24,17 @@ len and size tests!
 
 traverse.c при выковыривании аргументов id_table_lookup_all зырит во все таблички, что не является правильным
 + если аргументы возвращаются из вложенной области видимости push_return_args не могёт найти все аргументы
+
+
+def [a, b] test() {
+	a = ""  
+	if (1 == 1) {
+		b = 2
+	} else {    
+		b = 4
+	}
+}
+
+test()
+src/traverse.c 377 exec_function warning:Can't return all function arguments
+
