@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 PNAME='bin/crypti'
 path=`dirname $0`
-N=4
+N=9
 
 echo 'statesments tests...';
 for ((i=1; $i < $N + 1; i= $i + 1))

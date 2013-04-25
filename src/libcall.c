@@ -22,7 +22,7 @@
 	}							\
 } while(0)
 
-#define libcall_1arg_default(args, rettypes, retvals, func)	\
+#define libcall_1arg_at_err_act(args, rettypes, retvals, func, ACTION)	\
 do {								\
 	id_item_t *arg1;					\
 	struct variable *res;					\
@@ -42,18 +42,15 @@ do {								\
 								\
 	ret = func(res, arg1->var);				\
 	if (ret != 0)						\
-		goto err;					\
+		ACTION						\
 								\
 	rettypes[0] = ID_VAR;					\
 	retvals[0] = res;					\
 								\
 	return 0;						\
-err:								\
-	var_clear(res);						\
-	return 1;						\
 } while (0)
 
-#define libcall_3arg_default(args, rettypes, retvals, func)	\
+#define libcall_3arg_at_err_act(args, rettypes, retvals, func, ACTION)	\
 do {								\
 	id_item_t *arg1, *arg2, *arg3;				\
 	struct variable *res;					\
@@ -78,16 +75,58 @@ do {								\
 								\
 	ret = func(res, arg1->var, arg2->var, arg3->var);	\
 	if (ret != 0)						\
-		goto err;					\
+		ACTION						\
 								\
 	rettypes[0] = ID_VAR;					\
 	retvals[0] = res;					\
 								\
 	return 0;						\
-err:								\
+} while (0)
+
+#define libcall_2arg_at_err_act(args, rettypes, retvals, func, ACTION)	\
+do {								\
+	id_item_t *arg1, *arg2;				\
+	struct variable *res;					\
+	int ret;						\
+								\
+	assert(args != NULL && args[0] != NULL &&		\
+	    args[1] != NULL);					\
+								\
+	rettypes[0] = ID_UNKNOWN;				\
+	retvals[0] = NULL;					\
+								\
+	arg1 = args[0];						\
+	arg2 = args[1];						\
+								\
+	CHECK_TYPE(arg1, ID_VAR);				\
+	CHECK_TYPE(arg2, ID_VAR);				\
+								\
+	res = xmalloc(sizeof(*res));				\
+	var_init(res);						\
+								\
+	ret = func(res, arg1->var, arg2->var);			\
+	if (ret != 0)						\
+		ACTION						\
+								\
+	rettypes[0] = ID_VAR;					\
+	retvals[0] = res;					\
+								\
+	return 0;						\
+} while (0)
+
+#define ACT_SET_MINUS_ONE					\
+{								\
+	mpl_int *tmp;						\
+	tmp = var_bignum_ptr(res);				\
+	mpl_set_sint(tmp, -1);					\
+	var_force_type(res, VAR_BIGNUM);			\
+}
+
+#define ACT_RET_ERR						\
+{								\
 	var_clear(res);						\
 	return 1;						\
-} while (0)
+}
 
 int
 libcall_print(id_item_t **args, int *rettypes, void **retvals)
@@ -269,108 +308,56 @@ libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals)
 int
 libcall_subs(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_3arg_default(args, rettypes, retvals, varop_str_sub);
+	libcall_3arg_at_err_act(args, rettypes, retvals, varop_str_sub, ACT_RET_ERR);
 }
 
 int
 libcall_subocts(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_3arg_default(args, rettypes, retvals, varop_octstr_sub);
+	libcall_3arg_at_err_act(args, rettypes, retvals, varop_octstr_sub, ACT_RET_ERR);
 }
 
 int
 libcall_len(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_1arg_default(args, rettypes, retvals, varop_str_len);
+	libcall_1arg_at_err_act(args, rettypes, retvals, varop_str_len, ACT_RET_ERR);
 }
 
 int
 libcall_size(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_1arg_default(args, rettypes, retvals, varop_octstr_len);
+	libcall_1arg_at_err_act(args, rettypes, retvals, varop_octstr_len, ACT_RET_ERR);
 }
 
 int
 libcall_lpad(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_3arg_default(args, rettypes, retvals, varop_lpad);
+	libcall_3arg_at_err_act(args, rettypes, retvals, varop_lpad, ACT_RET_ERR);
 }
 
 int
 libcall_rpad(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_3arg_default(args, rettypes, retvals, varop_rpad);
+	libcall_3arg_at_err_act(args, rettypes, retvals, varop_rpad, ACT_RET_ERR);
 }
 
 int
 libcall_gcd(id_item_t **args, int *rettypes, void **retvals)
 {
-	id_item_t *arg1, *arg2;
-	struct variable *res;
-	int ret;
-
-	assert(args != NULL && args[0] != NULL && args[1] != NULL);
-	arg1 = args[0];
-	arg2 = args[1];
-
-	CHECK_TYPE(arg1, ID_VAR);
-	CHECK_TYPE(arg2, ID_VAR);
-
-	res = xmalloc(sizeof(*res));
-	var_init(res);
-
-	ret = varop_gcd(res, arg1->var, arg2->var);
-	if (ret != 0) {
-		mpl_int *tmp;
-
-		tmp = var_bignum_ptr(res);
-		mpl_set_sint(tmp, -1);
-		var_force_type(res, VAR_BIGNUM);
-	}
-
-	rettypes[0] = ID_VAR;
-	retvals[0] = res;
-	
-	return 0;
+	libcall_2arg_at_err_act(args, rettypes, retvals, varop_gcd, ACT_SET_MINUS_ONE);
 }
 
 int
 libcall_mod_inv(id_item_t **args, int *rettypes, void **retvals)
 {
-	id_item_t *arg1, *arg2;
-	struct variable *res;
-	int ret;
-
-	assert(args != NULL && args[0] != NULL && args[1] != NULL);
-	arg1 = args[0];
-	arg2 = args[1];
-
-	CHECK_TYPE(arg1, ID_VAR);
-	CHECK_TYPE(arg2, ID_VAR);
-
-	res = xmalloc(sizeof(*res));
-	var_init(res);
-
-	ret = varop_mod_inv(res, arg1->var, arg2->var);
-	if (ret != 0) {
-		mpl_int *tmp;
-
-		tmp = var_bignum_ptr(res);
-		mpl_set_sint(tmp, -1);
-		var_force_type(res, VAR_BIGNUM);
-	}
-
-	rettypes[0] = ID_VAR;
-	retvals[0] = res;
-	
-	return 0;
+	libcall_2arg_at_err_act(args, rettypes, retvals, varop_mod_inv, ACT_SET_MINUS_ONE);
 }
 
 
 int
 libcall_mod_exp(id_item_t **args, int *rettypes, void **retvals)
 {
-	libcall_3arg_default(args, rettypes, retvals, varop_mod_exp);
+	libcall_3arg_at_err_act(args, rettypes, retvals, varop_mod_exp, ACT_RET_ERR);
 }
 
 
