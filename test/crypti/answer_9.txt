@@ -1,0 +1,9 @@
+rpadding tests:
+"\x12"
+"hello"
+lpadding tests:
+"Monty"
+"0Monty"
+"00000Monty"
+"Monty"
+"0"

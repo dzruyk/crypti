@@ -1,0 +1,14 @@
+len() tests
+'hello' len is 	5
+'' len is 	0
+'12' len is 	2
+'' len is 	0
+'\x12' len is 	4
+
+size() tests
+
+'\x68\x65\x6C\x6C\x6F' size is 	5
+'' size is 	0
+'\x0C' size is 	1
+'' size is 	0
+'\x12' size is 	1
