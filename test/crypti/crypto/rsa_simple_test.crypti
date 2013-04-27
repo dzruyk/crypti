@@ -1,0 +1,41 @@
+def [c, error] RSAEP(n, exp, m) {
+
+        if (m >= n) {
+                error = "message representative out of range"
+                c = 0
+                return
+        }
+
+        c = mod_exp(m, exp, n)
+        error = ""
+}
+
+def [m, error] RSADP(n, d, c) {
+
+        if (c >= n) {
+                error = "message representative out of range"
+                m = 0
+                return;
+        }
+
+        m = mod_exp(c, d, n);
+        error = ""
+}
+
+printf("RSA simple test (для диплома чтобы отстали)\n");
+
+p = 3557
+q = 2579
+n = p * q
+fi = (p - 1) * (q - 1)
+e = 3
+d = mod_inv(3, fi)
+
+m = `RSA`
+printf("Message before encryption %s\n", m "")
+
+c, e = RSAEP(n, e, m)
+m1, e = RSADP(n, d, c)
+
+printf("Encrypted string is %s\n", m1 | 0x00);
+

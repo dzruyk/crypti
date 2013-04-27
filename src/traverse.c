@@ -1013,7 +1013,8 @@ set_value_node(ast_node_t *ltree, eval_t *ev)
 		
 		id = (ast_node_id_t *)ltree;
 
-		item = id_table_lookup_all(id->name);
+		//NOTE: quick fix
+		item = id_table_lookup(id->name);
 		//if we havent id, then we must define it
 		if (item == NULL) {
 			item = id_item_new(id->name);

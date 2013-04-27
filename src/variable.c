@@ -186,9 +186,9 @@ var_convert_type(struct variable *var, var_type_t to_type)
 
 	if (var->type & VAR_BIGNUM)
 		from_type = VAR_BIGNUM;
-	if (var->type & VAR_OCTSTRING)
+	else if (var->type & VAR_OCTSTRING)
 		from_type = VAR_OCTSTRING;
-	if (var->type & VAR_STRING)
+	else if (var->type & VAR_STRING)
 		from_type = VAR_STRING;
 	
 	var->type |= to_type;
