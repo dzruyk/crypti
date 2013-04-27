@@ -627,13 +627,9 @@ traverse_scope(ast_node_t *tree)
 {
 	ast_node_t *next;
 	res_type_t res;
-	struct hash_table *idtable;
 
 	assert(tree != NULL);
 
-	idtable = id_table_create();
-	id_table_push(idtable);
-	
 	//traverse next block
 	//FIXME: work bad with multiple scopes in functions
 	//or cycels
@@ -645,17 +641,12 @@ traverse_scope(ast_node_t *tree)
 		case RES_CONTINUE:
 		case RES_BREAK:
 		case RES_RETURN:
-			goto finalize;
+			return;
 		default:
 			next = next->child;
 			continue;
 		}
 	}
-
-finalize:
-	id_table_pop();
-	id_table_free(idtable);
-
 }
 
 

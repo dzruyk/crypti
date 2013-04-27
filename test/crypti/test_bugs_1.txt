@@ -1,0 +1,9 @@
+//List of known bugs with description
+
+//This is scope bug
+//If variable not defined yet traverse error will occured
+if (1 == 1) {
+	b = 42
+}
+b
+

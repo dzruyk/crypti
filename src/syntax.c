@@ -18,45 +18,21 @@
 
 /*******SYNTAX_CTX***********/
 
-enum ctx_type {
-	CTX_FUNCTION,
-	CTX_GLOBAL,
-	CTX_SCOPE,
-	CTX_UNKNOWN,
-};
-
 struct syn_ctx {
-	int type;
 	int is_cycle;
 	int is_cond;
+	int is_func;
 };
 
-struct syn_ctx *syn_ctx_new();
-
-struct syn_ctx *
-syn_ctx_new()
-{
-	struct syn_ctx *ctx;
-
-	ctx = xmalloc(sizeof(*ctx));
-	memset(ctx, 0, sizeof(*ctx));
-
-	return ctx;
-}
-
-void
-syn_ctx_free(struct syn_ctx *ctx)
-{
-	ufree(ctx);
-}
+struct syn_ctx helper;
 
 /*******SYNTAX_CTX***********/
 
 
 static ast_node_t * global_expr();
-static ast_node_t * stmts(struct syn_ctx *ctx);
-static ast_node_t *block(struct syn_ctx *ctx);
-static ast_node_t *statement(struct syn_ctx *ctx);
+static ast_node_t * stmts();
+static ast_node_t *block();
+static ast_node_t *statement();
 static ast_node_t *expr();
 
 static ast_node_t *assign(ast_node_t *first, int nesting);
@@ -84,17 +60,17 @@ static ast_node_t *concatenation();
 static ast_node_t *factor();
 static ast_node_t *identifier();
 
-static ast_node_t *process_if(struct syn_ctx *ctx);
-static ast_node_t *process_for(struct syn_ctx *ctx);
-static ast_node_t *process_do(struct syn_ctx *ctx);
-static ast_node_t *process_while(struct syn_ctx *ctx);
-static ast_node_t *process_break(struct syn_ctx *ctx);
-static ast_node_t *process_continue(struct syn_ctx *ctx);
-static ast_node_t *process_del(struct syn_ctx *ctx);
+static ast_node_t *process_if();
+static ast_node_t *process_for();
+static ast_node_t *process_do();
+static ast_node_t *process_while();
+static ast_node_t *process_break();
+static ast_node_t *process_continue();
+static ast_node_t *process_del();
 
-static ast_node_t *process_return(struct syn_ctx *ctx);
+static ast_node_t *process_return();
 
-static ast_node_t *process_scope(struct syn_ctx *ctx);
+static ast_node_t *process_scope();
 
 static ast_node_t *process_import();
 
@@ -261,6 +237,7 @@ program_start(ast_node_t **tree)
 
 	nerrors = 0;
 	*tree = NULL;
+	memset(&helper, 0, sizeof(helper));
 	
 	tok_next();
 
@@ -291,24 +268,23 @@ global_expr()
 	else if (match(TOK_IMPORT))
 		return process_import();
 
-	node = stmts(NULL);
+	node = stmts();
 
 	return node;
 }
 
 static ast_node_t *
-stmts(struct syn_ctx *ctx)
+stmts()
 {
 	DEBUG(LOG_VERBOSE, "\n");
 
-	//if (ctx->type != CTX_GLOBAL)
-	return block(ctx);
+	//return block();
 	
-	//return statement(ctx);
+	return statement();
 }
 
 static ast_node_t *
-block(struct syn_ctx *ctx)
+block()
 {
 	ast_node_t *result, *prev, *tmp;
 
@@ -323,7 +299,7 @@ block(struct syn_ctx *ctx)
 		if (current_tok == TOK_RBRACE)
 			break;
 	
-		tmp = statement(ctx);
+		tmp = statement();
 
 		if (result == NULL)
 			result = tmp;
@@ -346,13 +322,6 @@ block(struct syn_ctx *ctx)
 			break;
 		}
 
-		/*
-		 * We assume that if ctx is NULL then caller is global_expr()
-		 *FIXME: rewrite me
-		 */
-		if (ctx == NULL)
-			break;
-
 		tok_next();
 	}
 
@@ -360,36 +329,36 @@ block(struct syn_ctx *ctx)
 }
 
 static ast_node_t *
-statement(struct syn_ctx *ctx)
+statement()
 {	
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	if (match(TOK_LBRACE)) 
-		return process_scope(ctx);
+		return process_scope();
 
 	else if (match(TOK_IF))
-		return process_if(ctx);
+		return process_if();
 	
 	else if (match(TOK_FOR))
-		return process_for(ctx);
+		return process_for();
 	
 	else if (match(TOK_WHILE))
-		return process_while(ctx);
+		return process_while();
 
 	else if (match(TOK_BREAK))
-		return process_break(ctx);
+		return process_break();
 
 	else if (match(TOK_CONTINUE))
-		return process_continue(ctx);
+		return process_continue();
 	
 	else if (match(TOK_RETURN))
-		return process_return(ctx);
+		return process_return();
 
 	else if (match(TOK_DO))
-		return process_do(ctx);
+		return process_do();
 	
 	else if (match(TOK_DEL))
-		return process_del(ctx);
+		return process_del();
 
 	else
 		return expr();
@@ -1142,14 +1111,16 @@ identifier()
 }
 
 static ast_node_t *
-process_if(struct syn_ctx *ctx)
+process_if()
 {
 	ast_node_t *_if, *body, *_else;
 	boolean_t skipped;
+	int saved;
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	body = _if = _else = NULL;
+	saved = helper.is_cond++;
 
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
@@ -1167,12 +1138,12 @@ process_if(struct syn_ctx *ctx)
 		print_warn("')' is missed\n");
 		goto err;
 	}
-
+	
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statement(ctx);
+		body = statement();
 	} else
-		body = process_scope(ctx);
+		body = process_scope();
 	
 	if (nerrors != 0) {
 		print_warn("cant proc cond body\n");
@@ -1183,7 +1154,7 @@ process_if(struct syn_ctx *ctx)
 
 	if (match(TOK_ELSE) == TRUE) {
 		skip_eol();
-		_else = statement(ctx);
+		_else = statement();
 		if (_else == NULL) {
 			print_warn("cant get stmt after 'else'\n");
 			goto err;
@@ -1199,32 +1170,28 @@ process_if(struct syn_ctx *ctx)
 		goto err;
 	}
 
+	helper.is_cond = saved;
 	return ast_node_if_new(_if, body, _else);
 
 err:
 	ast_node_unref(_if);
 	ast_node_unref(body);
+	helper.is_cond = saved;
 	
 	nerrors++;
 	return ast_node_stub_new();
 }
 
 static ast_node_t *
-process_for(struct syn_ctx *ctx)
+process_for()
 {
 	ast_node_t *expr1, *expr2, *expr3;
 	ast_node_t *body;
-	struct syn_ctx helper;
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	body = expr1 = expr2 = expr3 = NULL;
-	if (ctx == NULL) {
-		ctx = &helper;
-		memset(ctx, 0, sizeof(*ctx));
-		ctx->type = CTX_GLOBAL;
-	}
-	
+
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
 		goto err;
@@ -1252,15 +1219,15 @@ process_for(struct syn_ctx *ctx)
 		goto err;
 	}
 
-	ctx->is_cycle++;
+	helper.is_cycle++;
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statement(ctx);
+		body = statement();
 	} else
-		body = process_scope(ctx);
+		body = process_scope();
 	
-	ctx->is_cycle--;
+	helper.is_cycle--;
 
 	if (nerrors != 0) {
 		print_warn("errors happen\n");
@@ -1280,29 +1247,24 @@ process_for(struct syn_ctx *ctx)
 
 
 static ast_node_t *
-process_do(struct syn_ctx *ctx)
+process_do()
 {
-	struct syn_ctx helper;
 	ast_node_t *cond, *body;
 
 	DEBUG(LOG_VERBOSE, "\n");
 
 	body = cond = NULL;
-	if (ctx == NULL) {
-		ctx = &helper;
-		memset(ctx, 0, sizeof(*ctx));
-		ctx->type = CTX_GLOBAL;
-	}
+
 	
-	ctx->is_cycle++;
+	helper.is_cycle++;
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statement(ctx);
+		body = statement();
 	} else
-		body = process_scope(ctx);
+		body = process_scope();
 	
-	ctx->is_cycle--;
+	helper.is_cycle--;
 
 	if (nerrors != 0) {
 		print_warn("errors happen\n");
@@ -1336,19 +1298,13 @@ err:
 }
 
 static ast_node_t *
-process_while(struct syn_ctx *ctx)
+process_while()
 {
-	struct syn_ctx helper;
 	ast_node_t *cond, *body;
 
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	body = cond = NULL;
-	if (ctx == NULL) {
-		ctx = &helper;
-		memset(ctx, 0, sizeof(*ctx));
-		ctx->type = CTX_GLOBAL;
-	}
 	
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
@@ -1364,15 +1320,15 @@ process_while(struct syn_ctx *ctx)
 		goto err;
 	}
 
-	ctx->is_cycle++;
+	helper.is_cycle++;
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
-		body = statement(ctx);
+		body = statement();
 	} else
-		body = process_scope(ctx);
+		body = process_scope();
 	
-	ctx->is_cycle--;
+	helper.is_cycle--;
 
 	if (nerrors != 0) {
 		print_warn("errors happen\n");
@@ -1389,13 +1345,13 @@ err:
 }
 
 static ast_node_t *
-process_del(struct syn_ctx *ctx)
+process_del()
 {
 	ast_node_t *node = NULL;
 
 	DEBUG(LOG_VERBOSE, "\n");
 
-	//FIXME: programmer must delete multiple identifiers with one statement.
+	//FIXME: programmer may delete multiple identifiers with one statement.
 	if (match(TOK_ID) == FALSE)
 		goto err;
 
@@ -1417,11 +1373,11 @@ err:
 }
 
 static ast_node_t *
-process_break(struct syn_ctx *ctx)
+process_break()
 {
 	DEBUG(LOG_VERBOSE, "\n");
 
-	if (ctx == NULL || ctx->is_cycle == 0) {
+	if (helper.is_cycle == 0) {
 		print_warn("break outside cycle\n");
 		nerrors++;
 		return ast_node_stub_new();
@@ -1431,9 +1387,9 @@ process_break(struct syn_ctx *ctx)
 }
 
 static ast_node_t *
-process_continue(struct syn_ctx *ctx)
+process_continue()
 {
-	if (ctx == NULL || ctx->is_cycle == 0) {
+	if (helper.is_cycle == 0) {
 		print_warn("continue outside cycle\n");
 		nerrors++;
 		return ast_node_stub_new();
@@ -1443,9 +1399,9 @@ process_continue(struct syn_ctx *ctx)
 }
 
 static ast_node_t *
-process_return(struct syn_ctx *ctx)
+process_return()
 {
-	if (ctx == NULL || ctx->type != CTX_FUNCTION) {
+	if (helper.is_func == 0) {
 		print_warn("return not in function\n");
 		nerrors++;
 		sync_stream();
@@ -1456,18 +1412,11 @@ process_return(struct syn_ctx *ctx)
 }
 
 static ast_node_t *
-process_scope(struct syn_ctx *ctx)
+process_scope()
 {
 	ast_node_t *node;
-	struct syn_ctx helper;
 	
-	if (ctx == NULL) {
-		ctx = &helper;
-		memset(ctx, 0, sizeof(*ctx));
-		ctx->type = CTX_SCOPE;
-	}
-
-	node = block(ctx);
+	node = block();
 	if (nerrors != 0) 
 		goto err;
 	
@@ -1727,18 +1676,15 @@ process_function_arguments(ast_node_func_t *func)
 static ret_t
 process_function_body(ast_node_func_t *func)
 {
-	struct syn_ctx *ctx = NULL;
-	
 	if (match(TOK_LBRACE) == FALSE) {
 		print_warn("LBRACE required\n");
 		goto err;
 	}
 
-	ctx = syn_ctx_new();
-	ctx->type = CTX_FUNCTION;
+	helper.is_func++;
 
-	//FIXME: void body functions
-	func->body = stmts(ctx);
+	//WARN: void body functions
+	func->body = block();
 	if (nerrors != 0) {
 		print_warn("cant traverse func body\n");
 		goto err;
@@ -1748,9 +1694,9 @@ process_function_body(ast_node_func_t *func)
 		print_warn("'}' missing\n");
 		goto err;
 	}
-	
-	syn_ctx_free(ctx);
 
+	helper.is_func--;
+	
 	return ret_ok;
 
 err:
@@ -1758,9 +1704,6 @@ err:
 	nerrors++;
 	ast_node_unref(func->body);
 	func->body = NULL;
-
-	if (ctx != NULL)
-		syn_ctx_free(ctx);
 
 	return ret_err;
 }
