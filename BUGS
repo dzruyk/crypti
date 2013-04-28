@@ -38,3 +38,5 @@ def [a, b] test() {
 test()
 src/traverse.c 377 exec_function warning:Can't return all function arguments
 
+проблема с выпечатыванием строк
+

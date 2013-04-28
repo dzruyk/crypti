@@ -303,6 +303,13 @@ libcall_rpad(id_item_t **args, int *rettypes, void **retvals)
 }
 
 int
+libcall_randint(id_item_t **args, int *rettypes, void **retvals)
+{
+	exec_with_err_handler(args, rettypes, retvals, 2,
+	   varop_rand_int, ACT_RET_ERR);
+}
+
+int
 libcall_gcd(id_item_t **args, int *rettypes, void **retvals)
 {
 	exec_with_err_handler(args, rettypes, retvals, 2,

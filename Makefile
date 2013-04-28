@@ -7,14 +7,15 @@ INCLUDES= -I ./include -I ./lib
 LEX_OBJS = $(patsubst %,src/%, lex.o id_table.o hash.o primes.o \
 	keyword.o common.o crypt_hashes.o array.o str.o octstr.o \
 	defaults.o buffer.o type_convertions.o variable.o var_op.o\
-	var_print.o)
+	var_print.o crypti_io.o random.o)
 
 LEX_MAIN = lex_test.o
 LEX_TEST = $(BIN)/lex_test
 
 CRYPT_LIB=lib/crypto/crypt_lib.a
 
-CRYPTI_OBJS = $(patsubst %,src/%,stack.o syntax.o syn_tree.o traverse.o eval.o function.o list.o libcall.o)
+CRYPTI_OBJS = $(patsubst %,src/%,stack.o syntax.o syn_tree.o traverse.o eval.o\
+	function.o list.o libcall.o)
 CRYPTI_MAIN = crypti.o
 CRYPTI_TEST = $(BIN)/crypti
 

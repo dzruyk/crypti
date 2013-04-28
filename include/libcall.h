@@ -28,6 +28,7 @@ int libcall_size(id_item_t **args, int *rettypes, void **retvals);
 int libcall_lpad(id_item_t **args, int *rettypes, void **retvals);
 int libcall_rpad(id_item_t **args, int *rettypes, void **retvals);
 
+int libcall_randint(id_item_t **args, int *rettypes, void **retvals);
 //int libcall_del(id_item_t **args, int *rettypes, void **retvals);
 
 /* mpl function wrappers. */

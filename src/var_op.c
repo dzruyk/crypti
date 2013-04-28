@@ -6,9 +6,11 @@
 #include "log.h"
 #include "macros.h"
 #include <mpl.h>
+#include "random.h"
 #include "octstr.h"
 #include "str.h"
 #include "variable.h"
+#include "var_op.h"
 
 
 /* bignum operations: */
@@ -542,6 +544,50 @@ varop_octstr_len(struct variable *res, struct variable *a)
 	var_force_type(res, VAR_BIGNUM);
 
 	return 0;
+}
+
+/* Random */
+int
+varop_rand_int(struct variable *dst, struct variable *start, struct variable *stop)
+{
+	mpl_int *ap, *bp, *cp;
+	struct variable tmp;
+	int ret, sz;
+	int n;
+
+	cp = var_bignum_ptr(dst);
+
+	var_init(&tmp);
+
+	if (varop_cmp(stop, start) != 1)
+		goto err;
+
+	if (varop_sub(&tmp, stop, start) != 0)
+		goto err;
+	
+	ap = var_cast_to_bignum(&tmp);
+	n = mpl_nr_bits(ap);
+	sz = n / CHAR_BIT;
+
+	do {
+		/* 
+		 * FIXME: mpl_random not appropriate bcs need to return
+		 * number in range [0; 2 ** sz] 
+		 */
+		ret = mpl_random(cp, sz, rand_get_rand_bytes, NULL);
+		if (ret != MPL_OK)
+			goto err;
+		var_force_type(dst, VAR_BIGNUM);
+	} while (varop_cmp(dst, &tmp) > 0);
+	
+
+	if (varop_add(dst, dst, start) != 0)
+		goto err;
+
+	return 0;
+err:
+	var_clear(&tmp);
+	return 1;
 }
 
 /* Rel operations.

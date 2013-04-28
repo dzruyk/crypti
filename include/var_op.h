@@ -38,6 +38,9 @@ int varop_oct_concat(struct variable *c, struct variable *a, struct variable *b)
 int varop_octstr_sub(struct variable *res, struct variable *s, struct variable *start, struct variable *len);
 int varop_octstr_len(struct variable *res, struct variable *a);
 
+/* Random */
+int varop_rand_int(struct variable *dst, struct variable *start, struct variable *stop);
+
 /* Rel operations.
  * return:
  * 1 if a > b

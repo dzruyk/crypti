@@ -1,0 +1,35 @@
+
+
+y = 0x688628C676E4F05D630E1BE39D0066178CA7AA83836B645DE5ADD359B4825A12B02EF4252E4E6FA9BEC1DB0BE90F6D7C8629CABB6E531F472B2664868156E20C
+
+
+//h is alpha ** a
+def [c1, c2] elgamal_enc(p, alph, h, m) {
+	//k = rand(1, p - 2)
+	// FIXME: write random^__^
+	/* very random number */
+	k =  p - 4
+	c1 = mod_exp(alph, k, p)
+	c2 = (m * mod_exp(h, k, p)) % p
+}
+
+def [m] elgamal_dec(p, a, c1, c2) {
+	tmp = mod_exp(c1, p - 1 - a, p)
+	m = (tmp * c2) % p 
+}
+
+
+p = 0xF1B18AE9F7B4E08FDA9A04832F4E919D89462FD31BF12F92791A93519F75076D6CE3942689CDFF2F344CAFF0F82D01864F69F3AECF566C774CBACF728B81A227
+alpha = 0x07
+
+a = 0x14E60B1BDFD33436C0DA8A22FDC14A2CCDBBED0627CE68
+h = mod_exp(alpha, a, p)
+
+encrypted = `top secret`
+printf("before encryption: %s\n", encrypted);
+
+c1, c2 = elgamal_enc(p, alpha, h, encrypted)
+
+m = elgamal_dec(p, a, c1, c2)
+
+printf("after decryption message: %s\n", m | 0x00);
