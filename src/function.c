@@ -37,8 +37,10 @@ static struct {
 	/* Perform right padding */
 	/* def [dst] rpad(src, width, filler) */
 	{"rpad", 3, 1, libcall_rpad},
-	/* def [int] randint(start, stop)*/
+	/* def [int] randint(start, stop) */
 	{"randint", 2, 1, libcall_randint},
+	/* def [octs] randocts(len) */
+	{"randocts", 1, 1, libcall_randocts},
 
 	/* mpl function wrappers. */
 	{"gcd", 2, 1, libcall_gcd},

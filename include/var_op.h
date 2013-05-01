@@ -40,6 +40,8 @@ int varop_octstr_len(struct variable *res, struct variable *a);
 
 /* Random */
 int varop_rand_int(struct variable *dst, struct variable *start, struct variable *stop);
+int varop_rand_octs(struct variable *dst, struct variable *len);
+
 
 /* Rel operations.
  * return:

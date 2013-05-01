@@ -590,6 +590,41 @@ err:
 	return 1;
 }
 
+#define BUF_SZ 1024
+int
+varop_rand_octs(struct variable *dst, struct variable *len)
+{
+	mpl_int *ap;
+	octstr_t *octstr;
+	unsigned char buf[BUF_SZ];
+	int ret;
+	unsigned long sz;
+
+	assert(dst != NULL && len != NULL);
+
+	ap = var_cast_to_bignum(len);
+	octstr = var_octstr_ptr(dst);
+
+	if (mpl_to_uint(ap, &sz) != MPL_OK)
+		return 1;
+	
+	octstr_reset(octstr);
+
+	do {
+		int n;
+		n = sz % BUF_SZ;
+		ret = rand_get_rand_bytes(buf, n);
+		if (ret == -1)
+			return 1;
+
+		octstr_append_n(octstr, buf, n);
+		sz -= n;
+	} while (sz > 0);
+
+	var_force_type(dst, VAR_OCTSTRING);
+	return 0;
+}
+
 /* Rel operations.
  * return:
  * 1 if a > b
