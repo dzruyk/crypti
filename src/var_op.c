@@ -588,6 +588,13 @@ err:
 	return 1;
 }
 
+int
+varop_rand_prime(struct variable *dst, struct variable *nbytes)
+{
+
+	return 0;
+}
+
 #define BUF_SZ 1024
 int
 varop_rand_octs(struct variable *dst, struct variable *len)

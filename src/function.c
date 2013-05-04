@@ -39,6 +39,8 @@ static struct {
 	{"rpad", 3, 1, libcall_rpad},
 	/* def [int] randint(start, stop) */
 	{"randint", 2, 1, libcall_randint},
+	/* def [prime randprime(nbytes) */
+	{"randprime", 1, 1, libcall_randprime},
 	/* def [octs] randocts(len) */
 	{"randocts", 1, 1, libcall_randocts},
 

@@ -310,6 +310,13 @@ libcall_randint(id_item_t **args, int *rettypes, void **retvals)
 }
 
 int
+libcall_ranprime(id_item_t **args, int *rettypes, void **retvals)
+{
+	exec_with_err_handler(args, rettypes, retvals, 1,
+	   varop_rand_prime, ACT_RET_ERR);
+}
+
+int
 libcall_randocts(id_item_t **args, int *rettypes, void **retvals)
 {
 	exec_with_err_handler(args, rettypes, retvals, 1,
