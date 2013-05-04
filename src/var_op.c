@@ -546,13 +546,19 @@ varop_octstr_len(struct variable *res, struct variable *a)
 	return 0;
 }
 
+static int
+varop_rand_wrapper(void *buf, size_t size, void *rndctx)
+{
+	return rand_get_rand_bytes((unsigned char *)buf, size);
+}
+
 /* Random */
 int
 varop_rand_int(struct variable *dst, struct variable *start, struct variable *stop)
 {
-	mpl_int *ap, *bp, *cp;
+	mpl_int *ap, *cp;
 	struct variable tmp;
-	int ret, sz;
+	int ret;
 	int n;
 
 	cp = var_bignum_ptr(dst);
@@ -566,20 +572,12 @@ varop_rand_int(struct variable *dst, struct variable *start, struct variable *st
 		goto err;
 	
 	ap = var_cast_to_bignum(&tmp);
-	n = mpl_nr_bits(ap);
-	sz = n / CHAR_BIT;
 
-	do {
-		/* 
-		 * FIXME: mpl_random not appropriate bcs need to return
-		 * number in range [0; 2 ** sz] 
-		 */
-		ret = mpl_random(cp, sz, rand_get_rand_bytes, NULL);
-		if (ret != MPL_OK)
-			goto err;
-		var_force_type(dst, VAR_BIGNUM);
-	} while (varop_cmp(dst, &tmp) > 0);
-	
+	ret = mpl_rand_below(cp, ap, rand_get_rand_bytes, NULL);
+	if (ret != MPL_OK)
+		goto err;
+
+	var_force_type(dst, VAR_BIGNUM);
 
 	if (varop_add(dst, dst, start) != 0)
 		goto err;

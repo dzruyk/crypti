@@ -5,10 +5,7 @@ y = 0x688628C676E4F05D630E1BE39D0066178CA7AA83836B645DE5ADD359B4825A12B02EF4252E
 
 //h is alpha ** a
 def [c1, c2] elgamal_enc(p, alph, h, m) {
-	//k = rand(1, p - 2)
-	// FIXME: write random^__^
-	/* very random number */
-	k =  p - 4
+	k = randint(1, p - 2)
 	c1 = mod_exp(alph, k, p)
 	c2 = (m * mod_exp(h, k, p)) % p
 }
