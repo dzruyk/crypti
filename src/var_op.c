@@ -559,7 +559,6 @@ varop_rand_int(struct variable *dst, struct variable *start, struct variable *st
 	mpl_int *ap, *cp;
 	struct variable tmp;
 	int ret;
-	int n;
 
 	cp = var_bignum_ptr(dst);
 
@@ -573,7 +572,7 @@ varop_rand_int(struct variable *dst, struct variable *start, struct variable *st
 	
 	ap = var_cast_to_bignum(&tmp);
 
-	ret = mpl_rand_below(cp, ap, rand_get_rand_bytes, NULL);
+	ret = mpl_rand_below(cp, ap, varop_rand_wrapper, NULL);
 	if (ret != MPL_OK)
 		goto err;
 
@@ -591,8 +590,48 @@ err:
 int
 varop_rand_prime(struct variable *dst, struct variable *nbytes)
 {
+	mpl_int *ap, *bp;
+	mpl_int one;
+	unsigned long n;
+	int i, rc, triesmax;
+	/* rounds, test value*/
+	int r = 5;
 
+	triesmax = 100;
+
+	if (mpl_init(&one) != MPL_OK)
+		return 1;
+
+	ap = var_cast_to_bignum(nbytes);
+	bp = var_bignum_ptr(dst);
+
+	if (mpl_to_uint(ap, &n) != MPL_OK)
+		goto err;
+
+	for (i = 0; i < triesmax; i++) {
+		if (mpl_random(bp, n, varop_rand_wrapper, NULL) != MPL_OK)
+			goto err;
+
+		if (mpl_iseven(bp))
+			if (mpl_add(bp, bp, &one) != MPL_OK)
+				goto err;
+
+		rc = mpl_primality_miller_rabin(bp, r, varop_rand_wrapper, NULL);
+		if (rc == MPL_OK)
+			break;
+	}
+	if (i >= triesmax) {
+		print_warn("max tries reached\n");
+		goto err;
+	}
+
+	var_force_type(dst, VAR_BIGNUM);
+
+	mpl_clear(&one);
 	return 0;
+err:
+	mpl_clear(&one);
+	return 1;
 }
 
 #define BUF_SZ 1024
