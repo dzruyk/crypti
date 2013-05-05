@@ -237,8 +237,11 @@ varop_neg(struct variable *res, struct variable *var)
 	return 0;
 }
 
-int
-varop_shl(struct variable *c, struct variable *a, struct variable *b)
+#define DIRECTION_RIGHT 0
+#define DIRECTION_LEFT 1
+
+static int
+varop_shift(struct variable *c, struct variable *a, struct variable *b, int direction)
 {
 	int n, ret;
 	unsigned long shift;
@@ -274,7 +277,13 @@ varop_shl(struct variable *c, struct variable *a, struct variable *b)
 		return 1;
 	}
 
-	ret = mpl_shl(cp, shift);
+	if (direction == DIRECTION_RIGHT)
+		ret = mpl_shr(cp, shift);
+	else if (direction == DIRECTION_LEFT)
+		ret = mpl_shl(cp, shift);
+	else
+		SHOULDNT_REACH();
+
 	if (ret != MPL_OK) {
 		DEBUG(LOG_DEFAULT, "can't shift left\n");
 		return 1;
@@ -285,51 +294,15 @@ varop_shl(struct variable *c, struct variable *a, struct variable *b)
 }
 
 int
+varop_shl(struct variable *c, struct variable *a, struct variable *b)
+{
+	return varop_shift(c, a, b, DIRECTION_LEFT);
+}
+
+int
 varop_shr(struct variable *c, struct variable *a, struct variable *b)
 {
-	int n, ret;
-	unsigned long shift;
-	mpl_int *ap, *bp, *cp;
-
-	assert(c != NULL && a != NULL && b != NULL);
-
-	ap = var_cast_to_bignum(a);
-	bp = var_cast_to_bignum(b);
-	cp = var_bignum_ptr(c);
-
-	if (mpl_isneg(bp)) {
-		DEBUG(LOG_DEFAULT, "negative shift integer\n");
-		return 1;
-	}
-
-	n = mpl_nr_bits(bp);
-
-	if (n > sizeof(int) * CHAR_BIT) {
-		DEBUG(LOG_DEFAULT, "can't convert to int, overflow\n");
-		return 1;
-	}
-
-	ret = mpl_to_uint(bp, &shift);
-	if (ret != MPL_OK) {
-		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
-		return 1;
-	}
-
-	ret = mpl_copy(cp, ap);
-	if (ret != MPL_OK) {
-		DEBUG(LOG_DEFAULT, "can't copy bnum\n");
-		return 1;
-	}
-
-	ret = mpl_shr(cp, shift);
-	if (ret != MPL_OK) {
-		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
-		return 1;
-	}
-
-	var_force_type(c, VAR_BIGNUM);
-
-	return 0;
+	return varop_shift(c, a, b, DIRECTION_RIGHT);
 }
 
 /* String operations: */
@@ -595,12 +568,13 @@ varop_rand_prime(struct variable *dst, struct variable *nbytes)
 	unsigned long n;
 	int i, rc, triesmax;
 	/* rounds, test value*/
-	int r = 5;
+	int r = 10;
 
-	triesmax = 100;
+	triesmax = 1024;
 
 	if (mpl_init(&one) != MPL_OK)
 		return 1;
+	mpl_set_one(&one);
 
 	ap = var_cast_to_bignum(nbytes);
 	bp = var_bignum_ptr(dst);
@@ -622,7 +596,7 @@ varop_rand_prime(struct variable *dst, struct variable *nbytes)
 	}
 	if (i >= triesmax) {
 		print_warn("max tries reached\n");
-		goto err;
+		//goto err;
 	}
 
 	var_force_type(dst, VAR_BIGNUM);
