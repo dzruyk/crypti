@@ -174,6 +174,11 @@ var_convert_type(struct variable *var, var_type_t to_type)
 	    to_type == VAR_STRING ||
 	    to_type == VAR_OCTSTRING));
 	
+	if (var->type != VAR_BIGNUM &&
+	    var->type != VAR_OCTSTRING &&
+	    var->type != VAR_STRING)
+		printf("composite type");
+
 	//type exist
 	if ((var->type & to_type) != 0) {
 		if (var->type & VAR_BIGNUM)

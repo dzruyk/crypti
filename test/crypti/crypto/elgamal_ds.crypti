@@ -1,0 +1,42 @@
+
+def [r, s] elgamal_ds_sign(p, alpha, a, M) {
+	m = (sha1(M) + 1) % ( p - 1)
+
+	//fixme k должно быть взаимно просто с p - 1
+	k = 5
+	r = mod_exp(alpha, k, p);
+
+	s = ((m - a * r) * mod_inv(k, p - 1)) % (p - 1)
+	//fixme plz write mod_abs
+	while (s < 0)
+		s += p - 1
+}
+
+def [all_ok] elgamal_ds_verify(p, alpha, h, M, r, s) {
+	m = (sha1(M) + 1) % ( p - 1)
+
+	first = mod_exp(alpha, m, p)
+	second = (mod_exp(h, r, p) * mod_exp(r, s, p)) % p
+	if (first == second)
+		all_ok = 1
+	else
+		all_ok = 0
+}
+
+p = 0xF1B18AE9F7B4E08FDA9A04832F4E919D89462FD31BF12F92791A93519F75076D6CE3942689CDFF2F344CAFF0F82D01864F69F3AECF566C774CBACF728B81A227
+alpha = 0x07
+
+a = 0x14E60B1BDFD33436C0DA8A22FDC14A2CCDBBED0627CE68
+h = mod_exp(alpha, a, p)
+//p = 23; alpha = 5; a = 7
+//h = mod_exp(alpha, a, p)
+
+
+m = `hello, lnly`
+r, s = elgamal_ds_sign(p, alpha, a, m)
+
+printf("r = %s, s = %s\n", r, s);
+if (elgamal_ds_verify(p, alpha, h, m, r, s))
+	printf("verify success\n")
+else
+	printf("[-] verify fail\n")
