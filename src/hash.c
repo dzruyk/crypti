@@ -151,8 +151,24 @@ _hash_table_insert(struct hash_table *table, void *key, void *data)
 					if (bp != &table->arr[idx])
 						free(bp);
 				} else {
+					if (bp == &table->arr[idx]) {
+						struct hash_bucket *nbp;
+
+						nbp = malloc(sizeof(struct hash_bucket));
+						if (nbp == NULL){
+							WARN("can't allocate bucket");
+							return ret_out_of_memory;
+
+						}
+						memset(nbp, 0, sizeof(struct hash_bucket));
+						nbp->key = bp->key;
+						nbp->data = bp->data;
+						/* forget about original bp */
+						bp = nbp;
+					}
 					bp->next = arr[new_idx].next;
 					arr[new_idx].next = bp;
+
 					collision++;
 				}
 			}

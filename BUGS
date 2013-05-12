@@ -24,20 +24,6 @@ len and size tests!
 
 проблема с выпечатыванием строк
 
-for(i = 0; i < 1000; i+=1) {
-	        arr[i] = 0;
-}
-сегментация
-for (i = 0; i< 100; i+=1)
-        arr[i] = 0
-
-for (i = 0; i < 10000; i += 1) { 
-        a = randint(0, 100)
-        arr[a] +=1
-}
-сегментация
-
-
 if (elgamal_ds_verify(p, alpha, h, m, r, s))
 	printf("verify success\n");
 else

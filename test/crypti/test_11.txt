@@ -1,0 +1,12 @@
+//test for sanity random genaration function
+
+for (i = 0; i< 100; i+=1)
+        arr[i] = 0
+
+for (i = 0; i < 10000; i += 1) {
+        a = randint(0, 100)
+        arr[a] +=1
+}
+
+for (i = 0; i< 100; i+=1)
+	printf("%d) %d\n", i, arr[i]);

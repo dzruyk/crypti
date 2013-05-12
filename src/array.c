@@ -19,6 +19,8 @@ arr_hash_cb(const void *data)
 	int i, mult, res;
 	char *s;
 	
+	assert(data != NULL);
+
 	mult = 31;
 	res = 0;
 	s = (char*)data;
@@ -32,6 +34,8 @@ arr_hash_cb(const void *data)
 static int
 arr_cmp(const void *a, const void *b)
 {       
+	assert(a != NULL && b != NULL);
+
 	return strcmp((char*)a, (char*)b);
 }
 
@@ -40,6 +44,8 @@ arr_item_new(char *key, struct variable *var)
 {
 	arr_item_t *item;
 	struct variable *tmp;
+
+	assert(key != NULL && var != NULL);
 
 	item = xmalloc(sizeof(*item));
 	memset(item, 0, sizeof(*item));
@@ -57,6 +63,8 @@ arr_item_new(char *key, struct variable *var)
 static void
 arr_item_free(arr_item_t *item)
 {
+	assert(item != NULL);
+
 	ufree(item->key);
 	var_clear(item->var);
 	ufree(item->var);
@@ -147,6 +155,8 @@ arr_remove_item(arr_t *arr, char *key)
 {
 	arr_item_t *old;
 
+	assert(arr != NULL && key != NULL);
+
 	if (hash_table_lookup(arr->hash, key, (void **)&old) != ret_ok)
 		return ret_err;
 
@@ -200,6 +210,8 @@ arr_free(arr_t *arr)
 	arr_iterate_t *iter;
 	arr_item_t *item;
 
+	assert(arr != NULL);
+
 	iter = array_iterate_new(arr);
 	if (iter == NULL)
 		error(1, "array_iterate_new fail\n");
@@ -220,6 +232,8 @@ array_iterate_new(arr_t *arr)
 {
 	arr_iterate_t *iterate;
 
+	assert(arr != NULL);
+
 	iterate = xmalloc(sizeof(*iterate));
 	
 	iterate->iter = hash_table_iterate_init(arr->hash);
@@ -233,6 +247,8 @@ boolean_t
 array_iterate(arr_iterate_t *iterate, arr_item_t **res)
 {
 	void *key;
+
+	assert(iterate != NULL && res != NULL);
 
 	return hash_table_iterate(iterate->iter, &key, (void **)res);
 }
