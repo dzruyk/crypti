@@ -49,13 +49,21 @@ static struct {
 	{"mod_inv", 2, 1, libcall_mod_inv},
 	{"mod_exp", 3, 1, libcall_mod_exp},
 
-	/* Crypto hashes (simple) */
+	/* 
+	 * Crypto hashes (simple) interface:
+	 * def [digest] hash_name(data)
+	 */
 	{"md5", 1, 1, libcall_md5},
 	{"sha1", 1, 1, libcall_sha1},
 	{"sha256", 1, 1, libcall_sha256},
 	{"whirlpool", 1, 1, libcall_whirlpool},
 
-	/* Crypto hashes (full) */
+	/* 
+	 * Crypto hashes (full) interface
+	 * def [all_ok] hash_name_init(id)
+	 * def [] hash_name_update(id, data)
+	 * def [digest] hash_name_finalize(id)
+	 */
 	{"md5_init", 1, 1, libcall_md5_init},
 	{"md5_update", 2, 0, libcall_md5_update},
 	{"md5_finalize", 1, 1, libcall_md5_finalize},

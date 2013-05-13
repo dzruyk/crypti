@@ -111,6 +111,8 @@ str_substr(str_t *res, str_t *str, int first, int n)
 	size_t len;
 	int i;
 
+	assert(res != NULL);
+
 	len = str_len(str);
 
 	if (first < 0)

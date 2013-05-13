@@ -116,6 +116,8 @@ traverse_arr(ast_node_t *tree)
 	ast_node_t **synarr;
 	int i, sz;
 	
+	assert(tree != NULL);
+
 	DEBUG(LOG_VERBOSE, "\n");
 
 	synarr = ((ast_node_arr_t *)tree)->arr;
@@ -301,6 +303,8 @@ push_return_args(func_t *func)
 {
 	id_item_t *items[MAXRETARGS];
 	int i;
+
+	assert(func != NULL);
 
 	for (i = func->nret - 1; i >= 0; i--) {
 		items[i] = id_table_lookup(func->retargs[i]);
