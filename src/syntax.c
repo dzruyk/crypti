@@ -39,6 +39,7 @@ static ast_node_t *assign(ast_node_t *first, int nesting);
 static ast_node_t *get_rval();
 static ast_node_t *op_with_assign(ast_node_t *lvalue);
 
+static ast_node_t *trenary_op();
 static ast_node_t *logic_or();
 static ast_node_t *logic_and();
 static ast_node_t *bool_or();
@@ -372,7 +373,7 @@ expr()
 	
 	ast_node_t *result;
 	
-	result = logic_or();
+	result = trenary_op();
 	if (result == NULL)
 		return NULL;
 
@@ -449,7 +450,7 @@ op_with_assign(ast_node_t *node)
 	}
 	tok_next();
 	
-	right = logic_or();
+	right = trenary_op();
 	if (right == NULL) {
 		print_warn("uncomplited as expression\n");
 		goto err;
@@ -477,7 +478,7 @@ get_rval()
 			goto err;
 	} else {
 		//to variable
-		right = logic_or();
+		right = trenary_op();
 		if (right == NULL) {
 			print_warn("uncomplited as expression\n");
 			goto err;
@@ -573,6 +574,38 @@ err:
 	ast_node_unref(lseq);
 	ast_node_unref(rseq);
 
+	return ast_node_stub_new();
+}
+
+static ast_node_t *
+trenary_op()
+{
+	ast_node_t *_if_yes, *_if_no;
+	ast_node_t *cond;
+
+	DEBUG(LOG_VERBOSE, "\n");
+	
+	cond = logic_or();
+	
+	if (cond == NULL)
+		return NULL;
+
+	if (match(TOK_QUESTION) == FALSE)
+		return cond;
+	_if_yes = expr();
+	if (match(TOK_COLON) == FALSE ||
+	    _if_yes == NULL || nerrors != 0)
+		goto err;
+		
+	_if_no = expr();
+	if (_if_no == NULL || nerrors != 0)
+		goto err;
+	
+	return ast_node_trenary_new(cond, _if_yes, _if_no);
+err:
+	nerrors++;
+	ast_node_unref(cond);
+	print_warn("trenary op syntax error\n");
 	return ast_node_stub_new();
 }
 

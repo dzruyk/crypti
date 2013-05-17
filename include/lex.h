@@ -45,6 +45,8 @@ typedef enum {
 	TOK_RBRACKET,	// ]
 	TOK_DOT,	// .
 	TOK_COMMA,	// ,
+	TOK_COLON,	// :
+	TOK_QUESTION,	// ?
 	TOK_SEMICOLON,	// ;
 	TOK_SHL,	// <<
 	TOK_SHR,	// >>

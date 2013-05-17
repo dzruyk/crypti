@@ -22,6 +22,7 @@ ast_node_free(ast_node_t *tree)
 	ast_node_while_t *whilenode;
 	ast_node_do_t *donode;
 	ast_node_del_t *delnode;
+	ast_node_trenary_t *trenary;
 	ast_node_unary_t *unary;
 	ast_node_import_t *import;
 
@@ -83,6 +84,12 @@ ast_node_free(ast_node_t *tree)
 	case AST_NODE_DEL:
 		delnode = (ast_node_del_t *)tree;
 		ast_node_unref(delnode->id);
+		break;
+	case AST_NODE_TRENARY:
+		trenary = (ast_node_trenary_t *)tree;
+		ast_node_unref(trenary->cond);
+		ast_node_unref(trenary->_if_no);
+		ast_node_unref(trenary->_if_yes);
 		break;
 	case AST_NODE_UNARY:
 		unary = (ast_node_unary_t *) tree;
@@ -398,6 +405,22 @@ ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node)
 	    call->nargs * sizeof(*(call->args)));
 
 	call->args[n] = node;
+}
+
+ast_node_t *
+ast_node_trenary_new(ast_node_t *cond, 
+    ast_node_t *_if_yes, ast_node_t *_if_no)
+{
+	ast_node_trenary_t *res;	
+
+	res = (ast_node_trenary_t *) 
+	    ast_node_new(AST_NODE_TRENARY, sizeof(*res), ast_node_free);
+
+	res->cond = cond;
+	res->_if_no = _if_no;
+	res->_if_yes = _if_yes;
+
+	return AST_NODE(res);
 }
 
 ast_node_t *

@@ -43,6 +43,7 @@ typedef enum {
 	AST_NODE_DEF,
 	AST_NODE_CALL,
 	AST_NODE_UNARY,
+	AST_NODE_TRENARY,
 	AST_NODE_OP,
 	AST_NODE_OP_AS,
 	AST_NODE_AS,
@@ -119,6 +120,13 @@ typedef struct {
 	ast_node_t *node;
 	int opcode;
 } ast_node_unary_t;
+
+typedef struct {
+	ast_node_t tree;
+	ast_node_t *cond;
+	ast_node_t *_if_yes;
+	ast_node_t *_if_no;
+} ast_node_trenary_t;
 
 typedef struct {
 	ast_node_t tree;
@@ -225,6 +233,9 @@ ast_node_t *ast_node_func_def_new();
 ast_node_t *ast_node_func_call_new(char *name);
 
 void ast_node_func_call_add_next_arg(ast_node_func_call_t *call, ast_node_t *node);
+
+ast_node_t *ast_node_trenary_new(ast_node_t *cond, 
+    ast_node_t *_if_yes, ast_node_t *_if_no);
 
 ast_node_t *ast_node_unary_new(ast_node_t *node, opcode_t opcode);
 

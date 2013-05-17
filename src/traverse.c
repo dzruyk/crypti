@@ -1137,6 +1137,26 @@ traverse_seq(ast_node_t *tree)
 }
 
 static void
+traverse_trenary(ast_node_t *tree)
+{
+	ast_node_trenary_t *trenary;
+	int ret;
+
+	assert(tree != NULL);
+
+	trenary = (ast_node_trenary_t *) tree;
+
+	ret = traverse_cond(trenary->cond);
+	if (nerrors != 0)
+		return;
+	if (ret == TRUE)
+		traverse(trenary->_if_yes);
+	else
+		traverse(trenary->_if_no);
+	
+}
+
+static void
 traverse_unary(ast_node_t *tree)
 {
 	ast_node_unary_t *unary;
@@ -1325,6 +1345,7 @@ struct {
 	{AST_NODE_ACCESS, traverse_access},
 	{AST_NODE_DEF, traverse_func_def},
 	{AST_NODE_CALL, traverse_func_call},
+	{AST_NODE_TRENARY, traverse_trenary},
 	{AST_NODE_UNARY, traverse_unary},
 	{AST_NODE_OP, traverse_op},
 	{AST_NODE_OP_AS, traverse_op_as},

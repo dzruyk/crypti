@@ -1,9 +1,9 @@
 #RSA library
 
-def rsakg(const len, exp, n, d) {
+def [] rsakg(len, exp, n, d) {
 
-	p = rand_prime(len / 2);
-	q = rand_prime(len / 2);
+	p = randprime(len / 2);
+	q = randprime(len / 2);
 
 	n = p * q;
 
@@ -14,16 +14,17 @@ def rsakg(const len, exp, n, d) {
 
 	d = mod_inv(exp, phi);
 
-	return 0;
+	return;
 }
 
 
 
-def [mask] MGF(Z, l) {
+DEF [mask] MGF(Z, l) {
 
 	count = l / hLen + (1 % hLen ? 1 : 0)
 	for (i = 0; i < count; i += 1) {
-		C = zeropad(i, 4);
+		//C = zeropad(i, 4);
+		C = rpad(``, 4, '\x00`);
 		T = T # sha1(Z # C)
 	}
 	mask = subocts(T, 0, l)
@@ -67,7 +68,7 @@ def [EM, error] EME_OAEP_Encode(M, P, emLen) {
 	PS = zerostr(emLen - mLen - 2 * hLen - 1);
 	DB = pHash # PS # `\x01` # M
 
-	seed = randstr(hLen);
+	seed = randocts(hLen);
 	dbMask = MGF(seed, emLen - hLen)
 	maskedDB = DB ^ dbMask
 	seedMask = MGF(maskedDB, hLen)
