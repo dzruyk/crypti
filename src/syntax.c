@@ -1102,7 +1102,7 @@ factor()
 	DEBUG(LOG_VERBOSE, "\n");
 	
 	if (match(TOK_LPAR)) {
-		stat = logic_or();
+		stat = trenary_op();
 		
 		if (match(TOK_RPAR) == FALSE) {
 			print_warn("right parenthesis missed\n");
