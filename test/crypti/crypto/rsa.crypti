@@ -1,4 +1,4 @@
-#RSA library
+//RSA library
 
 hLen = size(sha1(``))
 
@@ -25,6 +25,7 @@ def [] rsakg(len, exp, n, d) {
 def [mask] MGF(Z, l) {
 
 	count = l / hLen + (1 % hLen ? 1 : 0)
+	T = ``
 	for (i = 0; i < count; i += 1) {
 		//C = zeropad(i, 4);
 		C = rpad(``, 4, `\x00`);
@@ -80,36 +81,43 @@ def [EM, error] EME_OAEP_Encode(M, P, emLen) {
 	error = ""
 }
 
-def [idx] ostrstr(s, sub) {
+def [idx] skip_ps(s) {
 	idx = -1
 	for (i = 0; i < size(s); i+=1) {
-		if (sub == subocts(s, i, size(sub)))
-			idx = i
+		ch = subocts(s, i, 1);
+		if (ch == `\x01`) {
+			idx = i;
+			return;
+		} else if (ch == `\x00`) {
+			continue;
+		} else {
+			break;
+		}
 	}
 }
 
 def [M, error] EME_OAEP_Decode(EM, P) {
-
+	emLen = size(EM)
 	if (emLen < 2 * hLen + 1) {
 		error = "decoding error"
 		M = 0;
 		return
 	}
 	maskedSeed = subocts(EM, 0, hLen)
-	maskedDB = subocts(EM, Hlen, emLen - hLen)
-	seedMask = MGF(maskedDB, hlen)
+	maskedDB = subocts(EM, hLen, emLen - hLen)
+	seedMask = MGF(maskedDB, hLen)
 	seed = maskedSeed ^ seedMask
 	dbMask = MGF(seed, emLen - hLen)
 	DB = maskedDB ^ dbMask
 	pHash = sha1(P)
 	pHash2 = subocts(DB, 0, hLen)
-	if (pHash != pHash2) {
+	msg_start = skip_ps(subocts(DB, hLen + 1, size(DB)))
+	if (pHash != pHash2 || msg_start == -1) {
 		error = "decoding error"
 		M = 0
 		return
 	}
-	writeme!!!!!!!!!!!!!!!
-
+	M = subocts(DB, hLen + msg_start + 2, size(DB))
 	error = ""
 }
 
@@ -140,4 +148,24 @@ def [M, error] RSAES_OAEP_Decrypt(n, d, C, P) {
 		return
 	}
 }
+
+
+p = 164937809498693114066467408383914782333527197073511036987162167595522505138910091466343304701245525422116374834426971425227721548214532559674219220342937496611284194917663412121043440284783914805054028450034622664404548963465968167588865175878063342160088395936966476918173662869141689417625294310780618312389
+q = 161414438690455166913945841202721236684257406486355983540000547295416410254210772029010565257527513977947983404388871117229928421359414306396411094759266738477229669629274353771573848566767631453505555567145121955951188523516188198578506911433360076528200612058731207470313388554358069481907987968704391147129
+n = p * q
+fi = (p - 1) * (q - 1)
+e = 3
+d = mod_inv(3, fi)
+
+secret_msg = `Dz_lnly was here`
+C, err = RSAES_OAEP_Encrypt(n, e, secret_msg, `padding`)
+
+if (err) {
+	printf("%s\n", err)
+} else {
+	printf("Decode successfull\n")
+}
+
+M1, err = RSAES_OAEP_Decrypt(n, d, C, `padding`)
+printf("%s\n", M1 | 0x00);
 

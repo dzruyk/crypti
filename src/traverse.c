@@ -370,6 +370,7 @@ exec_function(func_t *func)
 			print_warn("unexpected break\n");
 			return;
 		case RES_RETURN:
+			helper.is_return--;
 			goto finalize;
 		default:
 			next = next->child;

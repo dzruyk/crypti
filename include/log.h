@@ -1,7 +1,7 @@
 #ifndef __CRYPTI_H_
 #define __CRYPTI_H_
 
-#define IS_DEBUG 1
+#define IS_DEBUG 0
 #define LOG_LEVEL LOG_DEFAULT
 
 #define LOG_DEFAULT 1

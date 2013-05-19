@@ -19,6 +19,7 @@ static struct {
 	int nret;
 	libcall_handler_t handler;
 } builtin [] = {
+	//{"exit", 0, 0, libcall_exit},
 	{"print", 1, 0, libcall_print},
 	{"printf", FUNC_VAR_ARGS, 0, libcall_printf},
 	{"sum", FUNC_VAR_ARGS, 1, libcall_sum},
