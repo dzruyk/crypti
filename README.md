@@ -6,6 +6,13 @@ Description
 
 Crypti is simple language for crypto researchers.
 
+
+License
+-------
+
+BSD license
+
+
 Installation
 ------------
 For installing crypti you need to install libmpl lib,
