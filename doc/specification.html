@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
     "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 <head>
-<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf8" />
 <meta name="generator" content="AsciiDoc 8.6.7" />
 <title>Черновик документации по crypti.</title>
 <style type="text/css">
@@ -783,6 +783,11 @@ asciidoc.install();
 <div class="ulist"><ul>
 <li>
 <p>
+Комментарии
+</p>
+</li>
+<li>
+<p>
 Идентификаторы
 </p>
 </li>
@@ -1033,20 +1038,25 @@ b = a " universe"</tt></pre>
 <li>
 <p>
 Десятичной
+Запись производится в соответствии с регулярным выражением:
+<tt><tt>[+-]*[0-9]+</tt></tt>
 </p>
 </li>
-</ol></div>
-<div class="paragraph"><p>Запись производится в соответствии с регулярным выражением:
-<tt><tt>[+-]*[0-9]+</tt></tt></p></div>
-<div class="olist arabic"><ol class="arabic">
 <li>
 <p>
 Шестнадцатиричной
+Число записывается с помощью регулярного выражения:
+<tt><tt>[+-]*0x[0-9A-F]+</tt></tt>
+</p>
+</li>
+<li>
+<p>
+Восьмиричной.
+Число записывается с помощью регулярного выражения:
+<tt><tt>[+-]*0[0-7]+</tt></tt>
 </p>
 </li>
 </ol></div>
-<div class="paragraph"><p>Число записывается с помощью регулярного выражения:
-<tt><tt>[+-]*0x[0-9A-F]+</tt></tt></p></div>
 <div class="paragraph"><p>Если перед числом указано больше одного знака,
 то результирующий знак определяется по следующему правилу:</p></div>
 <div class="paragraph"><p><tt>-</tt>) Если количество минусов перед знаком нечётное</p></div>
@@ -1054,7 +1064,9 @@ b = a " universe"</tt></pre>
 <div class="paragraph"><p>Примеры определения чисел:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>42
+<pre><tt>0xdeadbeef
+0777
+42
 1000012
 1234567890</tt></pre>
 </div></div>
@@ -1072,8 +1084,8 @@ b = a " universe"</tt></pre>
 <div class="paragraph"><p>Примеры определения октетных строк:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>'\x00\x44\x23\x11'
-'\x0d\x0a\x42'</tt></pre>
+<pre><tt>`\x00\x44\x23\x11`
+`\x0d\x0a\x42`</tt></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -1116,6 +1128,22 @@ b = a " universe"</tt></pre>
 <div class="sect1">
 <h2 id="_лексические_элементы">Лексические элементы</h2>
 <div class="sectionbody">
+</div>
+</div>
+<div class="sect1">
+<h2 id="_комментарии">Комментарии</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Однострочные комментарии задаются с помощью последовательности //.</p></div>
+<div class="sect2">
+<h3 id="_пример">Пример:</h3>
+<div class="paragraph"><p>Для написания многострочных комментариев используется последовательность /* */</p></div>
+</div>
+<div class="sect2">
+<h3 id="_пример_2">Пример:</h3>
+<div class="paragraph"><p>/*
+ * this is commenary
+ */</p></div>
+</div>
 <div class="sect2">
 <h3 id="_идентификаторы">Идентификаторы</h3>
 <div class="paragraph"><p>Идентификаторы можно задать в соответствии со следующим регулярным выражением.
@@ -1185,7 +1213,7 @@ b = a " universe"</tt></pre>
 на следующую итерацию цикла.</p></div>
 <div class="paragraph"><p><strong>return</strong></p></div>
 <div class="paragraph"><p><strong>return</strong> должен встречаться в теле функции.
-он приводит немедленному завершению функции.
+Он приводит немедленному завершению функции.
 При этом возвращаются текущие значения возвращаемых параметров функции.</p></div>
 <div class="paragraph"><p><strong>import</strong></p></div>
 <div class="paragraph"><p>Синтаксис:</p></div>
@@ -1522,6 +1550,12 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Описание</p></td>
 </tr>
 <tr>
+<td align="left" valign="top"><p class="table"><tt>:?</tt></p></td>
+<td align="left" valign="top"><p class="table">Тренарный оператор. Синтаксис: <em>expr</em> ? <em>if_true</em> : <em>if_false</em>
+                Аналогичный Си тренарный оператор. Если <em>expr</em> истинно выполняется
+                выражение <em>if_true</em>, в обратном случае выполняется <em>if_false</em></p></td>
+</tr>
+<tr>
 <td align="left" valign="top"><p class="table"><tt>.</tt></p></td>
 <td align="left" valign="top"><p class="table">Синтаксис: <em>a.b</em>. операция взятия атрибута <em>b</em> у переменной <em>a</em>.
                 попытка взятия не существующего атрибута приводит к <strong>&lt;Runtime error&gt;</strong></p></td>
@@ -1773,14 +1807,14 @@ func(a);</tt></pre>
 <div class="sect1">
 <h2 id="_стандартная_библиотека">Стандартная библиотека</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Описание модулей</p></div>
+<div class="paragraph"><p>Описание функций (функции разбиты на несколько категорий)</p></div>
 <div class="sect2">
 <h3 id="_1_crypto">1. crypto</h3>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[res] mod_inv(num, modulo)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Находит обратное <em>num</em> число по модулю <em>modulo</em>.</p></div>
+<div class="paragraph"><p>Находит обратное <em>num</em> число по модулю <em>modulo</em> или -1 если такого числа не существует.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[res] mod_exp(n, exp, modulo)</tt></pre>
@@ -1789,30 +1823,38 @@ func(a);</tt></pre>
 <tt>(<em>n</em> ** <em>exp</em>) % <em>modulo</em></tt></p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[ctx] md5_ctx_new()
-[] md5_ctx_update(ctx, msg)
-[digest] md5_ctx_final(ctx)</tt></pre>
+<pre><tt>[digest] md5(str)
+
+[ret] md5_ctx_init(id)
+[] md5_ctx_update(id, msg)
+[digest] md5_ctx_finalize(id)</tt></pre>
 </div></div>
 <div class="paragraph"><p>Набор функций для получения md5 хеша.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[ctx] whirpool_ctx_new()
-[] whirpool_ctx_update(ctx, msg)
-[digest] whirpool_ctx_final(ctx)</tt></pre>
+<pre><tt>[digest] whirpool(str)
+
+[ret] whirpool_ctx_init(id)
+[] whirpool_ctx_update(id, msg)
+[digest] whirpool_ctx_finalize(id)</tt></pre>
 </div></div>
 <div class="paragraph"><p>Набор функций для получения whirpool хеша.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[ctx] sha1_ctx_new()
-[] sha1_ctx_update(ctx, msg)
-[digest] sha1_ctx_final(ctx)</tt></pre>
+<pre><tt>[digest] sha1(str)
+
+[ret] sha1_ctx_init(id)
+[] sha1_ctx_update(id, msg)
+[digest] sha1_ctx_finalize(id)</tt></pre>
 </div></div>
 <div class="paragraph"><p>Набор функций для получения sha1 хеша.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[ctx] sha256_ctx_new()
-[] sha256_ctx_update(ctx, msg)
-[digest] sha256_ctx_final(ctx)</tt></pre>
+<pre><tt>[digest] sha256(str)
+
+[ret] sha256_ctx_init(id)
+[] sha256_ctx_update(id, msg)
+[digest] sha256_ctx_finalize(id)</tt></pre>
 </div></div>
 <div class="paragraph"><p>Набор функций для получения sha256 хеша.</p></div>
 <div class="listingblock">
@@ -1822,10 +1864,14 @@ func(a);</tt></pre>
 [out] aes_encrypt(ctx, in)
 [out] aes_decrypt(ctx, in)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Набор функций для шифрования и дешифрования с помощью алгоритма aes</p></div>
+<div class="paragraph"><p>Набор функций для шифрования и дешифрования с помощью алгоритма aes <strong>(unimplemented now)</strong></p></div>
 </div>
 <div class="sect2">
 <h3 id="_2_stdio">2. stdio</h3>
+<div class="literalblock">
+<div class="content">
+<pre><tt>*( Functions unimplemented now)*</tt></pre>
+</div></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>[fd] fopen(path, mode)
@@ -1892,24 +1938,42 @@ func(a);</tt></pre>
 <h3 id="_3_random">3.random</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[res] rand_prime(len)</tt></pre>
+<pre><tt>[res] randprime(nbytes)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Генерирует случайное число длиннной <em>len</em> байт.</p></div>
+<div class="paragraph"><p>Генерирует случайное число длиннной <em>nbytes</em> байт.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>def [int] randint(start, stop)</tt></pre>
+</div></div>
+<div class="paragraph"><p>Возвращает случайное число из промежутка [<em>start</em>; _stop)</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>def [octs] randocts(len)</tt></pre>
+</div></div>
+<div class="paragraph"><p>Возвращает случайную октетную строку длинной <em>nbytes</em> байт.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_4_string">4.string</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[string] new_string(len, filler)</tt></pre>
+<pre><tt>[dst] lpad(src, width, filler)
+[dst] rpad(src, width, filler)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Возвращает новую строку <em>len</em> байт длинны,
-каждый байт которой равен <em>filler</em>.</p></div>
+<div class="paragraph"><p>Дополняет <em>src</em> строку слева или справа до длинны <em>width</em>
+с помощью filler.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[sub] subs(string, start, len)</tt></pre>
+<pre><tt>[sub] subs(string, start, len)
+[sub] subocts(string, start, len)</tt></pre>
 </div></div>
-<div class="paragraph"><p>Возвращает копию подстроки начиная с <em>start</em>,
+<div class="paragraph"><p>Возвращает часть строки/октетной строки начиная с <em>start</em>,
 <em>len</em> байт длинной.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>[n] len(s)
+[nbytes] size(octs)</tt></pre>
+</div></div>
+<div class="paragraph"><p>Возвращает длину строки <em>s</em>/ количество байтов в октетной строке <em>octs</em></p></div>
 </div>
 </div>
 </div>
@@ -1956,7 +2020,7 @@ hello()</tt></pre>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-07 00:59:09 MSK
+Последнее обновление 2013-06-02 13:15:55 MSK
 </div>
 </div>
 </body>

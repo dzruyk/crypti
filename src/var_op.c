@@ -526,6 +526,10 @@ varop_rand_wrapper(void *buf, size_t size, void *rndctx)
 }
 
 /* Random */
+
+/* 
+ * Return random number in range [start; stop)
+ */
 int
 varop_rand_int(struct variable *dst, struct variable *start, struct variable *stop)
 {

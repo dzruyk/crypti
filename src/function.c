@@ -26,11 +26,19 @@ static struct {
 	/*{"del", 1, libcall_del},*/
 	{"type", 1, 0, libcall_type},
 	{"arr_min_max", 1, 2, libcall_arr_min_max},
+	/* def [sub] subs(src, start, len) */
 	{"subs", 3, 1, libcall_subs},
+	/* def [sub] subocts(src, start, len) */
 	{"subocts", 3, 1, libcall_subocts},
-	/* string length*/
+	/* 
+	 * String length
+	 * def [n] len(s) 
+	 */
 	{"len", 1, 1, libcall_len},
-	/* Octstr byte count */
+	/* 
+	 * Octstr byte count
+	 * def [nbytes] size(octs) 
+	 */
 	{"size", 1, 1, libcall_size},
 	/* Perform left padding */
 	/* def [dst] lpad(src, width, filler) */
