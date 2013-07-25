@@ -27,7 +27,7 @@ print_help_message()
 {
 	printf(
 	"Usage: crypti [-h] [INPUT_FILE]\n"
-	"-h print this help message"
+	"-h print this help message "
 	"with no INPUT_FILE or whet INPUT_FILE is - read from "
 	"standard input (REPL loop)\n"
 	);

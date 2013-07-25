@@ -139,7 +139,7 @@ tok_next()
 }
 
 /*
- * pops last token to token stream
+ * Pops last token to token stream.
  * WARN: only one pushback guaranteed
  */
 static void
@@ -1833,7 +1833,7 @@ error:
 }
 
 /*
- * try to init new ast_node_arr_t
+ * Try to init new ast_node_arr_t
  * print warn and return NULL if some error occured
  * return ast_node_arr_t otherwise
  */
