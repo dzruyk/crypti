@@ -357,7 +357,7 @@ case ch:					\
 	lex_item.id = tok_type;			\
 	goto clean_end;
 
-#define EXTENDED_CASE_ITEM(ch, tok_type, additional_cases)	\
+#define EXTCASE_ITEM(ch, tok_type, additional_cases)	\
 case ch:							\
 	peek = fgetc(input);					\
 	switch (peek) {						\
@@ -385,35 +385,35 @@ case ch:							\
 	CASE_ITEM('%', TOK_PERSENT)
 
 	// If operator is '==' THEN TOK_EQ, TOK_AS otherwise
-	EXTENDED_CASE_ITEM('=', TOK_AS, 
+	EXTCASE_ITEM('=', TOK_AS, 
 	    CASE_ITEM('=', TOK_EQ))
-	EXTENDED_CASE_ITEM('!', TOK_NOT, 
+	EXTCASE_ITEM('!', TOK_NOT, 
 	    CASE_ITEM('=', TOK_NEQ))
-	EXTENDED_CASE_ITEM('&', TOK_B_AND,
+	EXTCASE_ITEM('&', TOK_B_AND,
 	    CASE_ITEM('&', TOK_L_AND)
 	    CASE_ITEM('=', TOK_B_AND_AS))
-	EXTENDED_CASE_ITEM('|', TOK_B_OR,
+	EXTCASE_ITEM('|', TOK_B_OR,
 	    CASE_ITEM('|', TOK_L_OR)
 	    CASE_ITEM('=', TOK_B_OR_AS))
-	EXTENDED_CASE_ITEM('^', TOK_B_XOR, 
+	EXTCASE_ITEM('^', TOK_B_XOR, 
 	    CASE_ITEM('=', TOK_B_XOR_AS))
-	EXTENDED_CASE_ITEM('+', TOK_PLUS,
+	EXTCASE_ITEM('+', TOK_PLUS,
 	    CASE_ITEM('=', TOK_PLUS_AS))
-	EXTENDED_CASE_ITEM('-', TOK_MINUS,
+	EXTCASE_ITEM('-', TOK_MINUS,
 	    CASE_ITEM('=', TOK_MINUS_AS))
-	EXTENDED_CASE_ITEM('<', TOK_LO,
+	EXTCASE_ITEM('<', TOK_LO,
 	    CASE_ITEM('=', TOK_LE)
-	    EXTENDED_CASE_ITEM('<', TOK_SHL,
+	    EXTCASE_ITEM('<', TOK_SHL,
 	        CASE_ITEM('=', TOK_SHL_AS)))
-	EXTENDED_CASE_ITEM('>', TOK_GR,
+	EXTCASE_ITEM('>', TOK_GR,
 	    CASE_ITEM('=', TOK_GE)
-	    EXTENDED_CASE_ITEM('>', TOK_SHR,
+	    EXTCASE_ITEM('>', TOK_SHR,
 	        CASE_ITEM('=', TOK_SHR_AS)))
-	EXTENDED_CASE_ITEM('*', TOK_MUL,
+	EXTCASE_ITEM('*', TOK_MUL,
 	    CASE_ITEM('=', TOK_MUL_AS)
-	    EXTENDED_CASE_ITEM('*', TOK_POW,
+	    EXTCASE_ITEM('*', TOK_POW,
 	        CASE_ITEM('=', TOK_POW_AS))) 
-	EXTENDED_CASE_ITEM('/', TOK_DIV,
+	EXTCASE_ITEM('/', TOK_DIV,
 	    CASE_ITEM('=', TOK_DIV_AS)
 	    case '/':
 		skip_comment();
