@@ -204,7 +204,7 @@ void buffer_printf_append(struct buffer *buffer, char *fmt, ...)
 	size_t head;
 
 #define VSNPRINTF_TRY   32
-	
+
 	va_start(ap, fmt);
 	va_copy(ap_save, ap);
 
@@ -225,7 +225,7 @@ void buffer_printf_append(struct buffer *buffer, char *fmt, ...)
 	} else {
 		buffer_trim(buffer, VSNPRINTF_TRY-res-1);
 	}
-	
+
 	buffer_trim(buffer, 1);
 	va_end(ap);
 }

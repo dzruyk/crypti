@@ -128,7 +128,7 @@ varop_mod_exp(struct variable *res, struct variable *a, struct variable *y,
 	int ret;
 
 	assert(res != NULL && a != NULL && y != NULL && b != NULL);
-	
+
 	ap = var_cast_to_bignum(a);
 	bp = var_cast_to_bignum(b);
 	yp = var_cast_to_bignum(y);
@@ -150,7 +150,7 @@ varop_or(struct variable *c, struct variable *a, struct variable *b)
 	octstr_t *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
-	
+
 	ap = var_cast_to_octstr(a);
 	bp = var_cast_to_octstr(b);
 	cp = var_octstr_ptr(c);
@@ -168,7 +168,7 @@ varop_xor(struct variable *c, struct variable *a, struct variable *b)
 	octstr_t *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
-	
+
 	ap = var_cast_to_octstr(a);
 	bp = var_cast_to_octstr(b);
 	cp = var_octstr_ptr(c);
@@ -186,7 +186,7 @@ varop_and(struct variable *c, struct variable *a, struct variable *b)
 	octstr_t *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
-	
+
 	ap = var_cast_to_octstr(a);
 	bp = var_cast_to_octstr(b);
 	cp = var_octstr_ptr(c);
@@ -212,7 +212,7 @@ varop_not(struct variable *res, struct variable *var)
 		mpl_set_one(bp);
 	else
 		mpl_zero(bp);
-	
+
 	var_force_type(res, VAR_BIGNUM);
 
 	return 0;
@@ -227,7 +227,7 @@ varop_neg(struct variable *res, struct variable *var)
 
 	src = var_cast_to_bignum(var);
 	dst = var_bignum_ptr(res);
-	
+
 	mpl_copy(dst, src);
 
 	dst->sign = !src->sign;
@@ -270,7 +270,7 @@ varop_shift(struct variable *c, struct variable *a, struct variable *b, int dire
 		DEBUG(LOG_DEFAULT, "can't convert to uint\n");
 		return 1;
 	}
-	
+
 	ret = mpl_copy(cp, ap);
 	if (ret != MPL_OK) {
 		DEBUG(LOG_DEFAULT, "can't copy bnum\n");
@@ -312,7 +312,7 @@ varop_str_concat(struct variable*c, struct variable *a, struct variable *b)
 	str_t *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
-	
+
 	ap = var_cast_to_str(a);
 	bp = var_cast_to_str(b);
 	cp = var_str_ptr(c);
@@ -343,13 +343,13 @@ varop_str_sub(struct variable *res, struct variable *s, struct variable *start, 
 	ret = mpl_to_uint(b, &n);
 	if (ret != MPL_OK)
 		goto err;
-	
+
 	resstr = var_str_ptr(res);
 
 	ret = str_substr(resstr, str, first, n);
 	if (ret != 0)
 		goto err;
-	
+
 	var_force_type(res, VAR_STRING);
 
 	return 0;
@@ -399,7 +399,7 @@ varop_padding(struct variable *dst, struct variable *src, struct variable *width
 	//FIXME: write mpl_to_sint
 	if (mpl_to_uint(wp, (unsigned long int *) &sz) != MPL_OK)
 		return 1;
-	
+
 	flen = octstr_len(fp);
 	if (flen == 0)
 		return 0;
@@ -410,7 +410,7 @@ varop_padding(struct variable *dst, struct variable *src, struct variable *width
 
 	if (type == PAD_RIGHT)
 		octstr_append_octstr(dp, sp);
-	
+
 	while (sz > 0 && sz > flen) {
 		octstr_append_octstr(dp, fp);
 		sz -= flen;
@@ -449,7 +449,7 @@ varop_oct_concat(struct variable *c, struct variable *a, struct variable *b)
 	octstr_t *ap, *bp, *cp;
 
 	assert(c != NULL && a != NULL && b != NULL);
-	
+
 	ap = var_cast_to_octstr(a);
 	bp = var_cast_to_octstr(b);
 	cp = var_octstr_ptr(c);
@@ -546,7 +546,7 @@ varop_rand_int(struct variable *dst, struct variable *start, struct variable *st
 
 	if (varop_sub(&tmp, stop, start) != 0)
 		goto err;
-	
+
 	ap = var_cast_to_bignum(&tmp);
 
 	ret = mpl_rand_below(cp, ap, varop_rand_wrapper, NULL);
@@ -629,7 +629,7 @@ varop_rand_octs(struct variable *dst, struct variable *len)
 
 	if (mpl_to_uint(ap, &sz) != MPL_OK)
 		return 1;
-	
+
 	octstr_reset(octstr);
 
 	do {
@@ -658,14 +658,14 @@ varop_cmp(struct variable *a, struct variable *b)
 {
 	mpl_int *ap, *bp;
 	int res;
-	
+
 	assert(a != NULL && b != NULL);
 
 	ap = var_cast_to_bignum(a);
 	bp = var_cast_to_bignum(b);
 
 	res = mpl_cmp(ap, bp);
-	
+
 	switch (res) {
 	case MPL_CMP_EQ:
 		return 0;

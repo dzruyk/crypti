@@ -11,7 +11,7 @@ print_usage(char *pname)
 
 inline void *
 xmalloc(size_t sz)
-{	
+{
 	void *tmp;
 	if ((tmp = malloc(sz)) == NULL)
 		error(1, "malloc_err");
@@ -35,7 +35,7 @@ strdup_or_die(char *str)
 	dup = strdup(str);
 	if (dup == NULL)
 		error(1, "malloc_err");
-	
+
 	return dup;
 }
 

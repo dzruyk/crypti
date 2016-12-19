@@ -40,14 +40,14 @@ hash_ctx_table_init()
 {
 	if (ctx_table != NULL)
 		error(1, "ctx table already initialisated!\n");
-	
+
 	ctx_table = xmalloc(sizeof(*ctx_table));
 
-	ctx_table->hash = hash_table_new(INITIAL_SZ, 
+	ctx_table->hash = hash_table_new(INITIAL_SZ,
 	    (hash_callback_t )default_hash_cb,
 	    (hash_compare_t )default_hash_compare);
 	ctx_table->count = 0;
-	
+
 	if (ctx_table->hash == NULL)
 		error(1, "error at table table creation\n");
 }
@@ -67,7 +67,7 @@ hash_ctx_table_destroy()
 	struct hash_table_iter *iter;
 
 	iter = hash_table_iterate_init(ctx_table->hash);
-	
+
 	while (hash_table_iterate(iter, &key, &data) != FALSE)
 		hash_ctx_destroy_cb((struct hash_ctx *)data);
 
@@ -83,7 +83,7 @@ static ret_t
 hash_ctx_table_insert(struct hash_ctx *item)
 {
 	int res;
-	
+
 	assert(item != NULL);
 
 	if (ctx_table->count + 1 > MAX_N_CTX) {
@@ -96,7 +96,7 @@ hash_ctx_table_insert(struct hash_ctx *item)
 		error(1, "error at func table insertion\n");
 	else if (res == ret_entry_exists)
 		error(1, "internal error, entry exists\n");
-	
+
 	ctx_table->count++;
 
 	return ret_ok;
@@ -122,7 +122,7 @@ hash_ctx_new(char *name, int type, void *ctx)
 
 	item = xmalloc(sizeof(*item));
 	memset(item, 0, sizeof(*item));
-	
+
 	item->name = strdup_or_die(name);
 	item->type = type;
 	item->ctx = ctx;
@@ -136,11 +136,11 @@ hash_ctx_delete(struct hash_ctx *item)
 	int ret;
 
 	assert(item != NULL);
-	
+
 	ret = hash_table_remove(ctx_table->hash, item->name);
 	if (ret == FALSE)
 		return ret_err;
-	
+
 	hash_ctx_destroy_cb(item);
 	ctx_table->count--;
 
@@ -308,7 +308,6 @@ octstr_sha1_finalize(str_t *id, octstr_t *out)
 	generic_hash_finalize(id, out, sha1, CTX_TYPE_SHA1, 20);
 
 }
-
 
 int
 octstr_sha256_init(str_t *id)

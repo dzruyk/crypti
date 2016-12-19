@@ -173,7 +173,7 @@ var_convert_type(struct variable *var, var_type_t to_type)
 	    to_type == VAR_BIGNUM ||
 	    to_type == VAR_STRING ||
 	    to_type == VAR_OCTSTRING));
-	
+
 	if (var->type != VAR_BIGNUM &&
 	    var->type != VAR_OCTSTRING &&
 	    var->type != VAR_STRING)
@@ -195,7 +195,7 @@ var_convert_type(struct variable *var, var_type_t to_type)
 		from_type = VAR_OCTSTRING;
 	else if (var->type & VAR_STRING)
 		from_type = VAR_STRING;
-	
+
 	var->type |= to_type;
 
 	return convert_value(var, to_type, var, from_type);

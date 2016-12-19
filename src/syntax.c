@@ -199,7 +199,7 @@ sync_stream()
 }
 
 boolean_t
-is_stmt_end() 
+is_stmt_end()
 {
 	switch (current_tok) {
 	case TOK_EOL:
@@ -239,11 +239,11 @@ program_start(ast_node_t **tree)
 	nerrors = 0;
 	*tree = NULL;
 	memset(&helper, 0, sizeof(helper));
-	
+
 	tok_next();
 
 	*tree = global_expr();
-	
+
 	if (nerrors != 0) {
 		//now we must flush tree
 		ast_node_unref(*tree);
@@ -265,7 +265,7 @@ global_expr()
 	//Define new function
 	if (match(TOK_DEF))
 		return process_function();
-	
+
 	else if (match(TOK_IMPORT))
 		return process_import();
 
@@ -280,7 +280,7 @@ stmts()
 	DEBUG(LOG_VERBOSE, "\n");
 
 	//return block();
-	
+
 	return statement();
 }
 
@@ -290,7 +290,7 @@ block()
 	ast_node_t *result, *prev, *tmp;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = prev = NULL;
 
 	//FIXME: bad, bad cycle
@@ -299,12 +299,12 @@ block()
 		//end of scope
 		if (current_tok == TOK_RBRACE)
 			break;
-	
+
 		tmp = statement();
 
 		if (result == NULL)
 			result = tmp;
-		
+
 		if (prev != NULL && tmp != NULL) {
 			prev->child = tmp;
 			tmp->parrent = prev;
@@ -331,18 +331,18 @@ block()
 
 static ast_node_t *
 statement()
-{	
+{
 	DEBUG(LOG_VERBOSE, "\n");
-	
-	if (match(TOK_LBRACE)) 
+
+	if (match(TOK_LBRACE))
 		return process_scope();
 
 	else if (match(TOK_IF))
 		return process_if();
-	
+
 	else if (match(TOK_FOR))
 		return process_for();
-	
+
 	else if (match(TOK_WHILE))
 		return process_while();
 
@@ -351,13 +351,13 @@ statement()
 
 	else if (match(TOK_CONTINUE))
 		return process_continue();
-	
+
 	else if (match(TOK_RETURN))
 		return process_return();
 
 	else if (match(TOK_DO))
 		return process_do();
-	
+
 	else if (match(TOK_DEL))
 		return process_del();
 
@@ -449,7 +449,7 @@ op_with_assign(ast_node_t *node)
 		error(1, "ERROR!\n");
 	}
 	tok_next();
-	
+
 	right = trenary_op();
 	if (right == NULL) {
 		print_warn("uncomplited as expression\n");
@@ -462,7 +462,7 @@ err:
 	nerrors++;
 
 	ast_node_unref(right);
-	
+
 	return ast_node_stub_new();
 }
 
@@ -584,9 +584,9 @@ trenary_op()
 	ast_node_t *cond;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	cond = logic_or();
-	
+
 	if (cond == NULL)
 		return NULL;
 
@@ -596,11 +596,11 @@ trenary_op()
 	if (match(TOK_COLON) == FALSE ||
 	    _if_yes == NULL || nerrors != 0)
 		goto err;
-		
+
 	_if_no = expr();
 	if (_if_no == NULL || nerrors != 0)
 		goto err;
-	
+
 	return ast_node_trenary_new(cond, _if_yes, _if_no);
 err:
 	nerrors++;
@@ -615,12 +615,12 @@ logic_or()
 	ast_node_t *right, *result;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = logic_and();
 
 	if (result == NULL)
 		return NULL;
-	
+
 	while (TRUE) {
 		if (match(TOK_L_OR) == FALSE)
 			return result;
@@ -641,16 +641,16 @@ logic_and()
 	ast_node_t *right, *result;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = bool_or();
 
 	if (result == NULL)
 		return NULL;
-	
+
 	while (TRUE) {
 		if(match(TOK_L_AND) == FALSE)
 			return result;
-		
+
 		right = bool_or();
 		if (right == NULL) {
 			nerrors++;
@@ -667,7 +667,7 @@ bool_or()
 	ast_node_t *right, *result;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = bool_xor();
 
 	if (result == NULL)
@@ -693,7 +693,7 @@ bool_xor()
 	ast_node_t *right, *result;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = bool_and();
 
 	if (result == NULL)
@@ -719,7 +719,7 @@ bool_and()
 	ast_node_t *right, *result;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = equity();
 
 	if (result == NULL)
@@ -747,12 +747,12 @@ equity()
 	opcode_t op;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = rel_op();
 
 	if (result == NULL)
 		return NULL;
-	
+
 	while (TRUE) {
 		switch (current_tok) {
 		case TOK_EQ:
@@ -784,12 +784,12 @@ rel_op()
 	int op;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = shift_expr();
 
 	if (result == NULL)
 		return NULL;
-	
+
 	while (TRUE) {
 		switch (current_tok) {
 		case TOK_GR:
@@ -826,12 +826,12 @@ shift_expr()
 	int op;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = add_expr();
 
 	if (result == NULL)
 		return NULL;
-	
+
 	while (TRUE) {
 		switch (current_tok) {
 		case TOK_SHL:
@@ -862,12 +862,12 @@ add_expr()
 	ast_node_t *tree;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	tree = mul_expr();
 
 	if (tree == NULL)
 		return NULL;
-	
+
 	return add_expr_rest(tree);
 }
 
@@ -878,7 +878,7 @@ add_expr_rest(ast_node_t *left)
 	int op;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = left;
 
 	while(TRUE) {
@@ -911,9 +911,9 @@ mul_expr()
 	ast_node_t *tree;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	tree = term();
-	if (tree == NULL) 
+	if (tree == NULL)
 		return NULL;
 
 	return mul_expr_rest(tree);
@@ -959,14 +959,14 @@ term()
 {
 	if (current_tok == TOK_EOL
 	    || current_tok == TOK_SEMICOLON) {
-		
+
 		return NULL;
 	} else if (is_eof() == TRUE) {
 
 		return NULL;
 	} else if (current_tok == TOK_PLUS
 	    || current_tok == TOK_MINUS) {
-		
+
 		return unary_plus();
 	} else if (current_tok == TOK_NOT) {
 
@@ -992,7 +992,7 @@ unary_not()
 	} while (match(TOK_NOT) == TRUE);
 
 	node = power();
-	
+
 	if (not)
 		return ast_node_unary_new(node, OP_NOT);
 	else
@@ -1028,7 +1028,7 @@ power()
 	int op;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	result = concatenation();
 
 	if (result == NULL)
@@ -1100,21 +1100,21 @@ factor()
 	ast_node_t *stat;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	if (match(TOK_LPAR)) {
 		stat = trenary_op();
-		
+
 		if (match(TOK_RPAR) == FALSE) {
 			print_warn("right parenthesis missed\n");
 			nerrors++;
 			return stat;
 		}
-		
+
 		return stat;
 	} else if (match(TOK_ID)) {
-		
+
 		return identifier();
-	
+
 	} else if (match(TOK_VAR)) {
 
 		return ast_node_var_new(lex_item_prev.var);
@@ -1132,7 +1132,7 @@ static ast_node_t *
 identifier()
 {
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	switch (current_tok) {
 	case TOK_LBRACKET:
 		return array_access();
@@ -1151,7 +1151,7 @@ process_if()
 	int saved;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	body = _if = _else = NULL;
 	saved = helper.is_cond++;
 
@@ -1171,18 +1171,19 @@ process_if()
 		print_warn("')' is missed\n");
 		goto err;
 	}
-	
+
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
 		body = statement();
-	} else
+	} else {
 		body = process_scope();
-	
+	}
+
 	if (nerrors != 0) {
 		print_warn("cant proc cond body\n");
 		goto err;
 	}
-	
+
 	skipped = skip_eol();
 
 	if (match(TOK_ELSE) == TRUE) {
@@ -1210,7 +1211,7 @@ err:
 	ast_node_unref(_if);
 	ast_node_unref(body);
 	helper.is_cond = saved;
-	
+
 	nerrors++;
 	return ast_node_stub_new();
 }
@@ -1222,7 +1223,7 @@ process_for()
 	ast_node_t *body;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	body = expr1 = expr2 = expr3 = NULL;
 
 	if (match(TOK_LPAR) == FALSE) {
@@ -1231,7 +1232,7 @@ process_for()
 	}
 
 	expr1 = expr();
-	
+
 	if (match(TOK_SEMICOLON) == FALSE) {
 		print_warn("semicolon expected\n");
 		goto err;
@@ -1246,7 +1247,7 @@ process_for()
 
 	if (current_tok != TOK_RPAR)
 		expr3 = expr();
-	
+
 	if (match(TOK_RPAR) == FALSE) {
 		print_warn("')' is missed\n");
 		goto err;
@@ -1259,7 +1260,7 @@ process_for()
 		body = statement();
 	} else
 		body = process_scope();
-	
+
 	helper.is_cycle--;
 
 	if (nerrors != 0) {
@@ -1288,22 +1289,23 @@ process_do()
 
 	body = cond = NULL;
 
-	
+
 	helper.is_cycle++;
 
 	if (match(TOK_LBRACE) == FALSE) {
 		skip_eol();
 		body = statement();
-	} else
+	} else {
 		body = process_scope();
-	
+	}
+
 	helper.is_cycle--;
 
 	if (nerrors != 0) {
 		print_warn("errors happen\n");
 		goto err;
 	}
-	
+
 	skip_eol();
 	if (match(TOK_WHILE) == FALSE) {
 		print_warn("expected keyword 'while'\n");
@@ -1336,9 +1338,9 @@ process_while()
 	ast_node_t *cond, *body;
 
 	DEBUG(LOG_VERBOSE, "\n");
-	
+
 	body = cond = NULL;
-	
+
 	if (match(TOK_LPAR) == FALSE) {
 		print_warn("'(' is missed\n");
 		goto err;
@@ -1360,7 +1362,7 @@ process_while()
 		body = statement();
 	} else
 		body = process_scope();
-	
+
 	helper.is_cycle--;
 
 	if (nerrors != 0) {
@@ -1389,7 +1391,7 @@ process_del()
 		goto err;
 
 	node = identifier();
-	
+
 	if (!is_lvalue(node))
 		goto err;
 
@@ -1415,7 +1417,7 @@ process_break()
 		nerrors++;
 		return ast_node_stub_new();
 	}
-	
+
 	return ast_node_break_new();
 }
 
@@ -1427,7 +1429,7 @@ process_continue()
 		nerrors++;
 		return ast_node_stub_new();
 	}
-	
+
 	return ast_node_continue_new();
 }
 
@@ -1448,11 +1450,11 @@ static ast_node_t *
 process_scope()
 {
 	ast_node_t *node;
-	
+
 	node = block();
-	if (nerrors != 0) 
+	if (nerrors != 0)
 		goto err;
-	
+
 	if (match(TOK_RBRACE) == FALSE) {
 		nerrors++;
 		goto err;
@@ -1460,7 +1462,7 @@ process_scope()
 
 	return ast_node_scope_new(node);
 err:
-	
+
 	ast_node_unref(node);
 	return ast_node_stub_new();
 }
@@ -1477,7 +1479,7 @@ get_module_name()
 
 	var = lex_item_prev.var;
 	str = var_str_ptr(var);
-	
+
 	modname =  strdup_or_die(str_ptr(str));
 
 	var_clear(var);
@@ -1497,7 +1499,7 @@ process_import()
 
 	nodes = NULL;
 	sz = len = 0;
-	
+
 	modname = get_module_name();
 
 	if (modname == NULL) {
@@ -1505,7 +1507,7 @@ process_import()
 		goto err;
 	}
 
-	/* 
+	/*
 	 * NOTE: Need to memorize import file name
 	 * because we wan't infinitie includes.
 	 */
@@ -1566,7 +1568,7 @@ err:
 	sync_stream();
 	for (i = 0; i < len; i++)
 		ast_node_unref(nodes[i]);
-	
+
 	ufree(modname);
 	ufree(nodes);
 
@@ -1600,10 +1602,10 @@ get_name_arr(char ***dst, int *nargs, int limit, char *errmsg, int endtok)
 		}
 
 		id = lex_item_prev.name;
-		
+
 		*dst = xrealloc(*dst, (n + 1) * sizeof(**dst));
 		(*dst)[n++] = id;
-		
+
 		if (match(TOK_COMMA) == FALSE &&
 		    current_tok != endtok) {
 			print_warn("comma expected\n");
@@ -1630,7 +1632,7 @@ process_function()
 	int ret;
 
 	func = (ast_node_func_t *)ast_node_func_def_new();
-	
+
 	ret = process_function_ret_lst(func);
 	if (ret != ret_ok)
 		goto err;
@@ -1642,7 +1644,7 @@ process_function()
 	}
 
 	func->name = lex_item_prev.name;
-	
+
 	ret = process_function_arguments(func);
 	if (ret != ret_ok)
 		goto err;
@@ -1650,7 +1652,7 @@ process_function()
 	ret = process_function_body(func);
 	if (ret != ret_ok)
 		goto err;
-	
+
 	return AST_NODE(func);
 
 err:
@@ -1663,7 +1665,7 @@ err:
 	return ast_node_stub_new();
 }
 
-static ret_t 
+static ret_t
 process_function_ret_lst(ast_node_func_t *func)
 {
 	if (!match(TOK_LBRACKET)) {
@@ -1729,7 +1731,7 @@ process_function_body(ast_node_func_t *func)
 	}
 
 	helper.is_func--;
-	
+
 	return ret_ok;
 
 err:
@@ -1740,7 +1742,7 @@ err:
 
 	return ret_err;
 }
-		
+
 static ast_node_t *
 function_call()
 {
@@ -1758,7 +1760,7 @@ function_call()
 	}
 
 	while (match(TOK_RPAR) == FALSE) {
-		
+
 		//get next ast_node
 		node = logic_or();
 		if (node == NULL) {
@@ -1774,14 +1776,14 @@ function_call()
 			goto err;
 		}
 	}
-	
+
 	return AST_NODE(call);
 
 err:
 
 	nerrors++;
 	ast_node_unref(AST_NODE(call));
-	
+
 	return ast_node_stub_new();
 }
 
@@ -1797,7 +1799,7 @@ array_access()
 
 	name = lex_item_prev.name;
 	tok_next();
-	
+
 	do {
 		item = logic_or();
 		if (item == NULL) {
@@ -1810,7 +1812,7 @@ array_access()
 			sz += 4;
 			ind = xrealloc(ind, sz * sizeof(*ind));
 		}
-		
+
 		ind[dim++] = item;
 
 	} while (match(TOK_COMMA));
@@ -1843,7 +1845,7 @@ array_init()
 	ast_node_t *item, **arr;
 
 	int i, total, arrsz;
-	
+
 	arr = NULL;
 	total = arrsz = 0;
 
@@ -1879,7 +1881,7 @@ error:
 
 	for (i = 0; i < total; i++)
 		ast_node_unref(arr[i]);
-	
+
 	ufree(arr);
 	return NULL;
 }

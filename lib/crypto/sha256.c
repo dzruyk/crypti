@@ -40,7 +40,7 @@
 #define K09 0x12835b01
 #define K10 0x243185be
 #define K11 0x550c7dc3
-#define K12 0x72be5d74 
+#define K12 0x72be5d74
 #define K13 0x80deb1fe
 #define K14 0x9bdc06a7
 #define K15 0xc19bf174
@@ -186,7 +186,7 @@ sha256_hash(uint32_t s[8], const unsigned char buffer[64])
 	W[61] = SSIG1(W[59]) + W[54] + SSIG0(W[46]) + W[45];
 	W[62] = SSIG1(W[60]) + W[55] + SSIG0(W[47]) + W[46];
 	W[63] = SSIG1(W[61]) + W[56] + SSIG0(W[48]) + W[47];
-	
+
 	a = s[0];
 	b = s[1];
 	c = s[2];
@@ -195,7 +195,7 @@ sha256_hash(uint32_t s[8], const unsigned char buffer[64])
 	f = s[5];
 	g = s[6];
 	h = s[7];
-	
+
 	SHA256_BASIC(a, b, c, d, e, f, g, h, K00, W[ 0], T1, T2);
 	SHA256_BASIC(a, b, c, d, e, f, g, h, K01, W[ 1], T1, T2);
 	SHA256_BASIC(a, b, c, d, e, f, g, h, K02, W[ 2], T1, T2);
@@ -260,7 +260,7 @@ sha256_hash(uint32_t s[8], const unsigned char buffer[64])
 	SHA256_BASIC(a, b, c, d, e, f, g, h, K61, W[61], T1, T2);
 	SHA256_BASIC(a, b, c, d, e, f, g, h, K62, W[62], T1, T2);
 	SHA256_BASIC(a, b, c, d, e, f, g, h, K63, W[63], T1, T2);
-	
+
 	s[0] += a;
 	s[1] += b;
 	s[2] += c;
@@ -279,7 +279,7 @@ sha256_context_init(struct sha256_context *ctx)
 
 	memset(ctx->buffer, 0, sizeof(ctx->buffer));
 	memset(ctx->state, 0, sizeof(ctx->state));
-	
+
 	ctx->state[0] = 0x6a09e667;
 	ctx->state[1] = 0xbb67ae85;
 	ctx->state[2] = 0x3c6ef372;
@@ -355,8 +355,8 @@ sha256_final(struct sha256_context *ctx, unsigned char digest[32])
 	uint8_t nb[8];
 
 	n = ctx->count[0] & 0x3f;
-	npad = ((n < 56) ? 56: 120) - n; 
-	
+	npad = ((n < 56) ? 56: 120) - n;
+
 	nbits[0] = ctx->count[1] << 3;
 	nbits[0] += ctx->count[0] >> 29;
 	nbits[1] = ctx->count[0] << 3;

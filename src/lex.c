@@ -209,7 +209,7 @@ convert_to_digit_base(char ch, int *num, int base)
 {
 	int tmp;
 	int lc;
-	
+
 	lc = tolower(ch);
 
 	if (lc >= '0' && lc <= '9')
@@ -243,9 +243,9 @@ get_digit_base(mpl_int *mp, int base)
 		/* mp = mp * STR_BASE + peek - '0'; */
 		mpl_set_uint(&tmp, num);
 
-		mpl_mul(mp, mp, &mpbase); 
+		mpl_mul(mp, mp, &mpbase);
 		mpl_add(mp, mp, &tmp);
-		
+
 		peek = fgetc(input);
 	};
 
@@ -260,7 +260,7 @@ get_digit()
 
 	var = xmalloc(sizeof(*var));
 	var_initv(var, NULL);
-	
+
 	mp = var_bignum_ptr(var);
 
 	if (peek == '0') {
@@ -298,7 +298,7 @@ get_identifier()
 	char *s = NULL;
 	char *tmp;
 	int used, len;
-	
+
 	len = used = 0;
 
 	do {
@@ -323,10 +323,10 @@ get_identifier()
 		lex_item.id = kword;
 		return kword;
 	}
-	
+
 	lex_item.id = TOK_ID;
 	lex_item.name = s;
-	
+
 	return TOK_ID;
 }
 
@@ -338,11 +338,11 @@ begin:
 
 	for (; peek == ' ' || peek == '\t';)
 		peek = fgetc(input);
-	
+
 	if (isdigit(peek))
 		return get_digit();
 
-	if (isalpha(peek) || peek == '_') 
+	if (isalpha(peek) || peek == '_')
 		return get_identifier();
 
 	if (peek == '\"')
@@ -367,7 +367,7 @@ case ch:							\
 	}							\
 	lex_item.id = tok_type;					\
 	return tok_type;
-	
+
 	CASE_ITEM('(', TOK_LPAR)
 	CASE_ITEM(')', TOK_RPAR)
 	CASE_ITEM('[', TOK_LBRACKET)
@@ -385,9 +385,9 @@ case ch:							\
 	CASE_ITEM('%', TOK_PERSENT)
 
 	// If operator is '==' THEN TOK_EQ, TOK_AS otherwise
-	EXTENDED_CASE_ITEM('=', TOK_AS, 
+	EXTENDED_CASE_ITEM('=', TOK_AS,
 	    CASE_ITEM('=', TOK_EQ))
-	EXTENDED_CASE_ITEM('!', TOK_NOT, 
+	EXTENDED_CASE_ITEM('!', TOK_NOT,
 	    CASE_ITEM('=', TOK_NEQ))
 	EXTENDED_CASE_ITEM('&', TOK_B_AND,
 	    CASE_ITEM('&', TOK_L_AND)
@@ -395,7 +395,7 @@ case ch:							\
 	EXTENDED_CASE_ITEM('|', TOK_B_OR,
 	    CASE_ITEM('|', TOK_L_OR)
 	    CASE_ITEM('=', TOK_B_OR_AS))
-	EXTENDED_CASE_ITEM('^', TOK_B_XOR, 
+	EXTENDED_CASE_ITEM('^', TOK_B_XOR,
 	    CASE_ITEM('=', TOK_B_XOR_AS))
 	EXTENDED_CASE_ITEM('+', TOK_PLUS,
 	    CASE_ITEM('=', TOK_PLUS_AS))
@@ -412,7 +412,7 @@ case ch:							\
 	EXTENDED_CASE_ITEM('*', TOK_MUL,
 	    CASE_ITEM('=', TOK_MUL_AS)
 	    EXTENDED_CASE_ITEM('*', TOK_POW,
-	        CASE_ITEM('=', TOK_POW_AS))) 
+	        CASE_ITEM('=', TOK_POW_AS)))
 	EXTENDED_CASE_ITEM('/', TOK_DIV,
 	    CASE_ITEM('=', TOK_DIV_AS)
 	    case '/':

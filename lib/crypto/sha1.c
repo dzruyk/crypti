@@ -277,7 +277,7 @@ sha1_context_init(struct sha1_context *ctx)
 
 	memset(ctx->buffer, 0, sizeof(ctx->buffer));
 	memset(ctx->state, 0, sizeof(ctx->state));
-	
+
 	ctx->state[0] = 0x67452301;
 	ctx->state[1] = 0xEFCDAB89;
 	ctx->state[2] = 0x98BADCFE;

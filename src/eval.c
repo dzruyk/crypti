@@ -16,7 +16,7 @@ eval_t *
 eval_var_new(void *var)
 {
 	eval_t *res;
-	
+
 	assert(var != NULL);
 
 	res = xmalloc(sizeof(*res));
@@ -30,7 +30,7 @@ eval_t *
 eval_arr_new(arr_t *arr)
 {
 	eval_t *res;
-	
+
 	assert(arr != NULL);
 
 	res = xmalloc(sizeof(*res));
@@ -47,7 +47,7 @@ eval_dup(eval_t *src)
 	eval_t *dst;
 
 	dst = xmalloc(sizeof(*dst));
-	
+
 	switch(src->type) {
 	case EVAL_VAR:
 		dst->type = EVAL_VAR;
@@ -71,7 +71,7 @@ eval_free(eval_t *eval)
 {
 	if (eval == NULL)
 		return;
-	
+
 	switch(eval->type) {
 	case EVAL_VAR:
 		var_clear(eval->var);
@@ -122,7 +122,7 @@ eval_process_unary(eval_t *ev, opcode_t opcode)
 		return NULL;
 
 	var = ev->var;
-	
+
 	resvar = xmalloc(sizeof(*resvar));
 	var_init(resvar);
 
@@ -167,14 +167,14 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 	struct variable *a, *b, *res;
 	eval_t *ev;
 	int ret;
-	
+
 	assert(left != NULL && right != NULL);
 
 	if (left->type != EVAL_VAR)
 		return NULL;
 	if (right->type != EVAL_VAR)
 		return NULL;
-	
+
 	res = xmalloc(sizeof(*res));
 	var_init(res);
 
@@ -211,7 +211,7 @@ eval_process_op(eval_t *left, eval_t *right, opcode_t opcode)
 		else						\
 			do_if_no(res);				\
 		break
-	
+
 	CASE_REL_ITEM(OP_EQ, 0, var_set_one, var_set_zero);
 	CASE_REL_ITEM(OP_NEQ, 0, var_set_zero, var_set_one);
 	CASE_REL_ITEM(OP_GR, 1, var_set_one, var_set_zero);
@@ -254,7 +254,7 @@ eval_print_val(eval_t *eval)
 	str_t *str;
 
 	if (eval == NULL)
-		return ret_err;	
+		return ret_err;
 
 	switch(eval->type) {
 	case EVAL_VAR:
@@ -264,12 +264,12 @@ eval_print_val(eval_t *eval)
 		break;
 	case EVAL_ARR:
 		//FIXME: stupid stub
-		arr_print(eval->arr);	
+		arr_print(eval->arr);
 		break;
 	default:
 		error(1, "INTERNAL ERROR: cant get value\n");
 	}
 
-	return ret_ok; 
+	return ret_ok;
 }
 

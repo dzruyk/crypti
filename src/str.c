@@ -92,7 +92,7 @@ str_reverse(str_t *str)
 {
 	char *start, *end;
 	char tmp;
-	
+
 	assert(str != NULL);
 
 	start = buffer_ptr(str->buf);
@@ -122,7 +122,7 @@ str_substr(str_t *res, str_t *str, int first, int n)
 		str_reset(res);
 		return 0;
 	}
-	
+
 	if (n > len - first)
 		n = len - first;
 

@@ -27,7 +27,7 @@ char *tokens[] = {
 	"TOK_SHL_AS",
 	"TOK_SHR_AS",
 	"TOK_NOT",
-	
+
 	"TOK_EQ",
 	"TOK_NEQ",
 	"TOK_GR",
@@ -36,7 +36,7 @@ char *tokens[] = {
 	"TOK_LE",
 	"TOK_L_AND",
 	"TOK_L_OR",
-	
+
 	"TOK_B_AND",
 	"TOK_B_XOR",
 	"TOK_B_OR",
@@ -51,12 +51,12 @@ char *tokens[] = {
 	"TOK_SEMICOLON",
 	"TOK_SHL",
 	"TOK_SHR",
-	
+
 	"TOK_PLUS",
 	"TOK_MINUS",
 	"TOK_MUL",
 	"TOK_DIV",
-	
+
 	"TOK_EOL",
 
 	"TOK_DEF",
@@ -95,9 +95,9 @@ main()
 		}
 		printf("\n");
 	} while (/*res != TOK_EOL && */res != TOK_UNKNOWN);
-	
+
 	id_table_destroy();
-	
+
 	return 0;
 }
 

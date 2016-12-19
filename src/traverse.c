@@ -26,12 +26,12 @@ typedef void (*traverse_cb)(ast_node_t *tree);
 struct trav_ctx {
 	int is_call;
 	int is_cycle;
-	
+
 	int is_return;
 	int is_break;
 	int is_continue;
 
-	func_t *func; 
+	func_t *func;
 };
 
 struct trav_ctx helper;
@@ -55,13 +55,13 @@ traverse_var(ast_node_t *tree)
 	struct variable *var, *copy;
 
 	assert(tree != NULL);
-	
+
 	var = ((ast_node_var_t *)tree)->var;
 
 	copy = xmalloc(sizeof(*copy));
 	var_init(copy);
 	var_copy(copy, var);
-	
+
 	ev = eval_var_new(copy);
 
 	stack_push(ev);
@@ -86,7 +86,7 @@ traverse_id(ast_node_t *tree)
 		nerrors++;
 		return;
 	}
-	
+
 	//FIXME: need to get copy of variable
 	switch (item->type) {
 	case ID_VAR:
@@ -115,7 +115,7 @@ traverse_arr(ast_node_t *tree)
 	eval_t *ev;
 	ast_node_t **synarr;
 	int i, sz;
-	
+
 	assert(tree != NULL);
 
 	DEBUG(LOG_VERBOSE, "\n");
@@ -138,10 +138,10 @@ traverse_arr(ast_node_t *tree)
 
 		if ((ev = stack_pop()) == NULL)
 			error(1, "unexpected error\n");
-		
+
 		if (ev->type != EVAL_VAR)
 			error(1, "can't set item\n");
-		
+
 		res = ev->var;
 
 		var_set_int(&index, i);
@@ -208,7 +208,7 @@ create_index(ast_node_t **ind, int dims)
 
 err:
 	var_clearv(&keyval, &sep, NULL);
-	
+
 	return key;
 }
 
@@ -222,12 +222,12 @@ traverse_access(ast_node_t *tree)
 	char *name, *key;
 
 	assert(tree != NULL);
-	
+
 	key = NULL;
 
 	if (nerrors != 0)
 		return;
-	
+
 	acc = (ast_node_access_t *)tree;
 
 	name = acc->name;
@@ -256,7 +256,7 @@ traverse_access(ast_node_t *tree)
 
 	resev = eval_var_new(copy);
 	stack_push(resev);
-	
+
 	return;
 error:
 	ufree(key);
@@ -283,7 +283,7 @@ traverse_func_def(ast_node_t *tree)
 			nerrors++;
 			return;
 		}
-		
+
 		ret = func_table_delete(func);
 		if (ret != ret_ok)
 			error(1, "cant delete from func table");
@@ -295,7 +295,7 @@ traverse_func_def(ast_node_t *tree)
 	func_set_args(func, synfunc->args, synfunc->nargs);
 	func_set_body(func, synfunc->body);
 
-	function_table_insert(func); 
+	function_table_insert(func);
 }
 
 boolean_t
@@ -352,7 +352,7 @@ exec_function(func_t *func)
 	assert(func != NULL);
 
 	next = func->body;
-	
+
 	saved = helper.func;
 	helper.func = func;
 	helper.is_call++;
@@ -405,18 +405,18 @@ get_next_argument(ast_node_t *argnode, char *hint)
 
 	if (nerrors != 0)
 		return NULL;
-	
+
 	ev = stack_pop();
 
 	if (ev == NULL) {
 		print_warn("cant get value\n");
 		return NULL;
 	}
-	
+
 	item = id_item_new(hint);
-	
+
 	set_value_id(item, ev);
-	
+
 	eval_free(ev);
 
 	return item;
@@ -436,11 +436,11 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 	int err, i;
 	int rtypes[MAXRETARGS];
 	void *rvals[MAXRETARGS];
-	
+
 	items = NULL;
 
 	if (call->nargs != 0) {
-		/* 
+		/*
 		 * NOTE: Last argument must be NULL (need for
 		 *  variable length functions).
 		 */
@@ -466,7 +466,7 @@ exec_library_function(func_t *func, ast_node_func_call_t *call)
 		nerrors++;
 		goto finalize;
 	}
-	
+
 	for (i = func->nret - 1; i >= 0; i--) {
 		switch (rtypes[i]) {
 		case ID_VAR:
@@ -542,7 +542,7 @@ traverse_func_call(ast_node_t *tree)
 		return;
 	}
 
-	/* 
+	/*
 	 * FIXME: now olny library functions can have var length
 	 * parameters list
 	 */
@@ -565,9 +565,9 @@ traverse_func_call(ast_node_t *tree)
 		goto finalize;
 
 	id_table_push(idtable);
-	
+
 	exec_function(func);
-	
+
 	id_table_pop();
 
 finalize:
@@ -580,7 +580,7 @@ finalize:
  * - RES_CONTINUE, RES_BREAK - if traversal break/continue
  * inside cycle(work with nesting);
  * - RES_RETURN - if traversal return inside function;
- * - RES_OK if no errors recognised and without 
+ * - RES_OK if no errors recognised and without
  * break/continue/return meeting;
  * - RES_ERROR otherwise;
  */
@@ -618,9 +618,10 @@ traverse_body(ast_node_t *tree)
 			res = RES_ERROR;
 			helper.is_return--;
 		}
-	} else
+	} else {
 		res = RES_OK;
-	
+	}
+
 	if (res == RES_ERROR)
 		nerrors++;
 
@@ -681,7 +682,7 @@ traverse_cond(ast_node_t *tree)
 		nerrors++;
 		return FALSE;
 	}
-	
+
 	if (eval_is_zero(ev) == TRUE)
 		ret = FALSE;
 	else
@@ -738,7 +739,7 @@ traverse_for(ast_node_t *tree)
 			boolean_t ret;
 
 			ret = traverse_cond(fornode->expr2);
-			
+
 			if (ret == FALSE)
 				goto finalize;
 		}
@@ -795,7 +796,7 @@ traverse_while(ast_node_t *tree)
 
 		if (whilenode->body == NULL)
 			continue;
-			
+
 		res = traverse_body(whilenode->body);
 
 		switch (res) {
@@ -837,7 +838,7 @@ traverse_do(ast_node_t *tree)
 	while (1) {
 		boolean_t ret;
 
-			
+
 		if (donode->body == NULL)
 			goto check_condition;
 
@@ -917,7 +918,7 @@ traverse_del(ast_node_t *tree)
 			return;
 		}
 		key = create_index(acc->ind, acc->dims);
-		
+
 		if (arr_remove_item(id->arr, key) != ret_ok) {
 			print_warn("can't remove arr item\n");
 			nerrors++;
@@ -925,7 +926,7 @@ traverse_del(ast_node_t *tree)
 			return;
 		}
 		ufree(key);
-		
+
 		break;
 	default:
 		SHOULDNT_REACH();
@@ -976,7 +977,7 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 		print_warn("try to assign not a number\n");
 		goto err;
 	}
-	
+
 	item = id_table_lookup_all(node->name);
 	if (item == NULL) {
 		item = id_item_new(node->name);
@@ -989,9 +990,9 @@ set_value_node_access(ast_node_access_t *node, eval_t *newval)
 		print_warn("%s isn't array\n", item->name);
 		goto err;
 	}
-	
+
 	key = create_index(node->ind, node->dims);
-	
+
 	arr_set_item(arr, key, newval->var);
 
 	ufree(key);
@@ -1015,7 +1016,7 @@ set_value_node(ast_node_t *ltree, eval_t *ev)
 	switch (ltree->type) {
 	case AST_NODE_ID: {
 		id_item_t *item;
-		
+
 		id = (ast_node_id_t *)ltree;
 
 		//NOTE: quick fix
@@ -1025,19 +1026,19 @@ set_value_node(ast_node_t *ltree, eval_t *ev)
 			item = id_item_new(id->name);
 			id_table_insert(item);
 		}
-		
+
 		set_value_id(item, ev);
 
 		break;}
 	case AST_NODE_ACCESS:
-		
+
 		acc = (ast_node_access_t *)ltree;
 		set_value_node_access(acc, ev);
-		
+
 		break;
 	default:
 		print_warn("assignment to not variable\n");
-		nerrors++;	
+		nerrors++;
 	}
 }
 
@@ -1068,7 +1069,7 @@ traverse_as_rest(ast_node_t *tree)
 
 	if (tree->right->type == AST_NODE_AS)
 		traverse_as_rest(tree->right);
-	else 
+	else
 		traverse(tree->right);
 
 	if (nerrors != 0)
@@ -1080,7 +1081,7 @@ traverse_as_rest(ast_node_t *tree)
 		nerrors++;
 		return -1;
 	}
-	
+
 	seq = (ast_node_seq_t *)ltree;
 	evs = xmalloc(seq->n * sizeof(*evs));
 	stack_pop_n((void **)evs, seq->n);
@@ -1121,7 +1122,7 @@ traverse_as(ast_node_t *tree)
 
 	if (nerrors != 0 || n < 0)
 		return;
-	
+
 	stack_remove_n(n);
 }
 
@@ -1130,7 +1131,7 @@ traverse_seq(ast_node_t *tree)
 {
 	ast_node_seq_t *seq;
 	int i;
-	
+
 	seq = (ast_node_seq_t *)tree;
 
 	for (i = seq->n - 1; i >= 0; i--)
@@ -1154,7 +1155,7 @@ traverse_trenary(ast_node_t *tree)
 		traverse(trenary->_if_yes);
 	else
 		traverse(trenary->_if_no);
-	
+
 }
 
 static void
@@ -1180,9 +1181,9 @@ traverse_unary(ast_node_t *tree)
 		print_warn("can't get operand\n");
 		goto finalize;
 	}
-	
+
 	res = eval_process_unary(ev, unary->opcode);
-	
+
 	if (res == NULL) {
 		nerrors++;
 		print_warn("operation error\n");
@@ -1203,14 +1204,14 @@ traverse_op(ast_node_t *tree)
 
 	assert(tree != NULL);
 
-	traverse(tree->left);	
+	traverse(tree->left);
 	traverse(tree->right);
 
 	optree = (ast_node_op_t *)tree;
 
 	if (nerrors != 0)
 		return;
-	
+
 	right = stack_pop();
 	left = stack_pop();
 
@@ -1219,15 +1220,15 @@ traverse_op(ast_node_t *tree)
 		print_warn("can't get operand\n");
 		goto finalize;
 	}
-	
+
 	res = eval_process_op(left, right, optree->opcode);
-	
+
 	if (res == NULL) {
 		nerrors++;
 		print_warn("operation error\n");
 		goto finalize;
 	}
-	
+
 	stack_push(res);
 
 finalize:
@@ -1239,20 +1240,20 @@ finalize:
 
 static void
 traverse_op_as(ast_node_t *tree)
-{	
+{
 	ast_node_op_as_t *optree;
 	eval_t *left, *right, *res;
 
 	assert(tree != NULL);
 
-	traverse(tree->left);	
+	traverse(tree->left);
 	traverse(tree->right);
 
 	optree = (ast_node_op_as_t *)tree;
 
 	if (nerrors != 0)
 		return;
-	
+
 	right = stack_pop();
 	left = stack_pop();
 
@@ -1261,14 +1262,14 @@ traverse_op_as(ast_node_t *tree)
 		print_warn("cant get operand\n");
 		goto finalize;
 	}
-	
+
 	res = eval_process_op(left, right, optree->opcode);
 	if (res == NULL) {
 		nerrors++;
 		print_warn("operation error\n");
 		goto finalize;
 	}
-	
+
 	set_value_node(tree->left, res);
 
 finalize:
@@ -1308,7 +1309,7 @@ traverse_import(ast_node_t *tree)
 
 		stack_flush();
 	}
-	
+
 	nerrors = old;
 }
 
@@ -1385,13 +1386,13 @@ traverse_prog(ast_node_t *tree)
 {
 	if (tree == NULL)
 		return ret_ok;
-	
+
 	//clean vars
 	nerrors = 0;
 	memset(&helper, 0, sizeof(helper));
 
 	traverse(tree);
-	
+
 	ast_node_unref(tree);
 
 	if (nerrors != 0) {

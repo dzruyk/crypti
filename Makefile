@@ -1,5 +1,6 @@
 include Common.mk
 
+CFLAGS= -Wall -std=gnu89
 BIN= ./bin
 SRC= ./src
 TEST= ./test/crypti
@@ -50,5 +51,3 @@ test: $(CRYPTI_TEST)
 
 rebuild: clean $(CRYPTI_TEST)
 
-debug:
-	echo $(LEX_OBJS)

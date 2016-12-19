@@ -58,7 +58,7 @@ static struct {
 	{"mod_inv", 2, 1, libcall_mod_inv},
 	{"mod_exp", 3, 1, libcall_mod_exp},
 
-	/* 
+	/*
 	 * Crypto hashes (simple) interface:
 	 * def [digest] hash_name(data)
 	 */
@@ -67,7 +67,7 @@ static struct {
 	{"sha256", 1, 1, libcall_sha256},
 	{"whirlpool", 1, 1, libcall_whirlpool},
 
-	/* 
+	/*
 	 * Crypto hashes (full) interface
 	 * def [all_ok] hash_name_init(id)
 	 * def [] hash_name_update(id, data)
@@ -93,16 +93,16 @@ static void function_table_fill();
 static void
 function_table_destroy_cb(func_t *item)
 {
-	
+
 	//FIXME: Library func
-	
+
 	if (item->is_lib == FALSE) {
 		int i;
-		
+
 		ufree(item->name);
-		
+
 		ast_node_unref(item->body);
-	
+
 		for (i = 0; i < item->nret; i++)
 			ufree(item->retargs[i]);
 		ufree(item->retargs);
@@ -114,19 +114,19 @@ function_table_destroy_cb(func_t *item)
 	ufree(item);
 }
 
-void 
+void
 function_table_init()
 {
 	if (func_table != NULL)
 		error(1, "function table already initialisated!");
-	
-	func_table = hash_table_new(INITIAL_SZ, 
+
+	func_table = hash_table_new(INITIAL_SZ,
 	    (hash_callback_t )default_hash_cb,
 	    (hash_compare_t )default_hash_compare);
-	
+
 	if (func_table == NULL)
 		error(1, "error at table table creation\n");
-	
+
 	function_table_fill();
 }
 
@@ -140,10 +140,10 @@ function_table_fill()
 
 	if (func_table == NULL)
 		error(1, "func_table uninit\n");
-	
+
 	for (i = 0; i < ARRSZ(builtin); i++) {
 		tmp = xmalloc(sizeof(*tmp));
-		
+
 		//fill table with built in functions
 		tmp->is_lib = 1;
 		tmp->name = builtin[i].name;
@@ -156,11 +156,11 @@ function_table_fill()
 }
 
 
-ret_t 
+ret_t
 function_table_insert(func_t *item)
 {
 	int res;
-	
+
 	assert(item != NULL);
 
 	res = hash_table_insert_unique(func_table, item->name, item);
@@ -185,14 +185,14 @@ function_table_lookup(char *name)
 		return res;
 }
 
-void 
+void
 function_table_destroy()
 {
 	void *key, *data;
 	struct hash_table_iter *iter;
 
 	iter = hash_table_iterate_init(func_table);
-	
+
 	while (hash_table_iterate(iter, &key, &data) != FALSE)
 		function_table_destroy_cb((func_t*)data);
 
@@ -207,7 +207,7 @@ func_t *
 func_new(char *name)
 {
 	func_t *func;
-	
+
 	assert(name != NULL);
 
 	func = xmalloc(sizeof(*func));
@@ -229,11 +229,11 @@ func_table_delete(func_t *func)
 
 	if (func->is_lib)
 		return ret_err;
-	
+
 	ret = hash_table_remove(func_table, func->name);
 	if (ret == FALSE)
 		return ret_err;
-	
+
 	function_table_destroy_cb(func);
 
 	return ret_ok;
@@ -243,7 +243,7 @@ void
 func_set_retargs(func_t *func, char **retargs, int nret)
 {
 	int i;
-	
+
 	assert(func != NULL);
 
 	if (nret > 0)
@@ -261,7 +261,7 @@ void
 func_set_args(func_t *func, char **args, int nargs)
 {
 	int i;
-	
+
 	assert(func != NULL);
 
 	if (nargs > 0)

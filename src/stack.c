@@ -20,7 +20,7 @@ void
 stack_init(stack_destructor destructor)
 {
 	assert(stack == NULL);
-	
+
 	stack = xmalloc(sizeof(*stack));
 
 	stack->arr = xmalloc(sizeof(*stack->arr) * stack_sz);
@@ -46,7 +46,7 @@ stack_destroy()
 	stack = NULL;
 }
 
-void 
+void
 stack_push(void *data)
 {
 	assert (stack != NULL &&
@@ -110,26 +110,26 @@ void
 stack_remove()
 {
 
-	assert (stack != NULL && 
+	assert (stack != NULL &&
 	    stack->cur > 0);
 
 	stack->cur --;
 	stack->destructor(stack->arr[stack->cur]);
 }
 
-void 
+void
 stack_remove_n(int n)
 {
 	while (n-- > 0)
 		stack_remove();
 }
 
-void 
+void
 stack_flush()
 {
 	int i;
 
-	assert (stack != NULL && 
+	assert (stack != NULL &&
 	    stack->sz > stack->cur + 1);
 
 	for (i = 0; i < stack->cur; i++)

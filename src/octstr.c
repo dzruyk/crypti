@@ -105,7 +105,7 @@ octstr_bitwise(octstr_t *dst, const octstr_t *a, const octstr_t *b, int op)
 
 	if (octstr_len(a) > octstr_len(b)) {
 		const octstr_t *tmp;
-		
+
 		tmp = a;
 		a = b;
 		b = tmp;
@@ -189,7 +189,7 @@ octstr_substr(octstr_t *res, octstr_t *str, int first, int n)
 		octstr_reset(res);
 		return 0;
 	}
-	
+
 	if (n > len - first)
 		n = len - first;
 

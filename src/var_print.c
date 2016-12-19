@@ -150,7 +150,7 @@ var_print_formatted(struct variable *fmt, struct variable **args, int nargs)
 	}
 
 	var_clear(&var);
-	
+
 	return n;
 }
 

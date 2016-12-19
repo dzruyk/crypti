@@ -123,7 +123,7 @@ id_table_init()
 	memset(scopes, 0, sizeof(*scopes));
 
 	global = current = id_table_create();
-	
+
 	scopes->scope = global;
 	scopes->prev = NULL;
 }
@@ -136,10 +136,10 @@ id_table_create()
 
 	table = hash_table_new(INITIAL_SZ, (hash_callback_t)default_hash_cb,
 	    (hash_compare_t)default_hash_compare);
-	
+
 	if (table == NULL)
 		error(1, "error at table table creation\n");
-	
+
 	return table;
 }
 
@@ -165,7 +165,7 @@ id_table_pop()
 
 	struct hash_table *table;
 	struct scopes *tmp;
-	
+
 	tmp = scopes;
 
 	scopes = tmp->prev;
@@ -184,7 +184,7 @@ id_table_insert_to(struct hash_table *table, id_item_t *item)
 	assert(table != NULL);
 
 	int res;
-	
+
 	res = hash_table_insert_unique(table, item->name, item);
 	if (res == ret_out_of_memory)
 		error(1, "error at id table insertion\n");
@@ -212,7 +212,7 @@ id_table_lookup_in(struct hash_table *table, char *name)
 	id_item_t *res;
 
 	assert(table != NULL && name != NULL);
-	
+
 	if (hash_table_lookup(table, name, (void**)&res) != ret_ok)
 		return NULL;
 	else
@@ -234,7 +234,7 @@ id_table_lookup_all(char *name)
 {
 	id_item_t *item;
 	struct scopes *tmp;
-	
+
 	assert(name != NULL);
 
 	tmp = scopes;
@@ -245,7 +245,7 @@ id_table_lookup_all(char *name)
 
 		tmp = tmp->prev;
 	}
-	
+
 	return NULL;
 }
 
@@ -254,7 +254,7 @@ id_table_remove(char *name)
 {
 	struct scopes *tmp;
 	ret_t ret;
-	
+
 	tmp = scopes;
 
 	assert(name != NULL);
@@ -271,11 +271,11 @@ id_table_remove(char *name)
 }
 
 
-ret_t 
+ret_t
 id_table_remove_from(struct hash_table *table, char *name)
 {
 	id_item_t *item;
-	
+
 	assert(table != NULL && name != NULL);
 
 	item = id_table_lookup_in(table, name);
@@ -285,7 +285,7 @@ id_table_remove_from(struct hash_table *table, char *name)
 	//normaly never be triggered
 	if (hash_table_remove(table, (void *)name) == FALSE)
 		return ret_err;
-	
+
 	id_item_free(item);
 
 	return ret_ok;
@@ -299,7 +299,7 @@ id_table_free(struct hash_table *table)
 	struct hash_table_iter *iter;
 
 	iter = hash_table_iterate_init(table);
-	
+
 	while (hash_table_iterate(iter, &key, &data) != FALSE)
 		id_item_free((id_item_t*)data);
 
@@ -326,9 +326,9 @@ void
 id_table_show_all_items()
 {
 	struct scopes *tmp;
-	
+
 	tmp = scopes;
-	
+
 	printf("getting info about id_items...\n");
 	while (tmp != NULL) {
 		id_item_t *item;
@@ -336,7 +336,7 @@ id_table_show_all_items()
 		void *key;
 
 		iter = hash_table_iterate_init(tmp->scope);
-		
+
 		while (hash_table_iterate(iter, &key, (void **)&item) == TRUE) {
 			printf("name = %s, type = %d\n",
 			    item->name, item->type);
@@ -346,7 +346,7 @@ id_table_show_all_items()
 
 		tmp = tmp->prev;
 	}
-	
+
 	printf("finishing...\n");
 }
 

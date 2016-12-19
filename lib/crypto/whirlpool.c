@@ -6,9 +6,9 @@
 
 #include "whirlpool.h"
 
-/* 
+/*
  * LE32 and LE64 macroses turn 32-bit and 64-bit constant values
- * to little-endian byte order. Whirlpool tables are constructed 
+ * to little-endian byte order. Whirlpool tables are constructed
  * with LE byte order in mind.
  */
 
@@ -466,7 +466,7 @@ whirlpool_hash(uint64_t s[8], const unsigned char buffer[64])
 	 * Keys K1...K10 are derived recursively for each round in turn.
 	 * Each round key is expanded from the preсeeding round key.
 	 */
-	
+
 	memcpy(rkey, s, 64);
 	memcpy(state, buffer, 64);
 	add_round_key(state, rkey);
@@ -566,7 +566,7 @@ whirlpool_final(struct whirlpool_context *ctx, unsigned char digest[64])
 	uint8_t nb[32];
 
 	n = ctx->count[0] & 0x3f;
-	npad = ((n < 32) ? 32: 96) - n; 
+	npad = ((n < 32) ? 32: 96) - n;
 
 	nbits[0] = ctx->count[1] >> 29;
 	nbits[1] = ctx->count[1] << 3;
@@ -580,7 +580,7 @@ whirlpool_final(struct whirlpool_context *ctx, unsigned char digest[64])
 	/* Pad message and append length. */
 	whirlpool_update(ctx, pad, npad);
 	whirlpool_update(ctx, nb, 32);
-	
+
 	memcpy(digest, ctx->state, 64);
 }
 

@@ -2,7 +2,7 @@
 
 int
 default_hash_compare(const void *a, const void *b)
-{	
+{
 	return strcmp((char*)a, (char*)b);
 }
 
@@ -11,7 +11,7 @@ default_hash_cb(const void *data)
 {
 	int i, mult, res;
 	char *s;
-	
+
 	mult = 31;
 	res = 0;
 	s = (char*)data;

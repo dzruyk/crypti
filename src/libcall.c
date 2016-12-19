@@ -93,7 +93,7 @@ libcall_print(id_item_t **args, int *rettypes, void **retvals)
 	assert(args != NULL && args[0] != NULL);
 
 	current = args[0];
-	
+
 	switch (current->type) {
 	case ID_VAR:
 		var = current->var;
@@ -127,7 +127,7 @@ libcall_printf(id_item_t **args, int *rettypes, void **retvals)
 	}
 	fmt = *args++;
 	CHECK_TYPE(fmt, ID_VAR);
-	
+
 	for (i = 0; args[i] != NULL; i++) {
 		assert(i < MAXFARGS);
 		//printf can process only variables now.
@@ -139,7 +139,7 @@ libcall_printf(id_item_t **args, int *rettypes, void **retvals)
 
 	rettypes[0] = ID_UNKNOWN;
 	retvals[0] = NULL;
-	
+
 	return 0;
 }
 
@@ -157,7 +157,7 @@ libcall_sum(id_item_t **args, int *rettypes, void **retvals)
 	res = xmalloc(sizeof(*res));
 	var_init(res);
 	var_set_zero(res);
-	
+
 	while (*args != NULL) {
 		arg = *args;
 		if (arg->type != ID_VAR) {
@@ -165,7 +165,7 @@ libcall_sum(id_item_t **args, int *rettypes, void **retvals)
 			id_type_2_str(ID_VAR));
 			goto err;
 		}
-		
+
 		if (varop_add(res, res, arg->var) != 0)
 			goto err;
 		args++;
@@ -184,7 +184,7 @@ int
 libcall_type(id_item_t **args, int *rettypes, void **retvals)
 {
 	id_item_t *current;
-	
+
 	assert(args != NULL && args[0] != NULL);
 
 	current = args[0];
@@ -237,7 +237,7 @@ libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals)
 	var_initv(min, max, NULL);
 
 	iter = array_iterate_new(arr);
-	
+
 	array_iterate(iter, &aitem);
 	var_copy(min, aitem->var);
 	var_copy(max, aitem->var);
@@ -249,7 +249,7 @@ libcall_arr_min_max(id_item_t **args, int *rettypes, void **retvals)
 		if (varop_cmp(max, tmp) == 1)
 			var_copy(max, tmp);
 	}
-	
+
 	array_iterate_free(iter);
 
 	rettypes[0] = ID_VAR;

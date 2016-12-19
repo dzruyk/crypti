@@ -37,7 +37,7 @@ static ret_t keyword_table_insert(keyword_table_item_t *item);
 
 static int
 keyword_compare(void *a, void *b)
-{	
+{
 	return strcmp((char*)a, (char*)b);
 }
 
@@ -46,7 +46,7 @@ keyword_hash_cb(const void *data)
 {
 	int i, mult, res;
 	char *s;
-	
+
 	mult = 31;
 	res = 0;
 	s = (char*)data;
@@ -62,19 +62,19 @@ keyword_table_destroy_cb(keyword_table_item_t *item)
 	free(item);
 }
 
-void 
+void
 keyword_table_init()
 {
 	if (key_table != NULL)
 		error(1, "keyword already initialisated!");
-	
-	key_table = hash_table_new(INITIAL_SZ, 
+
+	key_table = hash_table_new(INITIAL_SZ,
 	    (hash_callback_t )keyword_hash_cb,
 	    (hash_compare_t )keyword_compare);
-	
+
 	if (key_table == NULL)
 		error(1, "error at table table creation\n");
-	
+
 	keyword_table_fill();
 
 }
@@ -88,7 +88,7 @@ keyword_table_fill()
 
 	if (key_table == NULL)
 		error(1, "key_table uninit\n");
-	
+
 	for (i = 0; i < ARRSZ(keywords); i++) {
 		tmp = xmalloc(sizeof(*tmp));
 
@@ -99,11 +99,11 @@ keyword_table_fill()
 	}
 }
 
-static ret_t 
+static ret_t
 keyword_table_insert(keyword_table_item_t *item)
 {
 	int res;
-	
+
 	res = hash_table_insert_unique(key_table, item->name, item);
 	if (res == ret_out_of_memory)
 		error(1, "error at key table insertion\n");
@@ -124,14 +124,14 @@ keyword_table_lookup(char *name)
 		return res->id;
 }
 
-void 
+void
 keyword_table_destroy()
 {
 	void *key, *data;
 	struct hash_table_iter *iter;
 
 	iter = hash_table_iterate_init(key_table);
-	
+
 	while (hash_table_iterate(iter, &key, &data) != FALSE)
 		keyword_table_destroy_cb((keyword_table_item_t*)data);
 

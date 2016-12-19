@@ -18,7 +18,7 @@ arr_hash_cb(const void *data)
 {
 	int i, mult, res;
 	char *s;
-	
+
 	assert(data != NULL);
 
 	mult = 31;
@@ -27,13 +27,13 @@ arr_hash_cb(const void *data)
 
 	for (i = 0; i < strlen(data); i++)
 		res = res * mult + s[i];
-	
+
 	return res;
 }
 
 static int
 arr_cmp(const void *a, const void *b)
-{       
+{
 	assert(a != NULL && b != NULL);
 
 	return strcmp((char*)a, (char*)b);
@@ -49,7 +49,7 @@ arr_item_new(char *key, struct variable *var)
 
 	item = xmalloc(sizeof(*item));
 	memset(item, 0, sizeof(*item));
-	
+
 	tmp = xmalloc(sizeof(*tmp));
 	var_init(tmp);
 	var_copy(tmp, var);
@@ -77,7 +77,7 @@ arr_new()
 	arr_t *arr;
 
 	arr = xmalloc(sizeof(*arr));
-	
+
 	arr->hash = hash_table_new(initial_size, (hash_callback_t) arr_hash_cb,
 	    (hash_compare_t) arr_cmp);
 	arr->nitems = 0;
@@ -164,7 +164,7 @@ arr_remove_item(arr_t *arr, char *key)
 		return ret_err;
 
 	arr_item_free(old);
-	
+
 	arr->nitems--;
 
 	return ret_ok;
@@ -179,7 +179,7 @@ arr_print(arr_t *arr)
 	str_t *str;
 
 	assert(arr != NULL);
-	
+
 	printf("{");
 
 	iter = array_iterate_new(arr);
@@ -235,7 +235,7 @@ array_iterate_new(arr_t *arr)
 	assert(arr != NULL);
 
 	iterate = xmalloc(sizeof(*iterate));
-	
+
 	iterate->iter = hash_table_iterate_init(arr->hash);
 	if (iterate->iter == NULL)
 		error(1, "hash_table_iterate_init fail\n");
@@ -243,7 +243,7 @@ array_iterate_new(arr_t *arr)
 	return iterate;
 }
 
-boolean_t 
+boolean_t
 array_iterate(arr_iterate_t *iterate, arr_item_t **res)
 {
 	void *key;

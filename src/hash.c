@@ -242,10 +242,10 @@ hash_table_remove(struct hash_table *table, void *key)
 {
 	struct hash_bucket *nb;
 	unsigned int idx;
-	
+
 	return_val_if_fail(table != NULL, FALSE);
 	return_val_if_fail(key != NULL, FALSE);
-	
+
 	idx = table->hash_cb(key) % table->size;
 
 	if (table->arr[idx].key == NULL)
@@ -304,7 +304,7 @@ hash_table_clean(struct hash_table *table)
 
 		if (table->arr[idx].key == NULL)
 			continue;
-		
+
 		if (table->arr[idx].next != NULL) {
 			for (nb = table->arr[idx].next; nb != NULL; nb = next) {
 				next = nb->next;
@@ -324,7 +324,7 @@ hash_table_replace(struct hash_table *table, void *key, void *data)
 {
 	struct hash_bucket *nb;
 	unsigned int idx;
-	
+
 	return_val_if_fail(table != NULL, FALSE);
 	return_val_if_fail(key != NULL, FALSE);
 
@@ -372,7 +372,7 @@ struct hash_table_iter *
 hash_table_iterate_init(struct hash_table *table)
 {
 	struct hash_table_iter *iter;
-	
+
 	return_val_if_fail(table != NULL, NULL);
 
 	iter = malloc(sizeof(struct hash_table_iter));
@@ -401,8 +401,8 @@ hash_table_iterate_deinit(struct hash_table_iter **iter)
 boolean_t
 hash_table_iterate(struct hash_table_iter *iter, void **res_key, void **res_data)
 {
-	struct hash_table *table;	
-	
+	struct hash_table *table;
+
 	return_val_if_fail(iter != NULL, FALSE);
 	return_val_if_fail(iter->table != NULL, FALSE);
 

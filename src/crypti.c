@@ -52,7 +52,7 @@ parse_cl_arguments(int argc, char **argv)
 
 	argc -= optind;
 	argv = argv + optind;
-	
+
 	if (argc == 0)
 		set_input(stdin);
 	else {
@@ -72,7 +72,7 @@ void
 initialisation()
 {
 	//print_programme_info();
-	
+
 	id_table_init();
 	keyword_table_init();
 	function_table_init();
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 {
 	ast_node_t *tree;
 	ret_t ret;
-	
+
 	parse_cl_arguments(argc, argv);
 
 	initialisation();
@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 	} while (syntax_is_eof != 1);
 
 	deinitialisation();
-	
+
 	//printf("\n");
 
 	return 0;

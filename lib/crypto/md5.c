@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
- 
+
 #include "md5.h"
 
 static const unsigned char md5pad[64] = { 0x80 }; /* Other 63 bytes are zeroes. */
@@ -25,7 +25,7 @@ static const unsigned char md5pad[64] = { 0x80 }; /* Other 63 bytes are zeroes. 
 
 #define ROL(x, n)	(((x) << (n)) | ((x) >> (32-(n))))
 
-/* 
+/*
  * FF, GG, HH, II macroses implement MD5 round operations.
  * a, b, c, d: state 32-bit words
  * x: part of input block
@@ -170,7 +170,7 @@ md5_transform(u_int32_t state[4], const unsigned char block[64])
 	GG(d, a, b, c, x[2],  T11, 0xfcefa3f8UL);
 	GG(c, d, a, b, x[7],  T12, 0x676f02d9UL);
 	GG(b, c, d, a, x[12], T13, 0x8d2a4c8aUL);
-  
+
 	HH(a, b, c, d, x[5],  T20, 0xfffa3942UL);
 	HH(d, a, b, c, x[8],  T21, 0x8771f681UL);
 	HH(c, d, a, b, x[11], T22, 0x6d9d6122UL);
@@ -286,7 +286,7 @@ md5_final(struct md5_context *ctx, unsigned char digest[16])
 	/* Pad message and append length. */
 	md5_update(ctx, md5pad, npad);
 	md5_update(ctx, nbits, 8);
-	
+
 	uint32_to_bytes(digest, ctx->state, 4);
 	return digest;
 }

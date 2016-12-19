@@ -40,7 +40,7 @@ struct type_conv func_table[] = {
 	{ VAR_BIGNUM, VAR_BIGNUM, bignum_to_bignum},
 	{ VAR_BIGNUM, VAR_OCTSTRING, bignum_to_octstring},
 	{ VAR_BIGNUM, VAR_STRING, bignum_to_string},
-	
+
 	{ VAR_OCTSTRING, VAR_BIGNUM, octstring_to_bignum},
 	{ VAR_OCTSTRING, VAR_OCTSTRING, octstring_to_octstring},
 	{ VAR_OCTSTRING, VAR_STRING, octstring_to_string},
@@ -98,7 +98,7 @@ string_to_bignum(struct variable *to, const struct variable *from)
 		DEBUG(LOG_DEFAULT, "covertion error, set to zero\n");
 		mpl_zero(bnum);
 	}
-	
+
 	return bnum;
 }
 
@@ -110,7 +110,7 @@ string_to_octstring(struct variable *to, const struct variable *from)
 	char *src;
 
 	DEBUG(LOG_VERBOSE, "string to oct_string\n");
-	
+
 	str = var_str_ptr((struct variable *)from);
 	octstr = var_octstr_ptr(to);
 
@@ -128,7 +128,7 @@ string_to_string(struct variable *to, const struct variable *from)
 	str_t *dst, *src;
 
 	DEBUG(LOG_VERBOSE, "string to string\n");
-	
+
 	if (to == from) {
 		DEBUG(LOG_DEFAULT, "same string used in convertion\n");
 		return (void *)&to->str;
@@ -171,7 +171,7 @@ octstring_to_octstring(struct variable *to, const struct variable *from)
 	octstr_t *dst, *src;
 
 	DEBUG(LOG_VERBOSE, "oct_string to oct_string\n");
-	
+
 	if (to == from) {
 		DEBUG(LOG_DEFAULT, "same octstring used in convertion\n");
 		return (void *)&to->octstr;
@@ -214,7 +214,7 @@ octstring_to_string(struct variable *to, const struct variable *from)
 			str_putc(str, ch);
 		} else {
 			char ccode[5];
-			
+
 			snprintf(ccode, sizeof(ccode), "\\x%2.2X", ch);
 			str_append(str, ccode);
 		}
@@ -230,7 +230,7 @@ bignum_to_bignum(struct variable *to, const struct variable *from)
 	int rc;
 
 	DEBUG(LOG_VERBOSE, "bignum to bignum\n");
-	
+
 	if (to == from) {
 		DEBUG(LOG_DEFAULT, "same bignum used in convertion\n");
 		return (void *)&to->bnum;
@@ -249,7 +249,7 @@ err:
 	error(1, "convertion fail");
 }
 
-/* 
+/*
  * FIXME: Now we convert bignum to octstring
  * with temp buffer as intermediate represidence.
  * May be need to write some octstring or bnum wrappers
@@ -273,7 +273,7 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 
 	if (mpl_isneg(bnum))
 		warning("neg bnum to str convertion: sign mismatch\n");
-	
+
 	if (mpl_iszero(bnum)) {
 		octstr_putc(octstr, '\x00');
 		return octstr;
@@ -285,13 +285,13 @@ bignum_to_octstring(struct variable *to, const struct variable *from)
 	bytes = n / CHAR_BIT;
 	if (n % CHAR_BIT != 0)
 		bytes++;
-	
+
 	tmp = xmalloc(bytes);
 
 	rc = mpl_to_uchar(bnum, tmp, bytes);
-	if (rc != MPL_OK) 
+	if (rc != MPL_OK)
 		error(1, "mpl_to_uchar conversion fail\n");
-	
+
 	octstr_append_n(octstr, tmp, bytes);
 
 	ufree(tmp);
@@ -334,7 +334,7 @@ bignum_to_string(struct variable *to, const struct variable *from)
 		rc = mpl_div(&a, &r, &a, &b);
 		if (rc != MPL_OK)
 			goto err;
-		
+
 		ch = r.dig[0];
 		if (ch < 10)
 			str_putc(str, ch + '0');

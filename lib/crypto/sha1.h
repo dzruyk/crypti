@@ -13,5 +13,5 @@ void sha1_context_init(struct sha1_context *ctx);
 void sha1_update(struct sha1_context *ctx, const void *msg, u_int32_t len);
 void *sha1_final(struct sha1_context *ctx, unsigned char digest[20]);
 
-#endif /* SHA1_H_ */ 
+#endif /* SHA1_H_ */
 
